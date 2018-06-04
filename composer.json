@@ -1,0 +1,15 @@
+{
+    "name": "ondrej/spotify-album-tagger",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ondřej Bouda",
+            "email": "ondrej.bouda@gmail.com"
+        }
+    ],
+    "require": {
+        "jwilsson/spotify-web-api-php": "^2.2",
+        "tracy/tracy": "^2.5"
+    }
+}

@@ -1,0 +1,5 @@
+/vendor/
+/var/cache/*
+!var/cache/.gitkeep
+
+spotifyClient.php
