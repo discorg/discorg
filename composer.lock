@@ -8,25 +8,25 @@
     "packages": [
         {
             "name": "jwilsson/spotify-web-api-php",
-            "version": "2.2.1",
+            "version": "2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jwilsson/spotify-web-api-php.git",
-                "reference": "ac9a6bded883883dcd32cfaf01d4a6307c5bf243"
+                "reference": "0d6c738f8ab0f7faae489a579dbb63d13c20f48e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jwilsson/spotify-web-api-php/zipball/ac9a6bded883883dcd32cfaf01d4a6307c5bf243",
-                "reference": "ac9a6bded883883dcd32cfaf01d4a6307c5bf243",
+                "url": "https://api.github.com/repos/jwilsson/spotify-web-api-php/zipball/0d6c738f8ab0f7faae489a579dbb63d13c20f48e",
+                "reference": "0d6c738f8ab0f7faae489a579dbb63d13c20f48e",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "php": "^7.0"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.0",
-                "phpunit/phpunit": "^6.0",
+                "phpunit/phpunit": "^5.7 || ^6.0",
                 "squizlabs/php_codesniffer": "^3.0"
             },
             "type": "library",
@@ -50,20 +50,20 @@
             "keywords": [
                 "spotify"
             ],
-            "time": "2018-05-05T12:34:02+00:00"
+            "time": "2018-07-18T14:48:12+00:00"
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "534d4e4f0f31da494026a3761fad020c20b8debf"
+                "reference": "bea9df15a1cdbf3ec50ef3a75f5ada1ab536d679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/534d4e4f0f31da494026a3761fad020c20b8debf",
-                "reference": "534d4e4f0f31da494026a3761fad020c20b8debf",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/bea9df15a1cdbf3ec50ef3a75f5ada1ab536d679",
+                "reference": "bea9df15a1cdbf3ec50ef3a75f5ada1ab536d679",
                 "shasum": ""
             },
             "require": {
@@ -115,7 +115,7 @@
                 "nette",
                 "profiler"
             ],
-            "time": "2018-05-25T09:33:08+00:00"
+            "time": "2018-07-03T11:34:33+00:00"
         }
     ],
     "packages-dev": [],
