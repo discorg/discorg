@@ -13,6 +13,7 @@
         "tracy/tracy": "^2.5",
         "symfony/dependency-injection": "^4.1",
         "symfony/config": "^4.1",
-        "symfony/yaml": "^4.1"
+        "symfony/yaml": "^4.1",
+        "symfony/dotenv": "^4.1"
     }
 }
