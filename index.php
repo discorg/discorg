@@ -2,7 +2,9 @@
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/spotifyClientConfig.php';
+require __DIR__ . '/src/Spotify/Session/SpotifySession.php';
 
+use Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySession;
 use SpotifyWebAPI\SpotifyWebAPIException;
 use Tracy\Debugger;
 
@@ -17,36 +19,30 @@ const REFRESH_TOKEN_FILE = CACHE_DIR . '/refresh-token';
 
 
 if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
-	$session = new SpotifyWebAPI\Session(
+	$session = new SpotifySession(
 		SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET,
 		WWW_URL
 	);
-
-	$options = [
-		'scope' => [
-			'user-library-read',
-			'user-read-recently-played',
-			'user-read-currently-playing',
-		],
-	];
+	$url = $session->getAuthorizeUrl();
 
 	echo 'Redirecting to spotify.';
 
-	header('refresh:1;' . $session->getAuthorizeUrl($options));
+	header('refresh:1;' . $url);
 	die();
 
 } elseif (isset($_GET['code'])) {
-	$session = new SpotifyWebAPI\Session(
+	$session = new SpotifySession(
 		SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET,
 		WWW_URL
 	);
 
-	$session->requestAccessToken($_GET['code']);
+	$code = $_GET['code'];
+	[$accessToken, $refreshToken] = $session->requestTokens($code);
 
-	file_put_contents(ACCESS_TOKEN_FILE, $session->getAccessToken());
-	file_put_contents(REFRESH_TOKEN_FILE, $session->getRefreshToken());
+	file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
+	file_put_contents(REFRESH_TOKEN_FILE, $refreshToken);
 
 	header('refresh:1;index.php');
 	die();
@@ -68,14 +64,13 @@ if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
 
 			echo 'Refreshing token.';
 
-			$session = new SpotifyWebAPI\Session(
+			$session = new SpotifySession(
 				SPOTIFY_CLIENT_ID,
 				SPOTIFY_CLIENT_SECRET,
 				WWW_URL
 			);
 
-			$session->refreshAccessToken($refreshToken);
-			$accessToken = $session->getAccessToken();
+			$accessToken = $session->refreshAccessToken($refreshToken);
 			file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
 			$api->setAccessToken($accessToken);
 		}
