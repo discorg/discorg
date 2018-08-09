@@ -1,8 +1,14 @@
+parameters:
+
+    env(SPOTIFY_CLIENT_ID): ''
+    env(SPOTIFY_CLIENT_SECRET): ''
+
 services:
 
     spotifySession:
         class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySession
+        public: true
         arguments:
-            clientId: '%spotify.clientId%'
-            clientSecret: '%spotify.clientSecret%'
-            redirectUri: '%wwwUrl%'
+            $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'
+            $clientSecret: '%env(string:SPOTIFY_CLIENT_SECRET)%'
+            $redirectUri: '%wwwUrl%'

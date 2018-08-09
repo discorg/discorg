@@ -7,17 +7,28 @@ use SpotifyWebAPI\SpotifyWebAPIException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
 use Tracy\Debugger;
 
 Debugger::enable();
 Debugger::$maxDepth = 7;
 
-$containerBuilder = new ContainerBuilder();
-$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
-$loader->load('src/Spotify/config.yaml');
-$loader->load('config/config.local.yaml');
+$envFile = __DIR__.'/config/.env';
+if (file_exists($envFile)) {
+	$dotenv = new Dotenv();
+	$dotenv->load($envFile);
+}
 
-$spotifySession = $containerBuilder->get('spotifySession');
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+$loader->load('src/Spotify/config.yaml');
+
+$container->setParameter('wwwUrl', 'http://' . $_SERVER['HTTP_HOST']);
+
+$resolveEnvPlaceholders = true;
+$container->compile($resolveEnvPlaceholders);
+
+$spotifySession = $container->get('spotifySession');
 
 
 const CACHE_DIR = __DIR__ . '/var/cache';

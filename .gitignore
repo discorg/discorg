@@ -2,6 +2,6 @@
 /var/cache/*
 !var/cache/.gitkeep
 
-/config/config.local.yaml
+/config/.env
 
 /*.sh

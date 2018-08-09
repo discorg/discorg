@@ -2,6 +2,8 @@
 
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
+use Assert\Assertion;
+
 class SpotifySession
 {
 
@@ -22,6 +24,10 @@ class SpotifySession
 
 	public function __construct(string $clientId, string $clientSecret, string $redirectUri)
 	{
+		Assertion::notEmpty($clientId);
+		Assertion::notEmpty($clientSecret);
+		Assertion::notEmpty($redirectUri);
+
 		$this->clientId = $clientId;
 		$this->clientSecret = $clientSecret;
 		$this->redirectUri = $redirectUri;
@@ -61,7 +67,7 @@ class SpotifySession
 		$result = $session->requestAccessToken($authorizationCode);
 
 		if ($result === false) {
-			throw new \Exception('Access token not granted.');
+			throw new \RuntimeException('Access token not granted.');
 		}
 
 		return [
