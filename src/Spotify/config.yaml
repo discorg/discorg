@@ -1,0 +1,8 @@
+services:
+
+    spotifySession:
+        class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySession
+        arguments:
+            clientId: '%spotify.clientId%'
+            clientSecret: '%spotify.clientSecret%'
+            redirectUri: '%wwwUrl%'

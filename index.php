@@ -1,17 +1,25 @@
 <?php declare(strict_types = 1);
 
 require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/spotifyClientConfig.php';
 require __DIR__ . '/src/Spotify/Session/SpotifySession.php';
 
-use Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySession;
 use SpotifyWebAPI\SpotifyWebAPIException;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Tracy\Debugger;
 
 Debugger::enable();
 Debugger::$maxDepth = 7;
 
-const WWW_URL = 'http://localhost:8000';
+$containerBuilder = new ContainerBuilder();
+$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
+$loader->load('src/Spotify/config.yaml');
+$loader->load('config/config.local.yaml');
+
+$spotifySession = $containerBuilder->get('spotifySession');
+
+
 const CACHE_DIR = __DIR__ . '/var/cache';
 
 const ACCESS_TOKEN_FILE = CACHE_DIR . '/access-token';
@@ -19,12 +27,7 @@ const REFRESH_TOKEN_FILE = CACHE_DIR . '/refresh-token';
 
 
 if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
-	$session = new SpotifySession(
-		SPOTIFY_CLIENT_ID,
-		SPOTIFY_CLIENT_SECRET,
-		WWW_URL
-	);
-	$url = $session->getAuthorizeUrl();
+	$url = $spotifySession->getAuthorizeUrl();
 
 	echo 'Redirecting to spotify.';
 
@@ -32,14 +35,8 @@ if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
 	die();
 
 } elseif (isset($_GET['code'])) {
-	$session = new SpotifySession(
-		SPOTIFY_CLIENT_ID,
-		SPOTIFY_CLIENT_SECRET,
-		WWW_URL
-	);
-
 	$code = $_GET['code'];
-	[$accessToken, $refreshToken] = $session->requestTokens($code);
+	[$accessToken, $refreshToken] = $spotifySession->requestTokens($code);
 
 	file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
 	file_put_contents(REFRESH_TOKEN_FILE, $refreshToken);
@@ -64,13 +61,7 @@ if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
 
 			echo 'Refreshing token.';
 
-			$session = new SpotifySession(
-				SPOTIFY_CLIENT_ID,
-				SPOTIFY_CLIENT_SECRET,
-				WWW_URL
-			);
-
-			$accessToken = $session->refreshAccessToken($refreshToken);
+			$accessToken = $spotifySession->refreshAccessToken($refreshToken);
 			file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
 			$api->setAccessToken($accessToken);
 		}

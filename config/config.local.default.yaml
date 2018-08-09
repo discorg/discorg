@@ -1,0 +1,6 @@
+parameters:
+
+    wwwUrl: 'http://localhost'
+
+    spotify.clientId: ''
+    spotify.clientSecret: ''
