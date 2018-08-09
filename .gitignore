@@ -3,3 +3,5 @@
 !var/cache/.gitkeep
 
 /config/config.local.yaml
+
+/*.sh
