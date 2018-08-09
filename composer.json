@@ -10,6 +10,7 @@
     ],
     "require": {
         "jwilsson/spotify-web-api-php": "^2.2",
-        "tracy/tracy": "^2.5"
+        "tracy/tracy": "^2.5",
+        "symfony/dependency-injection": "^4.1"
     }
 }
