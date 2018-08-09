@@ -5,8 +5,8 @@ parameters:
 
 services:
 
-    spotifySession:
-        class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySession
+    spotifySessionFactory:
+        class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionFactory
         public: true
         arguments:
             $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'

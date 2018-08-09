@@ -2,6 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+use Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionFactory;
 use SpotifyWebAPI\SpotifyWebAPIException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,7 +28,8 @@ $container->setParameter('wwwUrl', 'http://' . $_SERVER['HTTP_HOST']);
 $resolveEnvPlaceholders = true;
 $container->compile($resolveEnvPlaceholders);
 
-$spotifySession = $container->get('spotifySession');
+/** @var SpotifySessionFactory $spotifySessionFactory */
+$spotifySessionFactory = $container->get('spotifySessionFactory');
 
 
 const CACHE_DIR = __DIR__ . '/var/cache';
@@ -37,6 +39,8 @@ const REFRESH_TOKEN_FILE = CACHE_DIR . '/refresh-token';
 
 
 if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
+	$spotifySession = $spotifySessionFactory->createAuthorizable();
+
 	$url = $spotifySession->getAuthorizeUrl();
 
 	echo 'Redirecting to spotify.';
@@ -45,20 +49,24 @@ if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
 	die();
 
 } elseif (isset($_GET['code'])) {
-	$code = $_GET['code'];
-	[$accessToken, $refreshToken] = $spotifySession->requestTokens($code);
+	$spotifySession = $spotifySessionFactory->createAuthorizable();
 
-	file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
-	file_put_contents(REFRESH_TOKEN_FILE, $refreshToken);
+	$code = $_GET['code'];
+	$session = $spotifySession->authorize($code);
+
+	file_put_contents(ACCESS_TOKEN_FILE, $session->getAccessToken());
+	file_put_contents(REFRESH_TOKEN_FILE, $session->getRefreshToken());
 
 	header('refresh:1;index.php');
 	die();
 
 } elseif (file_exists(ACCESS_TOKEN_FILE)) {
-	$token = file_get_contents(ACCESS_TOKEN_FILE);
+	$accessToken = file_get_contents(ACCESS_TOKEN_FILE);
+	$refreshToken = file_get_contents(REFRESH_TOKEN_FILE);
+	$spotifySession = $spotifySessionFactory->createAuthorized($accessToken, $refreshToken);
 
 	$api = new SpotifyWebAPI\SpotifyWebAPI();
-	$api->setAccessToken($token);
+	$api->setAccessToken($spotifySession->getAccessToken());
 	$api->setReturnType(\SpotifyWebAPI\SpotifyWebAPI::RETURN_ASSOC);
 
 	try {
@@ -67,13 +75,12 @@ if (!file_exists(ACCESS_TOKEN_FILE) && !isset($_GET['code'])) {
 
 		if ($e->getCode() === 401) {
 			unlink(ACCESS_TOKEN_FILE);
-			$refreshToken = file_get_contents(REFRESH_TOKEN_FILE);
 
 			echo 'Refreshing token.';
 
-			$accessToken = $spotifySession->refreshAccessToken($refreshToken);
-			file_put_contents(ACCESS_TOKEN_FILE, $accessToken);
-			$api->setAccessToken($accessToken);
+			$spotifySession = $spotifySession->refresh();
+			file_put_contents(ACCESS_TOKEN_FILE, $spotifySession->getAccessToken());
+			$api->setAccessToken($spotifySession->getAccessToken());
 		}
 	}
 }
