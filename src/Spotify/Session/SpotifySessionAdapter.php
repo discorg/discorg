@@ -13,11 +13,22 @@ class SpotifySessionAdapter implements AuthorizableSpotifySession, AuthorizedSpo
 	private $session;
 
 	/**
+	 * @var string[]
+	 */
+	private $authorizationScopes = [];
+
+	/**
 	 * @var string
 	 */
 	private $accessToken;
 
-	public function __construct(string $clientId, string $clientSecret, string $redirectUri)
+	/**
+	 * @param string $clientId
+	 * @param string $clientSecret
+	 * @param string $redirectUri
+	 * @param string[] $authorizationScopes
+	 */
+	public function __construct(string $clientId, string $clientSecret, string $redirectUri, array $authorizationScopes)
 	{
 		Assertion::notEmpty($clientId);
 		Assertion::notEmpty($clientSecret);
@@ -28,16 +39,15 @@ class SpotifySessionAdapter implements AuthorizableSpotifySession, AuthorizedSpo
 			$clientSecret,
 			$redirectUri
 		);
+
+		Assertion::allString($authorizationScopes);
+		$this->authorizationScopes = $authorizationScopes;
 	}
 
 	public function getAuthorizeUrl(): string
 	{
 		$options = [
-			'scope' => [
-				'user-library-read',
-				'user-read-recently-played',
-				'user-read-currently-playing',
-			],
+			'scope' => $this->authorizationScopes,
 		];
 
 		return $this->session->getAuthorizeUrl($options);

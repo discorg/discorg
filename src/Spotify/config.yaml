@@ -3,6 +3,30 @@ parameters:
     env(SPOTIFY_CLIENT_ID): ''
     env(SPOTIFY_CLIENT_SECRET): ''
 
+    spotify.sesion.scopes:
+        # Library
+        - user-library-read
+        - user-library-modify
+        # Playlists
+        - playlist-read-private
+        - playlist-modify-public
+        - playlist-modify-private
+        - playlist-read-collaborative
+        # Listening History
+        - user-read-recently-played
+        - user-top-read
+        # Users
+        - user-read-private
+        - user-read-email
+        - user-read-birthdate
+        # Spotify Connect
+        - user-modify-playback-state
+        - user-read-currently-playing
+        - user-read-playback-state
+        # Follow
+        - user-follow-modify
+        - user-follow-read
+
 services:
 
     spotifySessionFactory:
@@ -12,3 +36,4 @@ services:
             $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'
             $clientSecret: '%env(string:SPOTIFY_CLIENT_SECRET)%'
             $redirectUri: '%wwwUrl%'
+            $authorizationScopes: '%spotify.sesion.scopes%'
