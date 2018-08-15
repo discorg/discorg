@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    Bouda\SpotifyAlbumTagger\User\UserSessionManager: ~
+    Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager: '@Bouda\SpotifyAlbumTagger\User\UserSessionManager'
+    Bouda\SpotifyAlbumTagger\User\InitializedUserSessionManager: '@Bouda\SpotifyAlbumTagger\User\UserSessionManager'

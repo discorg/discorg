@@ -29,11 +29,30 @@ parameters:
 
 services:
 
-    spotifySessionFactory:
-        class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionFactory
+    _defaults:
+        autowire: true
+        autoconfigure: true
         public: true
+
+    Bouda\SpotifyAlbumTagger\User\UserSessionManager: ~
+    Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager: '@Bouda\SpotifyAlbumTagger\User\UserSessionManager'
+    Bouda\SpotifyAlbumTagger\User\InitializedUserSessionManager: '@Bouda\SpotifyAlbumTagger\User\UserSessionManager'
+
+    Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionManager: ~
+    Bouda\SpotifyAlbumTagger\Spotify\Session\InitializableSpotifySessionManager: '@Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionManager'
+    Bouda\SpotifyAlbumTagger\Spotify\Session\InitializedSpotifySessionManager: '@Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionManager'
+
+    Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionFactory:
+        class: Bouda\SpotifyAlbumTagger\Spotify\Session\SpotifySessionFactory
         arguments:
             $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'
             $clientSecret: '%env(string:SPOTIFY_CLIENT_SECRET)%'
             $redirectUri: '%wwwUrl%'
             $authorizationScopes: '%spotify.session.scopes%'
+
+    Bouda\SpotifyAlbumTagger\Spotify\Api\SpotifyWebApiFactory: ~
+
+    SpotifyWebAPI\SpotifyWebAPI:
+        factory: 'Bouda\SpotifyAlbumTagger\Spotify\Api\SpotifyWebApiFactory:create'
+
+    Bouda\SpotifyAlbumTagger\Spotify\SpotifyUserLibraryFacade: ~
