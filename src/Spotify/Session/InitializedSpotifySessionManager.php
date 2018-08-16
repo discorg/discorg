@@ -7,6 +7,4 @@ interface InitializedSpotifySessionManager
 
 	public function getSession(): AuthorizedSpotifySession;
 
-	public function refresh(): void;
-
 }

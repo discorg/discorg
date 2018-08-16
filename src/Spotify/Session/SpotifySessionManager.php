@@ -65,19 +65,9 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 			$userSession->getSpotifyRefreshToken()
 		);
 
-
-		try {
-			$api = new \SpotifyWebAPI\SpotifyWebAPI();
-			$api->setAccessToken($spotifySession->getAccessToken());
-			$api->me();
-		} catch (SpotifyWebAPIException $e) {
-
-			if ($e->getCode() === 401) {
-				$this->refresh();
-			}
-		}
-
 		$this->spotifySession = $spotifySession;
+
+		$this->refreshTokenIfNeeded();
 
 		return $this;
 	}
@@ -87,13 +77,24 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 		return $this->spotifySession;
 	}
 
-	public function refresh(): void
+	private function refreshTokenIfNeeded(): void
 	{
-		$spotifySession = $this->spotifySession->refresh();
+		$spotifySession = $this->spotifySession;
 
-		$userSession = $this->userSessionManager->getSession();
-		$userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-		$this->userSessionManager->saveSession();
+		try {
+			$api = new \SpotifyWebAPI\SpotifyWebAPI();
+			$api->setAccessToken($spotifySession->getAccessToken());
+			$api->me();
+		} catch (SpotifyWebAPIException $e) {
+
+			if ($e->getCode() === 401) {
+				$spotifySession->refresh();
+
+				$userSession = $this->userSessionManager->getSession();
+				$userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
+				$this->userSessionManager->saveSession();
+			}
+		}
 	}
 
 }
