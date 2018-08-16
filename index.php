@@ -2,8 +2,8 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+use Bouda\SpotifyAlbumTagger\Actions\Action;
 use Bouda\SpotifyAlbumTagger\Spotify\Session\InitializableSpotifySessionManager;
-use Bouda\SpotifyAlbumTagger\Spotify\SpotifyUserLibraryFacade;
 use Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +24,7 @@ $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
 $loader->load('src/Spotify/config.yaml');
 $loader->load('src/User/config.yaml');
+$loader->load('actions/config.yaml');
 
 $container->setParameter('wwwUrl', 'http://' . $_SERVER['HTTP_HOST']);
 
@@ -41,14 +42,24 @@ $spotifySessionManager = $container->get(InitializableSpotifySessionManager::cla
 $spotifySessionManager = $spotifySessionManager->initialize();
 $spotifySession = $spotifySessionManager->getSession();
 
-
-/** @var SpotifyUserLibraryFacade $spotifyUserLibrary */
-$spotifyUserLibrary = $container->get(SpotifyUserLibraryFacade::class);
-
-foreach ($spotifyUserLibrary->getAlbums(5) as $album) {
-	$album = $album['album'];
-	$uri = $album['uri'];
-	$imageUrl = $album['images'][1]['url'];
-	$title = $album['artists'][0]['name'] . ' - ' . substr($album['release_date'], 0, 4) . ' - ' . $album['name'];
-	echo sprintf('<a href="%s">%s</a><br>', $uri, $title);
+$requestQuery = $_SERVER['QUERY_STRING'];
+if ($requestQuery === null) {
+	$requestQuery = '?action=home';
 }
+preg_match('#action=([^&]*)#', $requestQuery, $matches);
+
+if (isset($matches[1])) {
+	$actionName = $matches[1];
+} else {
+	throw new RuntimeException('Action not set.');
+}
+
+$actionServiceName = sprintf('Bouda\SpotifyAlbumTagger\Actions\%sAction', ucfirst($actionName));
+
+if (!$container->has($actionServiceName)) {
+	throw new RuntimeException('Action not found.');
+}
+
+/** @var Action $action */
+$action = $container->get($actionServiceName);
+$action();
