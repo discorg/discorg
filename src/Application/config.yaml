@@ -1,0 +1,16 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    Bouda\SpotifyAlbumTagger\Application\ActionResolver: ~
+    Bouda\SpotifyAlbumTagger\Application\Application: ~
+
+    Bouda\SpotifyAlbumTagger\Actions\:
+        resource: '../../actions'
+
+imports:
+    - '../Spotify/config.yaml'
+    - '../User/config.yaml'

@@ -2,9 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Bouda\SpotifyAlbumTagger\Actions\Action;
-use Bouda\SpotifyAlbumTagger\Spotify\Session\InitializableSpotifySessionManager;
-use Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager;
+use Bouda\SpotifyAlbumTagger\Application\Application;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -22,44 +20,13 @@ if (file_exists($envFile)) {
 
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
-$loader->load('src/Spotify/config.yaml');
-$loader->load('src/User/config.yaml');
-$loader->load('actions/config.yaml');
+$loader->load('src/Application/config.yaml');
 
 $container->setParameter('wwwUrl', 'http://' . $_SERVER['HTTP_HOST']);
 
 $resolveEnvPlaceholders = true;
 $container->compile($resolveEnvPlaceholders);
 
-
-/** @var InitializableUserSessionManager $userSessionManager */
-$userSessionManager = $container->get(InitializableUserSessionManager::class);
-$initializedUserSessionManager = $userSessionManager->initialize();
-$userSession = $initializedUserSessionManager->getSession();
-
-/** @var InitializableSpotifySessionManager $spotifySessionManager */
-$spotifySessionManager = $container->get(InitializableSpotifySessionManager::class);
-$spotifySessionManager = $spotifySessionManager->initialize();
-$spotifySession = $spotifySessionManager->getSession();
-
-$requestQuery = $_SERVER['QUERY_STRING'];
-if ($requestQuery === null) {
-	$requestQuery = '?action=home';
-}
-preg_match('#action=([^&]*)#', $requestQuery, $matches);
-
-if (isset($matches[1])) {
-	$actionName = $matches[1];
-} else {
-	throw new RuntimeException('Action not set.');
-}
-
-$actionServiceName = sprintf('Bouda\SpotifyAlbumTagger\Actions\%sAction', ucfirst($actionName));
-
-if (!$container->has($actionServiceName)) {
-	throw new RuntimeException('Action not found.');
-}
-
-/** @var Action $action */
-$action = $container->get($actionServiceName);
-$action();
+/** @var Application $application */
+$application = $container->get(Application::class);
+$application->run($container);

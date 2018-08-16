@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Bouda\SpotifyAlbumTagger\Actions;
+namespace Bouda\SpotifyAlbumTagger\Application;
 
 interface Action
 {

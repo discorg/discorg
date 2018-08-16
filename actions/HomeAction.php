@@ -2,6 +2,8 @@
 
 namespace Bouda\SpotifyAlbumTagger\Actions;
 
+use Bouda\SpotifyAlbumTagger\Application\Action;
+
 class HomeAction implements Action
 {
 

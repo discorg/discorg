@@ -2,6 +2,7 @@
 
 namespace Bouda\SpotifyAlbumTagger\Actions;
 
+use Bouda\SpotifyAlbumTagger\Application\Action;
 use Bouda\SpotifyAlbumTagger\Spotify\SpotifyUserLibraryFacade;
 
 class AlbumsAction implements Action
