@@ -19,7 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bouda\\SpotifyAlbumTagger\\": "src/"
+            "Bouda\\SpotifyAlbumTagger\\": "src/",
+            "Bouda\\SpotifyAlbumTagger\\Actions\\": "actions/"
         }
     }
 }
