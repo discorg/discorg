@@ -9,7 +9,7 @@ class ActionResolver
 
 	public function resolve(ContainerInterface $container): Action
 	{
-		$requestQuery = $_SERVER['QUERY_STRING'];
+		$requestQuery = $_SERVER['QUERY_STRING'] ?? null;
 		if ($requestQuery === null) {
 			$requestQuery = '?action=home';
 		}
