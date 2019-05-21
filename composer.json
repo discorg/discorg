@@ -1,7 +1,7 @@
 {
-    "name": "ondrej/spotify-album-tagger",
+    "name": "ondrej/finder-keeper",
     "type": "project",
-    "license": "MIT",
+    "license": "BSD 3-Clause",
     "authors": [
         {
             "name": "Ondřej Bouda",
