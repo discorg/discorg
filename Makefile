@@ -16,3 +16,8 @@ check-code-style:
 .PHONY: fix-code-style
 fix-code-style:
 	vendor/bin/phpcbf
+
+.PHONY: phpstan
+phpstan:
+	vendor/bin/phpstan analyse -c phpstan.neon
+

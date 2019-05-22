@@ -31,6 +31,7 @@ class SpotifyUserLibraryFacade
         $albums = [];
 
         while (true) {
+            /** @var mixed[] $result */
             $result = $this->api->getMySavedAlbums([
                 'limit' => $batchSize,
                 'offset' => $offset,

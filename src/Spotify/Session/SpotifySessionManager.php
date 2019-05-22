@@ -46,7 +46,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
             die;
         }
 
-        if ($userSession->getSpotifyAccessToken() === null) {
+        if (! $userSession->isInitialized()) {
             $spotifySession = $this->spotifySessionFactory->createAuthorizable();
 
             $url = $spotifySession->getAuthorizeUrl();

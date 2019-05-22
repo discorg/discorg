@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\User;
 
+use LogicException;
+
 class UserSession
 {
-    /** @var string */
+    /** @var string|null */
     private $spotifyAccessToken;
 
-    /** @var string */
+    /** @var string|null */
     private $spotifyRefreshToken;
 
     public function setupSpotify(string $accessToken, string $refreshToken) : void
@@ -18,13 +20,27 @@ class UserSession
         $this->spotifyRefreshToken = $refreshToken;
     }
 
-    public function getSpotifyAccessToken() : ?string
+    public function getSpotifyAccessToken() : string
     {
+        if ($this->spotifyAccessToken === null) {
+            throw new LogicException('Uninitialized.');
+        }
+
         return $this->spotifyAccessToken;
     }
 
-    public function getSpotifyRefreshToken() : ?string
+    public function getSpotifyRefreshToken() : string
     {
+        if ($this->spotifyRefreshToken === null) {
+            throw new LogicException('Uninitialized.');
+        }
+
         return $this->spotifyRefreshToken;
+    }
+
+    public function isInitialized() : bool
+    {
+        return $this->spotifyAccessToken !== null
+            && $this->spotifyRefreshToken !== null;
     }
 }
