@@ -1,100 +1,94 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
 use Bouda\SpotifyAlbumTagger\User\InitializedUserSessionManager;
+use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
-
-
+use function header;
 
 class SpotifySessionManager implements InitializableSpotifySessionManager, InitializedSpotifySessionManager
 {
+    /** @var InitializedUserSessionManager */
+    private $userSessionManager;
 
-	/**
-	 * @var InitializedUserSessionManager
-	 */
-	private $userSessionManager;
+    /** @var SpotifySessionFactory */
+    private $spotifySessionFactory;
 
-	/**
-	 * @var SpotifySessionFactory
-	 */
-	private $spotifySessionFactory;
+    /** @var AuthorizedSpotifySession */
+    private $spotifySession;
 
-	/**
-	 * @var AuthorizedSpotifySession
-	 */
-	private $spotifySession;
+    public function __construct(
+        InitializedUserSessionManager $userSessionManager,
+        SpotifySessionFactory $spotifySessionFactory
+    ) {
+        $this->userSessionManager = $userSessionManager;
+        $this->spotifySessionFactory = $spotifySessionFactory;
+    }
 
-	public function __construct(InitializedUserSessionManager $userSessionManager, SpotifySessionFactory $spotifySessionFactory)
-	{
-		$this->userSessionManager = $userSessionManager;
-		$this->spotifySessionFactory = $spotifySessionFactory;
-	}
+    public function initialize() : InitializedSpotifySessionManager
+    {
+        $userSession = $this->userSessionManager->getSession();
 
-	public function initialize(): InitializedSpotifySessionManager
-	{
-		$userSession = $this->userSessionManager->getSession();
+        if (isset($_GET['code'])) {
+            $spotifySession = $this->spotifySessionFactory->createAuthorizable();
 
-		if (isset($_GET['code'])) {
-			$spotifySession = $this->spotifySessionFactory->createAuthorizable();
+            $code = $_GET['code'];
+            $spotifySession = $spotifySession->authorize($code);
 
-			$code = $_GET['code'];
-			$spotifySession = $spotifySession->authorize($code);
+            $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
+            $this->userSessionManager->saveSession();
 
+            echo 'Authorizing spotify session with code.';
+            header('refresh:1;index.php');
+            die;
+        }
 
-			$userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-			$this->userSessionManager->saveSession();
+        if ($userSession->getSpotifyAccessToken() === null) {
+            $spotifySession = $this->spotifySessionFactory->createAuthorizable();
 
-			echo 'Authorizing spotify session with code.';
-			header('refresh:1;index.php');
-			die;
-		}
+            $url = $spotifySession->getAuthorizeUrl();
 
-		if ($userSession->getSpotifyAccessToken() === null) {
-			$spotifySession = $this->spotifySessionFactory->createAuthorizable();
+            echo 'Redirecting to spotify.';
+            header('refresh:1;' . $url);
+            die;
+        }
 
-			$url = $spotifySession->getAuthorizeUrl();
+        $spotifySession = $this->spotifySessionFactory->createAuthorized(
+            $userSession->getSpotifyAccessToken(),
+            $userSession->getSpotifyRefreshToken()
+        );
 
-			echo 'Redirecting to spotify.';
-			header('refresh:1;' . $url);
-			die;
-		}
+        $this->spotifySession = $spotifySession;
 
-		$spotifySession = $this->spotifySessionFactory->createAuthorized(
-			$userSession->getSpotifyAccessToken(),
-			$userSession->getSpotifyRefreshToken()
-		);
+        $this->refreshTokenIfNeeded();
 
-		$this->spotifySession = $spotifySession;
+        return $this;
+    }
 
-		$this->refreshTokenIfNeeded();
+    public function getSession() : AuthorizedSpotifySession
+    {
+        return $this->spotifySession;
+    }
 
-		return $this;
-	}
+    private function refreshTokenIfNeeded() : void
+    {
+        $spotifySession = $this->spotifySession;
 
-	public function getSession(): AuthorizedSpotifySession
-	{
-		return $this->spotifySession;
-	}
+        try {
+            $api = new SpotifyWebAPI();
+            $api->setAccessToken($spotifySession->getAccessToken());
+            $api->me();
+        } catch (SpotifyWebAPIException $e) {
+            if ($e->getCode() === 401) {
+                $spotifySession->refresh();
 
-	private function refreshTokenIfNeeded(): void
-	{
-		$spotifySession = $this->spotifySession;
-
-		try {
-			$api = new \SpotifyWebAPI\SpotifyWebAPI();
-			$api->setAccessToken($spotifySession->getAccessToken());
-			$api->me();
-		} catch (SpotifyWebAPIException $e) {
-
-			if ($e->getCode() === 401) {
-				$spotifySession->refresh();
-
-				$userSession = $this->userSessionManager->getSession();
-				$userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-				$this->userSessionManager->saveSession();
-			}
-		}
-	}
-
+                $userSession = $this->userSessionManager->getSession();
+                $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
+                $this->userSessionManager->saveSession();
+            }
+        }
+    }
 }

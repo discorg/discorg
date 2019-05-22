@@ -1,58 +1,56 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\Spotify;
 
 use SpotifyWebAPI\SpotifyWebAPI;
-
-
+use function array_merge;
+use function count;
+use function min;
 
 class SpotifyUserLibraryFacade
 {
+    private const MAXIMUM_BATCH_SIZE = 50;
 
-	private const MAXIMUM_BATCH_SIZE = 50;
+    /** @var SpotifyWebAPI */
+    private $api;
 
-	/**
-	 * @var SpotifyWebAPI
-	 */
-	private $api;
+    public function __construct(SpotifyWebAPI $api)
+    {
+        $this->api = $api;
+    }
 
-	public function __construct(SpotifyWebAPI $api)
-	{
-		$this->api = $api;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function getAlbums(int $limit) : array
+    {
+        $batchSize = min(self::MAXIMUM_BATCH_SIZE, $limit);
+        $offset = 0;
+        $albums = [];
 
-	/**
-	 * @param int $limit
-	 * @return mixed[]
-	 */
-	public function getAlbums(int $limit): array
-	{
-		$batchSize = min(self::MAXIMUM_BATCH_SIZE, $limit);
-		$offset = 0;
-		$albums = [];
+        while (true) {
+            $result = $this->api->getMySavedAlbums([
+                'limit' => $batchSize,
+                'offset' => $offset,
+            ]);
 
-		while (true) {
-			$result = $this->api->getMySavedAlbums([
-				'limit' => $batchSize,
-				'offset' => $offset,
-			]);
+            $items = $result['items'];
 
-			$items = $result['items'];
+            if (count($items) === 0) {
+                break;
+            }
 
-			if (count($items) === 0) {
-				break;
-			}
+            $albums = array_merge($albums, $items);
 
-			$albums = array_merge($albums, $items);
+            if (count($albums) >= $limit) {
+                break;
+            }
 
-			if (count($albums) >= $limit) {
-				break;
-			}
+            $offset += self::MAXIMUM_BATCH_SIZE;
+        }
 
-			$offset += self::MAXIMUM_BATCH_SIZE;
-		}
-
-		return $albums;
-	}
-
+        return $albums;
+    }
 }

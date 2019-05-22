@@ -1,10 +1,10 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
 interface InitializableSpotifySessionManager
 {
-
-	public function initialize(): InitializedSpotifySessionManager;
-
+    public function initialize() : InitializedSpotifySessionManager;
 }

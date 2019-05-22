@@ -1,12 +1,12 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
 interface AuthorizableSpotifySession
 {
+    public function getAuthorizeUrl() : string;
 
-	public function getAuthorizeUrl(): string;
-
-	public function authorize(string $authorizationCode): AuthorizedSpotifySession;
-
+    public function authorize(string $authorizationCode) : AuthorizedSpotifySession;
 }
