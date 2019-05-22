@@ -3,5 +3,3 @@
 !var/cache/.gitkeep
 
 /config/.env
-
-/*.sh

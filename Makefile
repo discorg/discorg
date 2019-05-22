@@ -21,3 +21,6 @@ fix-code-style:
 phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon
 
+.PHONY: run
+run:
+	php -S localhost:8000
