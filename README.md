@@ -18,7 +18,7 @@ Finder Keeper is an app that helps me find and track the music I listen to. The 
 
 Tasks for now:
 - [x] import existing code from spotify-client
-- [x] setup stytic analysis and code style rules
+- [x] setup static analysis and code style rules
 - [ ] setup tech stack - services container, HTTP stack
 - [ ] setup happy-path HTTP end-to-end test
 - [ ] refactoring of existing code - setup application architecture (layers), extract infrastructure
@@ -38,6 +38,7 @@ Tasks for now:
     * phpstan + strict rules
     * checked exceptions
     * strict coding standard rules
+    * deptrac for architecture rules
 * HTTP stack
     * PSR-7 request/response
     * PSR-15 middleware stack
