@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
 use Bouda\SpotifyAlbumTagger\User\InitializedUserSessionManager;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
-use function header;
 
 class SpotifySessionManager implements InitializableSpotifySessionManager, InitializedSpotifySessionManager
 {
@@ -28,22 +30,26 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         $this->spotifySessionFactory = $spotifySessionFactory;
     }
 
-    public function initialize() : InitializedSpotifySessionManager
+    public function initialize(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
         $userSession = $this->userSessionManager->getSession();
 
-        if (isset($_GET['code'])) {
+        $requestQueryParameters = $request->getQueryParams();
+        if (isset($requestQueryParameters['code'])) {
             $spotifySession = $this->spotifySessionFactory->createAuthorizable();
 
-            $code = $_GET['code'];
+            $code = $requestQueryParameters['code'];
             $spotifySession = $spotifySession->authorize($code);
 
             $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-            $this->userSessionManager->saveSession();
+            $response = $this->userSessionManager->saveSession($response);
 
-            echo 'Authorizing spotify session with code.';
-            header('refresh:1;index.php');
-            die;
+            $response = $response->withBody(
+                (new Psr17Factory())->createStream('Authorizing spotify session with code.')
+            );
+            $response = $response->withHeader('Refresh', '1;index.php');
+
+            return $response;
         }
 
         if (! $userSession->isInitialized()) {
@@ -51,9 +57,12 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 
             $url = $spotifySession->getAuthorizeUrl();
 
-            echo 'Redirecting to spotify.';
-            header('refresh:1;' . $url);
-            die;
+            $response = $response->withBody(
+                (new Psr17Factory())->createStream('Redirecting to spotify.')
+            );
+            $response = $response->withHeader('Refresh', '1;' . $url);
+
+            return $response;
         }
 
         $spotifySession = $this->spotifySessionFactory->createAuthorized(
@@ -63,9 +72,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 
         $this->spotifySession = $spotifySession;
 
-        $this->refreshTokenIfNeeded();
-
-        return $this;
+        return $this->refreshTokenIfNeeded($response);
     }
 
     public function getSession() : AuthorizedSpotifySession
@@ -73,7 +80,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         return $this->spotifySession;
     }
 
-    private function refreshTokenIfNeeded() : void
+    private function refreshTokenIfNeeded(ResponseInterface $response) : ResponseInterface
     {
         $spotifySession = $this->spotifySession;
 
@@ -87,8 +94,11 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 
                 $userSession = $this->userSessionManager->getSession();
                 $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-                $this->userSessionManager->saveSession();
+
+                $response = $this->userSessionManager->saveSession($response);
             }
         }
+
+        return $response;
     }
 }

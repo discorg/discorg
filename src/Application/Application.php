@@ -6,7 +6,10 @@ namespace Bouda\SpotifyAlbumTagger\Application;
 
 use Bouda\SpotifyAlbumTagger\Spotify\Session\InitializableSpotifySessionManager;
 use Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Application
 {
@@ -29,13 +32,21 @@ class Application
         $this->actionResolver = $actionResolver;
     }
 
-    public function run(ContainerInterface $container) : void
+    public function run(ServerRequestInterface $request, ContainerInterface $container) : ResponseInterface
     {
-        $this->userSessionManager->initialize();
-        $this->spotifySessionManager->initialize();
+        $psr17Factory = new Psr17Factory();
+        $response = $psr17Factory->createResponse();
 
-        $action = $this->actionResolver->resolve($container);
+        $response = $this->userSessionManager->initialize($request, $response);
 
-        $action();
+        $response = $this->spotifySessionManager->initialize($request, $response);
+
+        if ($response->getHeader('Refresh') !== []) {
+            return $response;
+        }
+
+        $action = $this->actionResolver->resolve($request, $container);
+
+        return $action($request, $response);
     }
 }

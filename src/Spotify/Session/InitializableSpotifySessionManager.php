@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 interface InitializableSpotifySessionManager
 {
-    public function initialize() : InitializedSpotifySessionManager;
+    public function initialize(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface;
 }

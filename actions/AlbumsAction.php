@@ -6,6 +6,9 @@ namespace Bouda\SpotifyAlbumTagger\Actions;
 
 use Bouda\SpotifyAlbumTagger\Application\Action;
 use Bouda\SpotifyAlbumTagger\Spotify\SpotifyUserLibraryFacade;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use function sprintf;
 use function substr;
 
@@ -19,8 +22,10 @@ class AlbumsAction implements Action
         $this->spotifyUserLibrary = $spotifyUserLibrary;
     }
 
-    public function __invoke() : void
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
+        $responseBody = '';
+
         foreach ($this->spotifyUserLibrary->getAlbums(5) as $album) {
             $album = $album['album'];
             $uri = $album['uri'];
@@ -29,7 +34,11 @@ class AlbumsAction implements Action
                 . ' - '
                 . substr($album['release_date'], 0, 4)
                 . ' - ' . $album['name'];
-            echo sprintf('<a href="%s">%s</a><br>', $uri, $title);
+            $responseBody .= sprintf('<a href="%s">%s</a><br>', $uri, $title);
         }
+
+        $responseBodyAsStream = (new Psr17Factory())->createStream($responseBody);
+
+        return $response->withStatus(200)->withBody($responseBodyAsStream);
     }
 }

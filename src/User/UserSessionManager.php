@@ -4,27 +4,35 @@ declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\User;
 
+use DateTimeImmutable;
+use HansOtt\PSR7Cookies\SetCookie;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use function array_key_exists;
 use function serialize;
-use function setcookie;
-use function time;
 use function unserialize;
 
 class UserSessionManager implements InitializableUserSessionManager, InitializedUserSessionManager
 {
+    private const COOKIE_NAME = 'userSession';
+
     /** @var UserSession */
     private $session;
 
-    public function initialize() : InitializedUserSessionManager
-    {
-        if (array_key_exists('userSession', $_COOKIE)) {
-            $this->session = unserialize($_COOKIE['userSession']);
+    public function initialize(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ) : ResponseInterface {
+        $cookies = $request->getCookieParams();
+
+        if (array_key_exists(self::COOKIE_NAME, $cookies)) {
+            $this->session = unserialize($cookies['userSession']);
         } else {
             $this->session = new UserSession();
-            $this->saveSession();
+            $response = $this->saveSession($response);
         }
 
-        return $this;
+        return $response;
     }
 
     public function getSession() : UserSession
@@ -32,8 +40,15 @@ class UserSessionManager implements InitializableUserSessionManager, Initialized
         return $this->session;
     }
 
-    public function saveSession() : void
+    public function saveSession(ResponseInterface $response) : ResponseInterface
     {
-        setcookie('userSession', serialize($this->session), time() + 30 * 24 * 3600);
+        $response = $response->withoutHeader('Set-Cookie');
+
+        $expiresAt = new DateTimeImmutable();
+        $expiresAt = $expiresAt->modify('+ 1 month');
+
+        $cookie = SetCookie::thatExpires(self::COOKIE_NAME, serialize($this->session), $expiresAt);
+
+        return $cookie->addToResponse($response);
     }
 }
