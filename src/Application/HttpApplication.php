@@ -8,7 +8,6 @@ use Bouda\SpotifyAlbumTagger\Spotify\Session\InitializableSpotifySessionManager;
 use Bouda\SpotifyAlbumTagger\User\InitializableUserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -35,7 +34,7 @@ class HttpApplication
         $this->actionResolver = $actionResolver;
     }
 
-    public function run(ContainerInterface $container) : void
+    public function run() : void
     {
         $psr17Factory = new Psr17Factory();
 
@@ -56,12 +55,12 @@ class HttpApplication
         $uri = $uri->withHost($host);
         $request = $request->withUri($uri);
 
-        $response = $this->processRequest($container, $request);
+        $response = $this->processRequest($request);
 
         (new SapiEmitter())->emit($response);
     }
 
-    public function processRequest(ContainerInterface $container, ServerRequestInterface $request) : ResponseInterface
+    public function processRequest( ServerRequestInterface $request) : ResponseInterface
     {
         $psr17Factory = new Psr17Factory();
 
@@ -75,7 +74,7 @@ class HttpApplication
             return $response;
         }
 
-        $action = $this->actionResolver->resolve($request, $container);
+        $action = $this->actionResolver->resolve($request);
 
         $response = $action($request, $response);
 

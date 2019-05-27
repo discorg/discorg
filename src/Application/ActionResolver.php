@@ -12,7 +12,15 @@ use function ucfirst;
 
 class ActionResolver
 {
-    public function resolve(ServerRequestInterface $request, ContainerInterface $container) : Action
+    /** @var ContainerInterface */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    public function resolve(ServerRequestInterface $request) : Action
     {
         $queryParameters = $request->getQueryParams();
 
@@ -20,12 +28,12 @@ class ActionResolver
 
         $actionServiceName = sprintf('Bouda\SpotifyAlbumTagger\Actions\%sAction', ucfirst($actionName));
 
-        if (! $container->has($actionServiceName)) {
+        if (! $this->container->has($actionServiceName)) {
             throw new RuntimeException('Action not found.');
         }
 
         /** @var Action $action */
-        $action = $container->get($actionServiceName);
+        $action = $this->container->get($actionServiceName);
 
         return $action;
     }

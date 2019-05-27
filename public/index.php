@@ -29,4 +29,4 @@ $container->compile($resolveEnvPlaceholders);
 
 /** @var HttpApplication $application */
 $application = $container->get(HttpApplication::class);
-$application->run($container);
+$application->run();
