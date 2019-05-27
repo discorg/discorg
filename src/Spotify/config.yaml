@@ -47,7 +47,6 @@ services:
         arguments:
             $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'
             $clientSecret: '%env(string:SPOTIFY_CLIENT_SECRET)%'
-            $redirectUri: '%wwwUrl%'
             $authorizationScopes: '%spotify.session.scopes%'
 
     Bouda\SpotifyAlbumTagger\Spotify\Api\SpotifyWebApiFactory: ~

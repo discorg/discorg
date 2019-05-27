@@ -36,7 +36,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 
         $requestQueryParameters = $request->getQueryParams();
         if (isset($requestQueryParameters['code'])) {
-            $spotifySession = $this->spotifySessionFactory->createAuthorizable();
+            $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));
 
             $code = $requestQueryParameters['code'];
             $spotifySession = $spotifySession->authorize($code);
@@ -53,7 +53,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         }
 
         if (! $userSession->isInitialized()) {
-            $spotifySession = $this->spotifySessionFactory->createAuthorizable();
+            $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));
 
             $url = $spotifySession->getAuthorizeUrl();
 
@@ -66,8 +66,9 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         }
 
         $spotifySession = $this->spotifySessionFactory->createAuthorized(
+            $this->getRedirectUri($request),
             $userSession->getSpotifyAccessToken(),
-            $userSession->getSpotifyRefreshToken()
+            $userSession->getSpotifyRefreshToken(),
         );
 
         $this->spotifySession = $spotifySession;
@@ -100,5 +101,12 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         }
 
         return $response;
+    }
+
+    private function getRedirectUri(ServerRequestInterface $request) : string
+    {
+        $uri = $request->getUri()->withPath('')->withQuery('')->withFragment('');
+
+        return $uri->__toString();
     }
 }

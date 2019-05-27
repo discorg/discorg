@@ -27,8 +27,6 @@ $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(ROOT_DIRECTORY));
 $loader->load(ROOT_DIRECTORY . 'src/Application/config.yaml');
 
-$container->setParameter('wwwUrl', 'http://' . $_SERVER['HTTP_HOST']);
-
 $resolveEnvPlaceholders = true;
 $container->compile($resolveEnvPlaceholders);
 
@@ -42,6 +40,14 @@ $creator = new ServerRequestCreator(
 );
 
 $request = $creator->fromGlobals();
+
+// fix Nyholm\Psr7Server\ServerRequestCreator bug with duplicated port in URI
+$uri = $request->getUri();
+$host = $uri->getHost();
+// remove port from host
+$host = preg_replace('#:[0-9]+$#', '', $host);
+$uri = $uri->withHost($host);
+$request = $request->withUri($uri);
 
 /** @var HttpApplication $application */
 $application = $container->get(HttpApplication::class);

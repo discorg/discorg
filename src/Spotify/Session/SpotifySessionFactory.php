@@ -12,39 +12,38 @@ class SpotifySessionFactory
     /** @var string */
     private $clientSecret;
 
-    /** @var string */
-    private $redirectUri;
-
     /** @var string[] */
     private $authorizationScopes = [];
 
     /**
      * @param string[] $authorizationScopes
      */
-    public function __construct(string $clientId, string $clientSecret, string $redirectUri, array $authorizationScopes)
+    public function __construct(string $clientId, string $clientSecret, array $authorizationScopes)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->redirectUri = $redirectUri;
         $this->authorizationScopes = $authorizationScopes;
     }
 
-    public function createAuthorizable() : AuthorizableSpotifySession
+    public function createAuthorizable(string $redirectUri) : AuthorizableSpotifySession
     {
         return new SpotifySessionAdapter(
             $this->clientId,
             $this->clientSecret,
-            $this->redirectUri,
+            $redirectUri,
             $this->authorizationScopes
         );
     }
 
-    public function createAuthorized(string $accessToken, string $refreshToken) : AuthorizedSpotifySession
-    {
+    public function createAuthorized(
+        string $redirectUri,
+        string $accessToken,
+        string $refreshToken
+    ) : AuthorizedSpotifySession {
         $session = new SpotifySessionAdapter(
             $this->clientId,
             $this->clientSecret,
-            $this->redirectUri,
+            $redirectUri,
             $this->authorizationScopes
         );
 
