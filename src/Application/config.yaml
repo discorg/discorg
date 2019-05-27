@@ -6,7 +6,7 @@ services:
         public: true
 
     Bouda\SpotifyAlbumTagger\Application\ActionResolver: ~
-    Bouda\SpotifyAlbumTagger\Application\Application: ~
+    Bouda\SpotifyAlbumTagger\Application\HttpApplication: ~
 
     Bouda\SpotifyAlbumTagger\Actions\:
         resource: '../../actions'

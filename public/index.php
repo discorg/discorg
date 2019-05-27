@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Bouda\SpotifyAlbumTagger\Application\Application;
+use Bouda\SpotifyAlbumTagger\Application\HttpApplication;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Symfony\Component\Config\FileLocator;
@@ -43,8 +43,8 @@ $creator = new ServerRequestCreator(
 
 $request = $creator->fromGlobals();
 
-/** @var Application $application */
-$application = $container->get(Application::class);
+/** @var HttpApplication $application */
+$application = $container->get(HttpApplication::class);
 $response = $application->run($request, $container);
 
 (new SapiEmitter())->emit($response);
