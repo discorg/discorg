@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5c209685a1f2fb27054f2ba9e043b047",
+    "content-hash": "0b3643941757dc94257082a11500e7ea",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -357,16 +357,16 @@
         },
         {
             "name": "nyholm/psr7-server",
-            "version": "0.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7-server.git",
-                "reference": "1b71a848fcb066fb805b7a9ab3f41ff65bffcde8"
+                "reference": "4d037683112c0915b87739f052b651e4d6edeb8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7-server/zipball/1b71a848fcb066fb805b7a9ab3f41ff65bffcde8",
-                "reference": "1b71a848fcb066fb805b7a9ab3f41ff65bffcde8",
+                "url": "https://api.github.com/repos/Nyholm/psr7-server/zipball/4d037683112c0915b87739f052b651e4d6edeb8b",
+                "reference": "4d037683112c0915b87739f052b651e4d6edeb8b",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "psr-17",
                 "psr-7"
             ],
-            "time": "2018-09-02T10:41:28+00:00"
+            "time": "2019-02-03T16:56:52+00:00"
         },
         {
             "name": "php-http/message-factory",
@@ -2421,7 +2421,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nyholm/psr7-server": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -11,7 +11,6 @@ use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
-use function preg_replace;
 
 class HttpApplication
 {
@@ -47,20 +46,12 @@ class HttpApplication
 
         $request = $creator->fromGlobals();
 
-        // fix Nyholm\Psr7Server\ServerRequestCreator bug with duplicated port in URI
-        $uri = $request->getUri();
-        $host = $uri->getHost();
-        // remove port from host
-        $host = preg_replace('#:[0-9]+$#', '', $host);
-        $uri = $uri->withHost($host);
-        $request = $request->withUri($uri);
-
         $response = $this->processRequest($request);
 
         (new SapiEmitter())->emit($response);
     }
 
-    public function processRequest( ServerRequestInterface $request) : ResponseInterface
+    public function processRequest(ServerRequestInterface $request) : ResponseInterface
     {
         $psr17Factory = new Psr17Factory();
 
