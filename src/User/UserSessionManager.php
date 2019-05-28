@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Bouda\SpotifyAlbumTagger\User;
 
-use DateTimeImmutable;
 use HansOtt\PSR7Cookies\SetCookie;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -44,10 +43,7 @@ class UserSessionManager implements InitializableUserSessionManager, Initialized
     {
         $response = $response->withoutHeader('Set-Cookie');
 
-        $expiresAt = new DateTimeImmutable();
-        $expiresAt = $expiresAt->modify('+ 1 month');
-
-        $cookie = SetCookie::thatExpires(self::COOKIE_NAME, serialize($this->session), $expiresAt);
+        $cookie = SetCookie::thatStaysForever(self::COOKIE_NAME, serialize($this->session));
 
         return $cookie->addToResponse($response);
     }
