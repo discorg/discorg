@@ -3,3 +3,4 @@ parameters:
 	paths:
 		- actions
 		- src
+		- tests

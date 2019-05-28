@@ -3,7 +3,7 @@ build: vendor
 vendor:
 	composer install --no-interaction
 
-all: vendor lint check-code-style
+all: vendor lint check-code-style tests
 
 .PHONY: lint
 lint:
@@ -20,6 +20,10 @@ fix-code-style:
 .PHONY: phpstan
 phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon
+
+.PHONY: tests
+tests:
+	vendor/bin/phpunit
 
 .PHONY: run
 run:
