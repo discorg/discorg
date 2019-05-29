@@ -1,0 +1,48 @@
+-
+  request:
+    method: GET
+    url: 'https://api.spotify.com/v1/me'
+    headers:
+      Host: api.spotify.com
+      Authorization: 'Bearer BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn'
+  response:
+    status:
+      http_version: '2'
+      code: '401'
+      message: ''
+    headers:
+      www-authenticate: 'Bearer realm="spotify", error="invalid_token", error_description="The access token expired"'
+      access-control-allow-origin: '*'
+      access-control-allow-headers: 'Accept, Authorization, Origin, Content-Type, Retry-After'
+      access-control-allow-methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH'
+      access-control-allow-credentials: 'true'
+      access-control-max-age: '604800'
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '96'
+      date: 'Wed, 29 May 2019 14:00:01 GMT'
+      via: '1.1 google'
+      alt-svc: clear
+    body: "{\n  \"error\": {\n    \"status\": 401,\n    \"message\": \"The access token expired\"\n  }\n}"
+-
+  request:
+    method: POST
+    url: 'https://accounts.spotify.com/api/token'
+    headers:
+      Host: accounts.spotify.com
+      Authorization: 'Basic MTAwMDAwMDAwMDEwMDAwMDAwMDAxMDAwMDAwMDAwMTA6MjAwMDAwMDAwMDIwMDAwMDAwMDAyMDAwMDAwMDAwMjA='
+    body: 'grant_type=refresh_token&refresh_token=AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc'
+  response:
+    status:
+      http_version: '2'
+      code: '200'
+      message: ''
+    headers:
+      server: nginx
+      date: 'Wed, 29 May 2019 14:00:01 GMT'
+      content-type: application/json
+      vary: Accept-Encoding
+      x-content-type-options: nosniff
+      strict-transport-security: max-age=31536000
+      content-encoding: gzip
+    body: '{"access_token":"BQCaxJAeSUa8YkL1AZCbXm4T8Q9ebdLgwvH4ElRAcRE5fib","token_type":"Bearer","expires_in":3600,"scope":"playlist-read-private playlist-read-collaborative user-follow-read playlist-modify-private user-read-email user-read-private user-follow-modify user-modify-playback-state user-library-read user-library-modify playlist-modify-public user-read-playback-state user-read-currently-playing user-read-birthdate user-read-recently-played user-top-read"}'
