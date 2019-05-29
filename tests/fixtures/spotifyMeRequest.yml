@@ -1,0 +1,27 @@
+-
+    request:
+        method: GET
+        url: 'https://api.spotify.com/v1/me'
+        headers:
+            Host: api.spotify.com
+            Authorization: 'Bearer BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn'
+    response:
+        status:
+            http_version: '2'
+            code: '200'
+            message: ''
+        headers:
+            content-type: 'application/json; charset=utf-8'
+            cache-control: 'private, max-age=0'
+            vary: Authorization
+            access-control-allow-origin: '*'
+            access-control-allow-headers: 'Accept, Authorization, Origin, Content-Type, Retry-After'
+            access-control-allow-methods: 'GET, POST, OPTIONS, PUT, DELETE, PATCH'
+            access-control-allow-credentials: 'true'
+            access-control-max-age: '604800'
+            content-encoding: gzip
+            content-length: '419'
+            date: 'Wed, 29 May 2019 12:43:41 GMT'
+            via: '1.1 google'
+            alt-svc: clear
+        body: "{\n  \"birthdate\" : \"1955-02-01\",\n  \"country\" : \"CZ\",\n  \"display_name\" : \"Some Guy\",\n  \"email\" : \"some@guy.com\",\n  \"explicit_content\" : {\n    \"filter_enabled\" : false,\n    \"filter_locked\" : false\n  },\n  \"external_urls\" : {\n    \"spotify\" : \"https://open.spotify.com/user/some.guy\"\n  },\n  \"followers\" : {\n    \"href\" : null,\n    \"total\" : 18\n  },\n  \"href\" : \"https://api.spotify.com/v1/users/some.guy\",\n  \"id\" : \"some.guy\",\n  \"images\" : [ {\n    \"height\" : null,\n    \"url\" : \"https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10205261702402652&height=200&width=200&ext=1561715131&hash=AeSpwtZQ4Oj0tzb8\",\n    \"width\" : null\n  } ],\n  \"product\" : \"premium\",\n  \"type\" : \"user\",\n  \"uri\" : \"spotify:user:some.guy\"\n}"
