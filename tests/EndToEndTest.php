@@ -132,6 +132,35 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Hello world', (string) $response->getBody());
     }
 
+    public function testAlbums() : void
+    {
+        VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
+        VCR::insertCassette('spotifyAlbumsRequests.yml');
+
+        $application = $this->container->get(HttpApplication::class);
+
+        $userSession = new UserSession();
+        $userSession->setupSpotify(
+            'BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn',
+            'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
+        );
+
+        $request = (new ServerRequest('GET', new Uri('http://fake?action=albums')))
+            ->withQueryParams(['action' => 'albums'])
+            ->withCookieParams([
+                'userSession' => serialize($userSession),
+            ]);
+
+        $response = $application->processRequest($request);
+
+        Assert::assertSame(200, $response->getStatusCode());
+
+        Assert::assertStringEqualsFile(
+            __DIR__ . '/fixtures/expectedAlbumsResponseBody.html',
+            (string) $response->getBody()
+        );
+    }
+
     protected function setUp() : void
     {
         parent::setUp();
