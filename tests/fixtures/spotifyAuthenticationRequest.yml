@@ -1,0 +1,21 @@
+-
+    request:
+        method: POST
+        url: 'https://accounts.spotify.com/api/token'
+        headers:
+            Host: accounts.spotify.com
+        body: 'client_id=10000000001000000000100000000010&client_secret=20000000002000000000200000000020&code=koMDcP0ddBuWQlI1bFBWbbNc3j--NFs&grant_type=authorization_code&redirect_uri=http%3A%2F%2Ffake'
+    response:
+        status:
+            http_version: '2'
+            code: '200'
+            message: ''
+        headers:
+            server: nginx
+            date: 'Wed, 29 May 2019 12:43:39 GMT'
+            content-type: application/json
+            vary: Accept-Encoding
+            x-content-type-options: nosniff
+            strict-transport-security: max-age=31536000
+            content-encoding: gzip
+        body: '{"access_token":"BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn","token_type":"Bearer","expires_in":3600,"refresh_token":"AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc","scope":"playlist-read-private playlist-read-collaborative user-follow-read playlist-modify-private user-read-email user-read-private user-modify-playback-state user-follow-modify user-library-read user-library-modify playlist-modify-public user-read-playback-state user-read-currently-playing user-read-recently-played user-read-birthdate user-top-read"}'

@@ -54,6 +54,34 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Redirecting to spotify.', (string) $response->getBody());
     }
 
+    public function testSpotifyAuthentication() : void
+    {
+        VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
+        VCR::insertCassette('spotifyAuthenticationRequest.yml');
+
+        $application = $this->container->get(HttpApplication::class);
+
+        $request = (new ServerRequest('GET', new Uri('http://fake?code=some-code')))
+            ->withQueryParams(['code' => 'koMDcP0ddBuWQlI1bFBWbbNc3j--NFs']);
+
+        $response = $application->processRequest($request);
+
+        Assert::assertSame(200, $response->getStatusCode());
+
+        $expectedUserSession = new UserSession();
+        $expectedUserSession->setupSpotify(
+            'BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn',
+            'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
+        );
+        $userSessionHeader = $response->getHeaderLine('Set-Cookie');
+        Assert::assertSame(
+            SetCookie::thatStaysForever('userSession', serialize($expectedUserSession))->toHeaderValue(),
+            $userSessionHeader,
+        );
+
+        Assert::assertSame('Authorizing spotify session with code.', (string) $response->getBody());
+    }
+
     protected function setUp() : void
     {
         parent::setUp();
