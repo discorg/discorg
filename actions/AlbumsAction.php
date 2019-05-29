@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Actions;
+namespace App\Actions;
 
-use Bouda\SpotifyAlbumTagger\Application\Action;
-use Bouda\SpotifyAlbumTagger\Spotify\SpotifyUserLibraryFacade;
+use App\Application\Action;
+use App\Spotify\SpotifyUserLibraryFacade;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

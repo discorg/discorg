@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
+namespace App\Spotify\Session;
 
-use Bouda\SpotifyAlbumTagger\User\InitializedUserSessionManager;
+use App\User\InitializedUserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

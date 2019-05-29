@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Bouda\SpotifyAlbumTagger\Application\ContainerFactory;
-use Bouda\SpotifyAlbumTagger\Application\HttpApplication;
-use Bouda\SpotifyAlbumTagger\User\UserSession;
+use App\Application\ContainerFactory;
+use App\Application\HttpApplication;
+use App\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;

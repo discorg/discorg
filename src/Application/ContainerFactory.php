@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Application;
+namespace App\Application;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;

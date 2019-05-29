@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Spotify\Api;
+namespace App\Spotify\Api;
 
-use Bouda\SpotifyAlbumTagger\Spotify\Session\InitializedSpotifySessionManager;
+use App\Spotify\Session\InitializedSpotifySessionManager;
 use SpotifyWebAPI\SpotifyWebAPI;
 
 class SpotifyWebApiFactory

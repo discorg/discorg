@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Application;
+namespace App\Application;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,7 +26,7 @@ class ActionResolver
 
         $actionName = $queryParameters['action'] ?? 'home';
 
-        $actionServiceName = sprintf('Bouda\SpotifyAlbumTagger\Actions\%sAction', ucfirst($actionName));
+        $actionServiceName = sprintf('App\Actions\%sAction', ucfirst($actionName));
 
         if (! $this->container->has($actionServiceName)) {
             throw new RuntimeException('Action not found.');

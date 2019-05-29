@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Spotify\Session;
+namespace App\Spotify\Session;
 
 class SpotifySessionFactory
 {

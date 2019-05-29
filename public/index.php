@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Bouda\SpotifyAlbumTagger\Application\ContainerFactory;
-use Bouda\SpotifyAlbumTagger\Application\HttpApplication;
+use App\Application\ContainerFactory;
+use App\Application\HttpApplication;
 use Symfony\Component\Dotenv\Dotenv;
 use Tracy\Debugger;
 

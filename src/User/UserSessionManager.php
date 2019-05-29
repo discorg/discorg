@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\User;
+namespace App\User;
 
 use HansOtt\PSR7Cookies\SetCookie;
 use Psr\Http\Message\ResponseInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bouda\SpotifyAlbumTagger\Spotify;
+namespace App\Spotify;
 
 use SpotifyWebAPI\SpotifyWebAPI;
 use function array_merge;

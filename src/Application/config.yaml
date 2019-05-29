@@ -5,10 +5,10 @@ services:
         autoconfigure: true
         public: true
 
-    Bouda\SpotifyAlbumTagger\Application\ActionResolver: ~
-    Bouda\SpotifyAlbumTagger\Application\HttpApplication: ~
+    App\Application\ActionResolver: ~
+    App\Application\HttpApplication: ~
 
-    Bouda\SpotifyAlbumTagger\Actions\:
+    App\Actions\:
         resource: '../../actions'
 
 imports:
