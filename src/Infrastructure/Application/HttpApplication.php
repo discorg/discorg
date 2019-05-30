@@ -10,6 +10,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Relay\Relay;
 use RuntimeException;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
@@ -47,7 +48,13 @@ class HttpApplication
 
         $request = $creator->fromGlobals();
 
-        $response = $this->processRequest($request);
+        $relay = new Relay([
+            function (ServerRequestInterface $request) : ResponseInterface {
+                return $this->processRequest($request);
+            },
+        ]);
+
+        $response = $relay->handle($request);
 
         (new SapiEmitter())->emit($response);
     }
