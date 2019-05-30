@@ -27,7 +27,7 @@ class SpotifySessionFactory
 
     public function createAuthorizable(string $redirectUri) : AuthorizableSpotifySession
     {
-        return new SpotifySessionAdapter(
+        return AuthorizableSpotifySession::fromValues(
             $this->clientId,
             $this->clientSecret,
             $redirectUri,
@@ -40,13 +40,12 @@ class SpotifySessionFactory
         string $accessToken,
         string $refreshToken
     ) : AuthorizedSpotifySession {
-        $session = new SpotifySessionAdapter(
+        return AuthorizedSpotifySession::fromValues(
             $this->clientId,
             $this->clientSecret,
             $redirectUri,
-            $this->authorizationScopes
+            $accessToken,
+            $refreshToken
         );
-
-        return $session->withTokens($accessToken, $refreshToken);
     }
 }

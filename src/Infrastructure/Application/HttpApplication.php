@@ -10,6 +10,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
 class HttpApplication
@@ -57,9 +58,16 @@ class HttpApplication
 
         $response = $psr17Factory->createResponse();
 
+        /** @var ResponseInterface $response */
         [$response, $userSession] = $this->userSessionManager->initialize($request, $response);
 
-        $response = $this->spotifySessionManager->initialize($request, $response, $userSession);
+        try {
+            $response = $this->spotifySessionManager->initialize($request, $response, $userSession);
+        } catch (RuntimeException $exception) {
+            $response->withStatus(500);
+            $responseBodyAsStream = (new Psr17Factory())->createStream($exception->getMessage());
+            $response->withBody($responseBodyAsStream);
+        }
 
         if ($response->getHeader('Refresh') !== []) {
             return $response;

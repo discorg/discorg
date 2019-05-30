@@ -31,6 +31,9 @@ class SpotifySessionManager
         $this->spotifySessionFactory = $spotifySessionFactory;
     }
 
+    /**
+     * @throws AuthorizationFailed
+     */
     public function initialize(
         ServerRequestInterface $request,
         ResponseInterface $response,
