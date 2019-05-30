@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Application\ContainerFactory;
-use App\Application\HttpApplication;
+use App\Infrastructure\Application\ContainerFactory;
+use App\Infrastructure\Application\HttpApplication;
 use Symfony\Component\Dotenv\Dotenv;
 use Tracy\Debugger;
 

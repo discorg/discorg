@@ -34,24 +34,24 @@ services:
         autoconfigure: true
         public: true
 
-    App\User\UserSessionManager: ~
-    App\User\InitializableUserSessionManager: '@App\User\UserSessionManager'
-    App\User\InitializedUserSessionManager: '@App\User\UserSessionManager'
+    App\Infrastructure\User\UserSessionManager: ~
+    App\Infrastructure\User\InitializableUserSessionManager: '@App\Infrastructure\User\UserSessionManager'
+    App\Infrastructure\User\InitializedUserSessionManager: '@App\Infrastructure\User\UserSessionManager'
 
-    App\Spotify\Session\SpotifySessionManager: ~
-    App\Spotify\Session\InitializableSpotifySessionManager: '@App\Spotify\Session\SpotifySessionManager'
-    App\Spotify\Session\InitializedSpotifySessionManager: '@App\Spotify\Session\SpotifySessionManager'
+    App\Infrastructure\Spotify\Session\SpotifySessionManager: ~
+    App\Infrastructure\Spotify\Session\InitializableSpotifySessionManager: '@App\Infrastructure\Spotify\Session\SpotifySessionManager'
+    App\Infrastructure\Spotify\Session\InitializedSpotifySessionManager: '@App\Infrastructure\Spotify\Session\SpotifySessionManager'
 
-    App\Spotify\Session\SpotifySessionFactory:
-        class: App\Spotify\Session\SpotifySessionFactory
+    App\Infrastructure\Spotify\Session\SpotifySessionFactory:
+        class: App\Infrastructure\Spotify\Session\SpotifySessionFactory
         arguments:
             $clientId: '%env(string:SPOTIFY_CLIENT_ID)%'
             $clientSecret: '%env(string:SPOTIFY_CLIENT_SECRET)%'
             $authorizationScopes: '%spotify.session.scopes%'
 
-    App\Spotify\Api\SpotifyWebApiFactory: ~
+    App\Infrastructure\Spotify\Api\SpotifyWebApiFactory: ~
 
     SpotifyWebAPI\SpotifyWebAPI:
-        factory: 'App\Spotify\Api\SpotifyWebApiFactory:create'
+        factory: 'App\Infrastructure\Spotify\Api\SpotifyWebApiFactory:create'
 
-    App\Spotify\SpotifyUserLibraryFacade: ~
+    App\Infrastructure\Spotify\SpotifyUserLibraryFacade: ~

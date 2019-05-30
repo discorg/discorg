@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Spotify\Session;
+namespace App\Infrastructure\Spotify\Session;
 
 use Assert\Assertion;
 use RuntimeException;

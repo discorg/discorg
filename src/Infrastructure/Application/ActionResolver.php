@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Infrastructure\Application;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,7 +26,7 @@ class ActionResolver
 
         $actionName = $queryParameters['action'] ?? 'home';
 
-        $actionServiceName = sprintf('App\Actions\%sAction', ucfirst($actionName));
+        $actionServiceName = sprintf('App\Infrastructure\Actions\%sAction', ucfirst($actionName));
 
         if (! $this->container->has($actionServiceName)) {
             throw new RuntimeException('Action not found.');

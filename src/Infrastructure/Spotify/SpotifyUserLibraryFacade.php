@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Spotify;
+namespace App\Infrastructure\Spotify;
 
 use SpotifyWebAPI\SpotifyWebAPI;
 use function array_merge;

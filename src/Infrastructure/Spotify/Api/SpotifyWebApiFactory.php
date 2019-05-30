@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Spotify\Api;
+namespace App\Infrastructure\Spotify\Api;
 
-use App\Spotify\Session\InitializedSpotifySessionManager;
+use App\Infrastructure\Spotify\Session\InitializedSpotifySessionManager;
 use SpotifyWebAPI\SpotifyWebAPI;
 
 class SpotifyWebApiFactory

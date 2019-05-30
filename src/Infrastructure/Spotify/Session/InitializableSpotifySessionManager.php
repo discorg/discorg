@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Spotify\Session;
+namespace App\Infrastructure\Spotify\Session;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Infrastructure\Application;
 
-use App\Spotify\Session\InitializableSpotifySessionManager;
-use App\User\InitializableUserSessionManager;
+use App\Infrastructure\Spotify\Session\InitializableSpotifySessionManager;
+use App\Infrastructure\User\InitializableUserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;

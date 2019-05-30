@@ -1,0 +1,16 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\Infrastructure\Application\ActionResolver: ~
+    App\Infrastructure\Application\HttpApplication: ~
+
+    App\Infrastructure\Actions\:
+        resource: '../Actions/'
+
+imports:
+    - '../Spotify/config.yaml'
+    - '../User/config.yaml'

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Application\ContainerFactory;
-use App\Application\HttpApplication;
-use App\User\UserSession;
+use App\Infrastructure\Application\ContainerFactory;
+use App\Infrastructure\Application\HttpApplication;
+use App\Infrastructure\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Actions;
+namespace App\Infrastructure\Actions;
 
-use App\Application\Action;
-use App\Spotify\SpotifyUserLibraryFacade;
+use App\Infrastructure\Application\Action;
+use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

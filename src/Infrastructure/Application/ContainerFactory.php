@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Infrastructure\Application;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
@@ -15,7 +15,7 @@ final class ContainerFactory
     {
         $container = new ContainerBuilder();
         $loader = new YamlFileLoader($container, new FileLocator($rootDirectory));
-        $loader->load($rootDirectory . 'src/Application/config.yaml');
+        $loader->load($rootDirectory . 'src/Infrastructure/Application/config.yaml');
 
         $resolveEnvPlaceholders = true;
         $container->compile($resolveEnvPlaceholders);

@@ -1,0 +1,10 @@
+services:
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\Infrastructure\User\UserSessionManager: ~
+    App\Infrastructure\User\InitializableUserSessionManager: '@App\Infrastructure\User\UserSessionManager'
+    App\Infrastructure\User\InitializedUserSessionManager: '@App\Infrastructure\User\UserSessionManager'
