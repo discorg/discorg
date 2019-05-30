@@ -11,39 +11,43 @@ use function array_key_exists;
 use function serialize;
 use function unserialize;
 
-class UserSessionManager implements InitializableUserSessionManager, InitializedUserSessionManager
+class UserSessionManager
 {
     private const COOKIE_NAME = 'userSession';
 
-    /** @var UserSession */
-    private $session;
-
+    /**
+     * @return mixed[]
+     */
     public function initialize(
         ServerRequestInterface $request,
         ResponseInterface $response
-    ) : ResponseInterface {
+    ) : array {
         $cookies = $request->getCookieParams();
 
         if (array_key_exists(self::COOKIE_NAME, $cookies)) {
-            $this->session = unserialize($cookies['userSession']);
+            $unserializedSession = unserialize($cookies['userSession'], [
+                UserSession::class,
+            ]);
+
+            if (! $unserializedSession instanceof UserSession) {
+                $session = new UserSession();
+                $response = $this->saveSession($response, $session);
+            } else {
+                $session = $unserializedSession;
+            }
         } else {
-            $this->session = new UserSession();
-            $response = $this->saveSession($response);
+            $session = new UserSession();
+            $response = $this->saveSession($response, $session);
         }
 
-        return $response;
+        return [$response, $session];
     }
 
-    public function getSession() : UserSession
-    {
-        return $this->session;
-    }
-
-    public function saveSession(ResponseInterface $response) : ResponseInterface
+    public function saveSession(ResponseInterface $response, UserSession $userSession) : ResponseInterface
     {
         $response = $response->withoutHeader('Set-Cookie');
 
-        $cookie = SetCookie::thatStaysForever(self::COOKIE_NAME, serialize($this->session));
+        $cookie = SetCookie::thatStaysForever(self::COOKIE_NAME, serialize($userSession));
 
         return $cookie->addToResponse($response);
     }

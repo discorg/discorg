@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Spotify\Session;
 
-use App\Infrastructure\User\InitializedUserSessionManager;
+use App\Infrastructure\User\UserSession;
+use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
 
-class SpotifySessionManager implements InitializableSpotifySessionManager, InitializedSpotifySessionManager
+class SpotifySessionManager
 {
-    /** @var InitializedUserSessionManager */
+    /** @var UserSessionManager */
     private $userSessionManager;
 
     /** @var SpotifySessionFactory */
@@ -23,17 +24,18 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
     private $spotifySession;
 
     public function __construct(
-        InitializedUserSessionManager $userSessionManager,
+        UserSessionManager $userSessionManager,
         SpotifySessionFactory $spotifySessionFactory
     ) {
         $this->userSessionManager = $userSessionManager;
         $this->spotifySessionFactory = $spotifySessionFactory;
     }
 
-    public function initialize(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
-    {
-        $userSession = $this->userSessionManager->getSession();
-
+    public function initialize(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        UserSession $userSession
+    ) : ResponseInterface {
         $requestQueryParameters = $request->getQueryParams();
         if (isset($requestQueryParameters['code'])) {
             $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));
@@ -42,7 +44,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
             $spotifySession = $spotifySession->authorize($code);
 
             $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
-            $response = $this->userSessionManager->saveSession($response);
+            $response = $this->userSessionManager->saveSession($response, $userSession);
 
             $response = $response->withBody(
                 (new Psr17Factory())->createStream('Authorizing spotify session with code.')
@@ -73,7 +75,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
 
         $this->spotifySession = $spotifySession;
 
-        return $this->refreshTokenIfNeeded($response);
+        return $this->refreshTokenIfNeeded($response, $userSession);
     }
 
     public function getSession() : AuthorizedSpotifySession
@@ -81,7 +83,7 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
         return $this->spotifySession;
     }
 
-    private function refreshTokenIfNeeded(ResponseInterface $response) : ResponseInterface
+    private function refreshTokenIfNeeded(ResponseInterface $response, UserSession $userSession) : ResponseInterface
     {
         $spotifySession = $this->spotifySession;
 
@@ -93,10 +95,9 @@ class SpotifySessionManager implements InitializableSpotifySessionManager, Initi
             if ($e->getCode() === 401) {
                 $spotifySession->refresh();
 
-                $userSession = $this->userSessionManager->getSession();
                 $userSession->setupSpotify($spotifySession->getAccessToken(), $spotifySession->getRefreshToken());
 
-                $response = $this->userSessionManager->saveSession($response);
+                $response = $this->userSessionManager->saveSession($response, $userSession);
             }
         }
 

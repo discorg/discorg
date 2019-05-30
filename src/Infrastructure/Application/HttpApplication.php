@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Application;
 
-use App\Infrastructure\Spotify\Session\InitializableSpotifySessionManager;
-use App\Infrastructure\User\InitializableUserSessionManager;
+use App\Infrastructure\Spotify\Session\SpotifySessionManager;
+use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
@@ -14,18 +14,18 @@ use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
 class HttpApplication
 {
-    /** @var InitializableUserSessionManager */
+    /** @var UserSessionManager */
     private $userSessionManager;
 
-    /** @var InitializableSpotifySessionManager */
+    /** @var SpotifySessionManager */
     private $spotifySessionManager;
 
     /** @var ActionResolver */
     private $actionResolver;
 
     public function __construct(
-        InitializableUserSessionManager $userSessionManager,
-        InitializableSpotifySessionManager $spotifySessionManager,
+        UserSessionManager $userSessionManager,
+        SpotifySessionManager $spotifySessionManager,
         ActionResolver $actionResolver
     ) {
         $this->userSessionManager = $userSessionManager;
@@ -57,9 +57,9 @@ class HttpApplication
 
         $response = $psr17Factory->createResponse();
 
-        $response = $this->userSessionManager->initialize($request, $response);
+        [$response, $userSession] = $this->userSessionManager->initialize($request, $response);
 
-        $response = $this->spotifySessionManager->initialize($request, $response);
+        $response = $this->spotifySessionManager->initialize($request, $response, $userSession);
 
         if ($response->getHeader('Refresh') !== []) {
             return $response;

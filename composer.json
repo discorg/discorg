@@ -11,9 +11,6 @@
     "require": {
         "jwilsson/spotify-web-api-php": "^2.2",
         "tracy/tracy": "^2.5",
-        "symfony/dependency-injection": "^4.1",
-        "symfony/config": "^4.1",
-        "symfony/yaml": "^4.1",
         "symfony/dotenv": "^4.1",
         "beberlei/assert": "^2.9",
         "doctrine/coding-standard": "^6.0",

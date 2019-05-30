@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Application;
 
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use function sprintf;
 use function ucfirst;
 
 class ActionResolver
 {
-    /** @var ContainerInterface */
+    /** @var ServiceContainer */
     private $container;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ServiceContainer $container)
     {
         $this->container = $container;
     }
@@ -28,12 +26,8 @@ class ActionResolver
 
         $actionServiceName = sprintf('App\Infrastructure\Actions\%sAction', ucfirst($actionName));
 
-        if (! $this->container->has($actionServiceName)) {
-            throw new RuntimeException('Action not found.');
-        }
-
         /** @var Action $action */
-        $action = $this->container->get($actionServiceName);
+        $action = $this->container->getAction($actionServiceName);
 
         return $action;
     }

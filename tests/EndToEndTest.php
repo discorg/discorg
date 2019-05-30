@@ -4,27 +4,25 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Application\ContainerFactory;
-use App\Infrastructure\Application\HttpApplication;
+use App\Infrastructure\Application\ServiceContainer;
 use App\Infrastructure\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Dotenv\Dotenv;
 use VCR\VCR;
 use function serialize;
 
 class EndToEndTest extends TestCase
 {
-    /** @var Container */
+    /** @var ServiceContainer */
     private $container;
 
     public function testUninitialized() : void
     {
-        $application = $this->container->get(HttpApplication::class);
+        $application = $this->container->httpApplication();
 
         $request = new ServerRequest('GET', new Uri('http://fake'));
         $response = $application->processRequest($request);
@@ -59,7 +57,7 @@ class EndToEndTest extends TestCase
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyAuthenticationRequest.yml');
 
-        $application = $this->container->get(HttpApplication::class);
+        $application = $this->container->httpApplication();
 
         $request = (new ServerRequest('GET', new Uri('http://fake?code=some-code')))
             ->withQueryParams(['code' => 'koMDcP0ddBuWQlI1bFBWbbNc3j--NFs']);
@@ -87,7 +85,7 @@ class EndToEndTest extends TestCase
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyMeRequest.yml');
 
-        $application = $this->container->get(HttpApplication::class);
+        $application = $this->container->httpApplication();
 
         $userSession = new UserSession();
         $userSession->setupSpotify(
@@ -112,7 +110,7 @@ class EndToEndTest extends TestCase
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyExpiredTokenRequests.yml');
 
-        $application = $this->container->get(HttpApplication::class);
+        $application = $this->container->httpApplication();
 
         $userSession = new UserSession();
         $userSession->setupSpotify(
@@ -137,7 +135,7 @@ class EndToEndTest extends TestCase
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyAlbumsRequests.yml');
 
-        $application = $this->container->get(HttpApplication::class);
+        $application = $this->container->httpApplication();
 
         $userSession = new UserSession();
         $userSession->setupSpotify(
@@ -168,7 +166,7 @@ class EndToEndTest extends TestCase
         $dotenv = new Dotenv();
         $dotenv->load(__DIR__ . '/fixtures/.env');
 
-        $this->container = (new ContainerFactory())->create(__DIR__ . '/../');
+        $this->container = (new ServiceContainer());
 
         VCR::turnOn();
         // no http requests should be made

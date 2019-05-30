@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Infrastructure\Application\ContainerFactory;
-use App\Infrastructure\Application\HttpApplication;
+use App\Infrastructure\Application\ServiceContainer;
 use Symfony\Component\Dotenv\Dotenv;
 use Tracy\Debugger;
 
@@ -18,9 +17,5 @@ if (file_exists($envFile)) {
     $dotenv->load($envFile);
 }
 
-$containerFactory = new ContainerFactory();
-$container = $containerFactory->create(__DIR__ . '/../');
-
-/** @var HttpApplication $application */
-$application = $container->get(HttpApplication::class);
+$application = (new ServiceContainer())->httpApplication();
 $application->run();
