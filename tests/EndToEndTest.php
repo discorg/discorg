@@ -25,7 +25,7 @@ class EndToEndTest extends TestCase
         $application = $this->container->httpApplication();
 
         $request = new ServerRequest('GET', new Uri('http://fake'));
-        $response = $application->processRequest($request);
+        $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
 
@@ -62,7 +62,7 @@ class EndToEndTest extends TestCase
         $request = (new ServerRequest('GET', new Uri('http://fake?code=some-code')))
             ->withQueryParams(['code' => 'koMDcP0ddBuWQlI1bFBWbbNc3j--NFs']);
 
-        $response = $application->processRequest($request);
+        $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
 
@@ -98,7 +98,7 @@ class EndToEndTest extends TestCase
                 'userSession' => serialize($userSession),
             ]);
 
-        $response = $application->processRequest($request);
+        $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
 
@@ -123,7 +123,7 @@ class EndToEndTest extends TestCase
                 'userSession' => serialize($userSession),
             ]);
 
-        $response = $application->processRequest($request);
+        $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
 
@@ -149,7 +149,7 @@ class EndToEndTest extends TestCase
                 'userSession' => serialize($userSession),
             ]);
 
-        $response = $application->processRequest($request);
+        $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
 

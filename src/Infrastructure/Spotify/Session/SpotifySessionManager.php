@@ -36,9 +36,11 @@ class SpotifySessionManager
      */
     public function initialize(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        UserSession $userSession
+        ResponseInterface $response
     ) : ResponseInterface {
+        /** @var UserSession $userSession */
+        $userSession = $request->getAttribute(UserSession::class);
+
         $requestQueryParameters = $request->getQueryParams();
         if (isset($requestQueryParameters['code'])) {
             $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));

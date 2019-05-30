@@ -15,32 +15,23 @@ class UserSessionManager
 {
     private const COOKIE_NAME = 'userSession';
 
-    /**
-     * @return mixed[]
-     */
-    public function initialize(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ) : array {
+    public function initialize(ServerRequestInterface $request) : UserSession
+    {
         $cookies = $request->getCookieParams();
 
-        if (array_key_exists(self::COOKIE_NAME, $cookies)) {
-            $unserializedSession = unserialize($cookies['userSession'], [
-                UserSession::class,
-            ]);
-
-            if (! $unserializedSession instanceof UserSession) {
-                $session = new UserSession();
-                $response = $this->saveSession($response, $session);
-            } else {
-                $session = $unserializedSession;
-            }
-        } else {
-            $session = new UserSession();
-            $response = $this->saveSession($response, $session);
+        if (! array_key_exists(self::COOKIE_NAME, $cookies)) {
+            return new UserSession();
         }
 
-        return [$response, $session];
+        $unserializedSession = unserialize($cookies['userSession'], [
+            UserSession::class,
+        ]);
+
+        if (! $unserializedSession instanceof UserSession) {
+            return new UserSession();
+        }
+
+        return $unserializedSession;
     }
 
     public function saveSession(ResponseInterface $response, UserSession $userSession) : ResponseInterface

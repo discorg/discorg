@@ -48,28 +48,31 @@ class HttpApplication
 
         $request = $creator->fromGlobals();
 
+        $response = $this->processRequestThroughMiddlewareStack($request);
+
+        (new SapiEmitter())->emit($response);
+    }
+
+    public function processRequestThroughMiddlewareStack(ServerRequestInterface $request) : ResponseInterface
+    {
         $relay = new Relay([
+            new UserSessionMiddleware($this->userSessionManager),
             function (ServerRequestInterface $request) : ResponseInterface {
                 return $this->processRequest($request);
             },
         ]);
 
-        $response = $relay->handle($request);
-
-        (new SapiEmitter())->emit($response);
+        return $relay->handle($request);
     }
 
-    public function processRequest(ServerRequestInterface $request) : ResponseInterface
+    private function processRequest(ServerRequestInterface $request) : ResponseInterface
     {
         $psr17Factory = new Psr17Factory();
 
         $response = $psr17Factory->createResponse();
 
-        /** @var ResponseInterface $response */
-        [$response, $userSession] = $this->userSessionManager->initialize($request, $response);
-
         try {
-            $response = $this->spotifySessionManager->initialize($request, $response, $userSession);
+            $response = $this->spotifySessionManager->initialize($request, $response);
         } catch (RuntimeException $exception) {
             $response->withStatus(500);
             $responseBodyAsStream = (new Psr17Factory())->createStream($exception->getMessage());
