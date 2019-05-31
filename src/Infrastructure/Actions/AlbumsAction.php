@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Actions;
 
 use App\Infrastructure\Application\Action;
+use App\Infrastructure\Spotify\Session\AuthorizedSpotifySession;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
+use Assert\Assertion;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,9 +26,13 @@ class AlbumsAction implements Action
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
+        /** @var AuthorizedSpotifySession $spotifySession */
+        $spotifySession = $request->getAttribute(AuthorizedSpotifySession::class);
+        Assertion::isInstanceOf($spotifySession, AuthorizedSpotifySession::class);
+
         $responseBody = '';
 
-        foreach ($this->spotifyUserLibrary->getAlbums(5) as $album) {
+        foreach ($this->spotifyUserLibrary->getAlbums($spotifySession->getAccessToken(), 5) as $album) {
             $album = $album['album'];
             $uri = $album['uri'];
             $imageUrl = $album['images'][1]['url'];

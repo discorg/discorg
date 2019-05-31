@@ -7,7 +7,6 @@ namespace App\Infrastructure\Application;
 use App\Infrastructure\Actions\AlbumsAction;
 use App\Infrastructure\Actions\HomeAction;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
-use App\Infrastructure\Spotify\Session\SpotifySessionManager;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
 use RuntimeException;
@@ -20,7 +19,7 @@ final class ServiceContainer
     {
         return new HttpApplication(
             $this->userSessionManager(),
-            $this->spotifySessionManager(),
+            $this->spotifySessionFactory(),
             $this->actionResolver(),
         );
     }
@@ -30,16 +29,6 @@ final class ServiceContainer
         static $userSessionManager;
 
         return $userSessionManager ?? $userSessionManager = new UserSessionManager();
-    }
-
-    private function spotifySessionManager() : SpotifySessionManager
-    {
-        static $spotifySessionManager;
-
-        return $spotifySessionManager ?? $spotifySessionManager = new SpotifySessionManager(
-            $this->userSessionManager(),
-            $this->spotifySessionFactory(),
-        );
     }
 
     private function spotifySessionFactory() : SpotifySessionFactory
@@ -115,7 +104,6 @@ final class ServiceContainer
     private function spotifyWebAPI() : SpotifyWebAPI
     {
         $api = new SpotifyWebAPI();
-        $api->setAccessToken($this->spotifySessionManager()->getSession()->getAccessToken());
         $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
 
         return $api;

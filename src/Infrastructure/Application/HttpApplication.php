@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Application;
 
-use App\Infrastructure\Spotify\Session\SpotifySessionManager;
+use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Relay\Relay;
-use RuntimeException;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
 class HttpApplication
@@ -19,19 +18,19 @@ class HttpApplication
     /** @var UserSessionManager */
     private $userSessionManager;
 
-    /** @var SpotifySessionManager */
-    private $spotifySessionManager;
+    /** @var SpotifySessionFactory */
+    private $spotifySessionFactory;
 
     /** @var ActionResolver */
     private $actionResolver;
 
     public function __construct(
         UserSessionManager $userSessionManager,
-        SpotifySessionManager $spotifySessionManager,
+        SpotifySessionFactory $spotifySessionFactory,
         ActionResolver $actionResolver
     ) {
         $this->userSessionManager = $userSessionManager;
-        $this->spotifySessionManager = $spotifySessionManager;
+        $this->spotifySessionFactory = $spotifySessionFactory;
         $this->actionResolver = $actionResolver;
     }
 
@@ -57,6 +56,7 @@ class HttpApplication
     {
         $relay = new Relay([
             new UserSessionMiddleware($this->userSessionManager),
+            new SpotifySessionMiddleware($this->spotifySessionFactory),
             function (ServerRequestInterface $request) : ResponseInterface {
                 return $this->processRequest($request);
             },
@@ -70,18 +70,6 @@ class HttpApplication
         $psr17Factory = new Psr17Factory();
 
         $response = $psr17Factory->createResponse();
-
-        try {
-            $response = $this->spotifySessionManager->initialize($request, $response);
-        } catch (RuntimeException $exception) {
-            $response->withStatus(500);
-            $responseBodyAsStream = (new Psr17Factory())->createStream($exception->getMessage());
-            $response->withBody($responseBodyAsStream);
-        }
-
-        if ($response->getHeader('Refresh') !== []) {
-            return $response;
-        }
 
         $action = $this->actionResolver->resolve($request);
 

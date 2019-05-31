@@ -24,8 +24,10 @@ class SpotifyUserLibraryFacade
     /**
      * @return mixed[]
      */
-    public function getAlbums(int $limit) : array
+    public function getAlbums(string $accessToken, int $limit) : array
     {
+        $this->api->setAccessToken($accessToken);
+
         $batchSize = min(self::MAXIMUM_BATCH_SIZE, $limit);
         $offset = 0;
         $albums = [];
