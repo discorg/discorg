@@ -2,29 +2,34 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Http\Actions;
+namespace App\Infrastructure\Http\Actions\Albums;
 
-use App\Infrastructure\Http\Action;
 use App\Infrastructure\Spotify\Session\AuthorizedSpotifySession;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use Assert\Assertion;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use function sprintf;
 use function substr;
 
-class AlbumsAction implements Action
+class GetAlbums implements RequestHandlerInterface
 {
     /** @var SpotifyUserLibraryFacade */
     private $spotifyUserLibrary;
 
-    public function __construct(SpotifyUserLibraryFacade $spotifyUserLibrary)
+    /** @var ResponseFactoryInterface */
+    private $responseFactory;
+
+    public function __construct(SpotifyUserLibraryFacade $spotifyUserLibrary, ResponseFactoryInterface $responseFactory)
     {
         $this->spotifyUserLibrary = $spotifyUserLibrary;
+        $this->responseFactory = $responseFactory;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
+    public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         /** @var AuthorizedSpotifySession $spotifySession */
         $spotifySession = $request->getAttribute(AuthorizedSpotifySession::class);
@@ -45,6 +50,8 @@ class AlbumsAction implements Action
 
         $responseBodyAsStream = (new Psr17Factory())->createStream($responseBody);
 
-        return $response->withStatus(200)->withBody($responseBodyAsStream);
+        return $response = $this->responseFactory
+            ->createResponse(200)
+            ->withBody($responseBodyAsStream);
     }
 }

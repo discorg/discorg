@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Infrastructure\Http\Action;
-use App\Infrastructure\Http\ActionResolver;
-use App\Infrastructure\Http\Actions\AlbumsAction;
-use App\Infrastructure\Http\Actions\HomeAction;
+use App\Infrastructure\Http\Actions\Albums\GetAlbums;
+use App\Infrastructure\Http\Actions\Get;
+use App\Infrastructure\Http\HandlerResolver;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use SpotifyWebAPI\SpotifyWebAPI;
 use function getenv;
@@ -68,33 +69,36 @@ final class ServiceContainer
         );
     }
 
-    private function actionResolver() : ActionResolver
+    private function actionResolver() : HandlerResolver
     {
         static $actionResolver;
 
-        return $actionResolver ?? $actionResolver = new ActionResolver($this);
+        return $actionResolver ?? $actionResolver = new HandlerResolver($this);
     }
 
     /**
      * @throws RuntimeException
      */
-    public function getAction(string $actionServiceName) : Action
+    public function getHttpHandler(string $type) : RequestHandlerInterface
     {
-        switch ($actionServiceName) {
-            case HomeAction::class:
-                return new HomeAction();
-            case AlbumsAction::class:
-                return $this->albumsAction();
+        switch ($type) {
+            case Get::class:
+                return new Get(
+                    $this->psr17factory(),
+                );
+            case GetAlbums::class:
+                return new GetAlbums(
+                    $this->spotifyUserLibrary(),
+                    $this->psr17factory(),
+                );
             default:
-                throw new RuntimeException('Action not found.');
+                throw new RuntimeException('Handler not found.');
         }
     }
 
-    private function albumsAction() : AlbumsAction
+    private function psr17factory() : Psr17Factory
     {
-        return new AlbumsAction(
-            $this->spotifyUserLibrary(),
-        );
+        return new Psr17Factory();
     }
 
     private function spotifyUserLibrary() : SpotifyUserLibraryFacade

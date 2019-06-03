@@ -24,7 +24,7 @@ class EndToEndTest extends TestCase
     {
         $application = $this->container->httpApplication();
 
-        $request = new ServerRequest('GET', new Uri('http://fake'));
+        $request = new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/'));
         $response = $application->processRequestThroughMiddlewareStack($request);
 
         Assert::assertSame(200, $response->getStatusCode());
@@ -40,7 +40,7 @@ class EndToEndTest extends TestCase
             '1;'
             . 'https://accounts.spotify.com/authorize/'
             . '?client_id=10000000001000000000100000000010'
-            . '&redirect_uri=http%3A%2F%2Ffake'
+            . '&redirect_uri=http%3A%2F%2Ffinder-keeper.bouda.dev'
             . '&response_type=code'
             . '&scope=user-library-read+user-library-modify+playlist-read-private+playlist-modify-public'
             . '+playlist-modify-private+playlist-read-collaborative+user-read-recently-played+user-top-read'
@@ -59,7 +59,7 @@ class EndToEndTest extends TestCase
 
         $application = $this->container->httpApplication();
 
-        $request = (new ServerRequest('GET', new Uri('http://fake?code=some-code')))
+        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/?code=some-code')))
             ->withQueryParams(['code' => 'koMDcP0ddBuWQlI1bFBWbbNc3j--NFs']);
 
         $response = $application->processRequestThroughMiddlewareStack($request);
@@ -93,7 +93,7 @@ class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://fake')))
+        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/')))
             ->withCookieParams([
                 'userSession' => serialize($userSession),
             ]);
@@ -118,7 +118,7 @@ class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://fake')))
+        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/')))
             ->withCookieParams([
                 'userSession' => serialize($userSession),
             ]);
@@ -143,7 +143,7 @@ class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://fake?action=albums')))
+        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/albums')))
             ->withQueryParams(['action' => 'albums'])
             ->withCookieParams([
                 'userSession' => serialize($userSession),
@@ -157,6 +157,30 @@ class EndToEndTest extends TestCase
             __DIR__ . '/fixtures/expectedAlbumsResponseBody.html',
             (string) $response->getBody()
         );
+    }
+
+    public function test404() : void
+    {
+        VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
+        VCR::insertCassette('spotifyMeRequest.yml');
+
+        $application = $this->container->httpApplication();
+
+        $userSession = new UserSession();
+        $userSession->setupSpotify(
+            'BQAR7OMMTw4M1ZZqsmU6J_5ZNvBUfvjKeoe6P6Vf0a3SdZ-0XHoOMRBTn',
+            'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
+        );
+
+        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/nonexistent')))
+            ->withQueryParams(['action' => 'nonexistent'])
+            ->withCookieParams([
+                'userSession' => serialize($userSession),
+            ]);
+
+        $response = $application->processRequestThroughMiddlewareStack($request);
+
+        Assert::assertSame(404, $response->getStatusCode());
     }
 
     protected function setUp() : void

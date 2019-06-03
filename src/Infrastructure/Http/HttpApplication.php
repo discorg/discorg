@@ -21,17 +21,17 @@ class HttpApplication
     /** @var SpotifySessionFactory */
     private $spotifySessionFactory;
 
-    /** @var ActionResolver */
-    private $actionResolver;
+    /** @var HandlerResolver */
+    private $handlerResolver;
 
     public function __construct(
         UserSessionManager $userSessionManager,
         SpotifySessionFactory $spotifySessionFactory,
-        ActionResolver $actionResolver
+        HandlerResolver $actionResolver
     ) {
         $this->userSessionManager = $userSessionManager;
         $this->spotifySessionFactory = $spotifySessionFactory;
-        $this->actionResolver = $actionResolver;
+        $this->handlerResolver = $actionResolver;
     }
 
     public function run() : void
@@ -58,23 +58,16 @@ class HttpApplication
             new UserSessionMiddleware($this->userSessionManager),
             new SpotifySessionMiddleware($this->spotifySessionFactory),
             function (ServerRequestInterface $request) : ResponseInterface {
-                return $this->processRequest($request);
+                try {
+                    $handler = $this->handlerResolver->resolve($request);
+
+                    return $handler->handle($request);
+                } catch (HandlerNotFound $exception) {
+                    return (new Psr17Factory())->createResponse(404);
+                }
             },
         ]);
 
         return $relay->handle($request);
-    }
-
-    private function processRequest(ServerRequestInterface $request) : ResponseInterface
-    {
-        $psr17Factory = new Psr17Factory();
-
-        $response = $psr17Factory->createResponse();
-
-        $action = $this->actionResolver->resolve($request);
-
-        $response = $action($request, $response);
-
-        return $response;
     }
 }
