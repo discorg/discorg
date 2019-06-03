@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Application;
+namespace App\Infrastructure;
 
 use App\Infrastructure\Actions\AlbumsAction;
 use App\Infrastructure\Actions\HomeAction;
+use App\Infrastructure\Application\Action;
+use App\Infrastructure\Application\ActionResolver;
+use App\Infrastructure\Application\HttpApplication;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;

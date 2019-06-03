@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Infrastructure\Application\ServiceContainer;
+use App\Infrastructure\ServiceContainer;
 use Symfony\Component\Dotenv\Dotenv;
 use Tracy\Debugger;
 

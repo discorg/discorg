@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use App\Infrastructure\Application\ServiceContainer;
+use App\Infrastructure\ServiceContainer;
 use App\Infrastructure\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
 use Nyholm\Psr7\ServerRequest;

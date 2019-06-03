@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Application;
 
+use App\Infrastructure\ServiceContainer;
 use Psr\Http\Message\ServerRequestInterface;
 use function sprintf;
 use function ucfirst;
