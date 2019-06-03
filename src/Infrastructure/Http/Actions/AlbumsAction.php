@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Actions;
+namespace App\Infrastructure\Http\Actions;
 
-use App\Infrastructure\Application\Action;
+use App\Infrastructure\Http\Action;
 use App\Infrastructure\Spotify\Session\AuthorizedSpotifySession;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use Assert\Assertion;

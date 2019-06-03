@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Actions;
+namespace App\Infrastructure\Http\Actions;
 
-use App\Infrastructure\Application\Action;
+use App\Infrastructure\Http\Action;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

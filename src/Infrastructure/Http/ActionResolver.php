@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Application;
+namespace App\Infrastructure\Http;
 
 use App\Infrastructure\ServiceContainer;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,7 +25,7 @@ class ActionResolver
 
         $actionName = $queryParameters['action'] ?? 'home';
 
-        $actionServiceName = sprintf('App\Infrastructure\Actions\%sAction', ucfirst($actionName));
+        $actionServiceName = sprintf('App\Infrastructure\Http\Actions\%sAction', ucfirst($actionName));
 
         /** @var Action $action */
         $action = $this->container->getAction($actionServiceName);

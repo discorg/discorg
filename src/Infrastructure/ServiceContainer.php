@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Infrastructure\Actions\AlbumsAction;
-use App\Infrastructure\Actions\HomeAction;
-use App\Infrastructure\Application\Action;
-use App\Infrastructure\Application\ActionResolver;
+use App\Infrastructure\Http\Action;
+use App\Infrastructure\Http\ActionResolver;
+use App\Infrastructure\Http\Actions\AlbumsAction;
+use App\Infrastructure\Http\Actions\HomeAction;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
