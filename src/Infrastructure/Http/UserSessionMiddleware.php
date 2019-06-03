@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Application;
+namespace App\Infrastructure\Http;
 
 use App\Infrastructure\User\UserSession;
 use App\Infrastructure\User\UserSessionManager;

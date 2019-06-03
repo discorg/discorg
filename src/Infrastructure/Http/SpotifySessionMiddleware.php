@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Application;
+namespace App\Infrastructure\Http;
 
 use App\Infrastructure\Spotify\Session\AuthorizableSpotifySession;
 use App\Infrastructure\Spotify\Session\AuthorizedSpotifySession;

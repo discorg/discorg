@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use App\Infrastructure\Application\ActionResolver;
-use App\Infrastructure\Application\SpotifySessionMiddleware;
-use App\Infrastructure\Application\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
