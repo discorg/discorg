@@ -6,13 +6,16 @@ namespace App\Infrastructure;
 
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Get;
+use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
+use App\Infrastructure\Http\RequestHandlingMiddleware;
+use App\Infrastructure\Http\SpotifySessionMiddleware;
+use App\Infrastructure\Http\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 use SpotifyWebAPI\SpotifyWebAPI;
 use function getenv;
 
@@ -21,10 +24,37 @@ final class ServiceContainer
     public function httpApplication() : HttpApplication
     {
         return new HttpApplication(
-            $this->userSessionManager(),
-            $this->spotifySessionFactory(),
-            $this,
+            $this->userSessionMiddleware(),
+            $this->spotifySessionMiddleware(),
+            $this->requestHandlingMiddleware(),
         );
+    }
+
+    private function userSessionMiddleware() : UserSessionMiddleware
+    {
+        return new UserSessionMiddleware($this->userSessionManager());
+    }
+
+    private function spotifySessionMiddleware() : SpotifySessionMiddleware
+    {
+        return new SpotifySessionMiddleware($this->spotifySessionFactory());
+    }
+
+    private function requestHandlingMiddleware() : RequestHandlingMiddleware
+    {
+        return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
+            'GET /' => function () : RequestHandlerInterface {
+                return new Get(
+                    $this->psr17factory(),
+                );
+            },
+            'GET /albums' => function () : RequestHandlerInterface {
+                return new GetAlbums(
+                    $this->spotifyUserLibrary(),
+                    $this->psr17factory(),
+                );
+            },
+        ]));
     }
 
     private function userSessionManager() : UserSessionManager
@@ -66,26 +96,6 @@ final class ServiceContainer
                 'user-follow-read',
             ]
         );
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public function getHttpHandler(string $type) : RequestHandlerInterface
-    {
-        switch ($type) {
-            case Get::class:
-                return new Get(
-                    $this->psr17factory(),
-                );
-            case GetAlbums::class:
-                return new GetAlbums(
-                    $this->spotifyUserLibrary(),
-                    $this->psr17factory(),
-                );
-            default:
-                throw new RuntimeException('Handler not found.');
-        }
     }
 
     private function psr17factory() : Psr17Factory
