@@ -6,7 +6,6 @@ namespace App\Infrastructure;
 
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Get;
-use App\Infrastructure\Http\HandlerResolver;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
@@ -24,7 +23,7 @@ final class ServiceContainer
         return new HttpApplication(
             $this->userSessionManager(),
             $this->spotifySessionFactory(),
-            $this->actionResolver(),
+            $this,
         );
     }
 
@@ -67,13 +66,6 @@ final class ServiceContainer
                 'user-follow-read',
             ]
         );
-    }
-
-    private function actionResolver() : HandlerResolver
-    {
-        static $actionResolver;
-
-        return $actionResolver ?? $actionResolver = new HandlerResolver($this);
     }
 
     /**

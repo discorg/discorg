@@ -9,8 +9,8 @@ use function sprintf;
 
 final class HandlerNotFound extends RuntimeException
 {
-    public static function fromPath(string $path) : self
+    public static function fromActionIdentifier(HttpActionIdentifier $actionIdentifier) : self
     {
-        return new self(sprintf('Handler not found for path "%s".', $path));
+        return new self(sprintf('Handler not found for action "%s".', $actionIdentifier->toString()));
     }
 }

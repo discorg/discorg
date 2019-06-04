@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
+use App\Infrastructure\Http\Actions\Albums\GetAlbums;
+use App\Infrastructure\Http\Actions\Get;
+use App\Infrastructure\ServiceContainer;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\User\UserSessionManager;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
@@ -21,17 +25,17 @@ class HttpApplication
     /** @var SpotifySessionFactory */
     private $spotifySessionFactory;
 
-    /** @var HandlerResolver */
-    private $handlerResolver;
+    /** @var ServiceContainer */
+    private $container;
 
     public function __construct(
         UserSessionManager $userSessionManager,
         SpotifySessionFactory $spotifySessionFactory,
-        HandlerResolver $actionResolver
+        ServiceContainer $container
     ) {
         $this->userSessionManager = $userSessionManager;
         $this->spotifySessionFactory = $spotifySessionFactory;
-        $this->handlerResolver = $actionResolver;
+        $this->container = $container;
     }
 
     public function run() : void
@@ -57,15 +61,14 @@ class HttpApplication
         $relay = new Relay([
             new UserSessionMiddleware($this->userSessionManager),
             new SpotifySessionMiddleware($this->spotifySessionFactory),
-            function (ServerRequestInterface $request) : ResponseInterface {
-                try {
-                    $handler = $this->handlerResolver->resolve($request);
-
-                    return $handler->handle($request);
-                } catch (HandlerNotFound $exception) {
-                    return (new Psr17Factory())->createResponse(404);
-                }
-            },
+            new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
+                'GET /' => function () : RequestHandlerInterface {
+                    return $this->container->getHttpHandler(Get::class);
+                },
+                'GET /albums' => function () : RequestHandlerInterface {
+                    return $this->container->getHttpHandler(GetAlbums::class);
+                },
+            ])),
         ]);
 
         return $relay->handle($request);
