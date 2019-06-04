@@ -59,16 +59,12 @@ final class ServiceContainer
 
     private function userSessionManager() : UserSessionManager
     {
-        static $userSessionManager;
-
-        return $userSessionManager ?? $userSessionManager = new UserSessionManager();
+        return new UserSessionManager();
     }
 
     private function spotifySessionFactory() : SpotifySessionFactory
     {
-        static $spotifySessionFactory;
-
-        return $spotifySessionFactory ?? new SpotifySessionFactory(
+        return new SpotifySessionFactory(
             (string) getenv('SPOTIFY_CLIENT_ID'),
             (string) getenv('SPOTIFY_CLIENT_SECRET'),
             [
@@ -105,9 +101,7 @@ final class ServiceContainer
 
     private function spotifyUserLibrary() : SpotifyUserLibraryFacade
     {
-        static $spotifyUserLibrary;
-
-        return $spotifyUserLibrary ?? $spotifyUserLibrary = new SpotifyUserLibraryFacade($this->spotifyWebAPI());
+        return new SpotifyUserLibraryFacade($this->spotifyWebAPI());
     }
 
     private function spotifyWebAPI() : SpotifyWebAPI
