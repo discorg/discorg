@@ -9,10 +9,11 @@ use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
-class HttpApplication
+class HttpApplication implements RequestHandlerInterface
 {
     /** @var MiddlewareInterface[] */
     private $middleware;
@@ -35,12 +36,12 @@ class HttpApplication
 
         $request = $creator->fromGlobals();
 
-        $response = $this->processRequestThroughMiddlewareStack($request);
+        $response = $this->handle($request);
 
         (new SapiEmitter())->emit($response);
     }
 
-    public function processRequestThroughMiddlewareStack(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         $relay = new Relay($this->middleware);
 
