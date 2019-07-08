@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests;
+namespace Tests\EndToEnd;
 
 use App\Infrastructure\ServiceContainer;
 use App\Infrastructure\User\UserSession;
