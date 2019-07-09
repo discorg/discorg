@@ -20,7 +20,7 @@ class EndToEndTest extends TestCase
     /** @var ServiceContainer */
     private $container;
 
-    public function testUninitialized() : void
+    public function testClientGetsRedirectedToSpotifyWhenSpotifySessionNotInitalized() : void
     {
         $application = $this->container->httpApplication();
 
@@ -52,7 +52,7 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Redirecting to spotify.', (string) $response->getBody());
     }
 
-    public function testSpotifyAuthentication() : void
+    public function testClientGetsMessageAndSpotifySessionIsInitializedWhenClientReturnsFromSpotify() : void
     {
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyAuthenticationRequest.yml');
@@ -80,7 +80,7 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Authorizing spotify session with code.', (string) $response->getBody());
     }
 
-    public function testHelloWorld() : void
+    public function testClientGetsHelloWorldWithValidSpotifyToken() : void
     {
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyMeRequest.yml');
@@ -105,7 +105,7 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Hello world', (string) $response->getBody());
     }
 
-    public function testExpiredSpotifyAccessToken() : void
+    public function testClientGetsHelloWorldAndSpotifyTokenGetsRefreshedWhenExpired() : void
     {
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyExpiredTokenRequests.yml');
@@ -130,7 +130,7 @@ class EndToEndTest extends TestCase
         Assert::assertSame('Hello world', (string) $response->getBody());
     }
 
-    public function testAlbums() : void
+    public function testClientGetsAlbums() : void
     {
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyAlbumsRequests.yml');
@@ -159,7 +159,7 @@ class EndToEndTest extends TestCase
         );
     }
 
-    public function test404() : void
+    public function testClientGets404() : void
     {
         VCR::configure()->setCassettePath(__DIR__ . '/fixtures');
         VCR::insertCassette('spotifyMeRequest.yml');

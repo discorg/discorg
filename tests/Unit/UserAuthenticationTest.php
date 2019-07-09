@@ -23,7 +23,7 @@ class UserAuthenticationTest extends TestCase
     /**
      * @throws CannotRegisterUser
      */
-    public function testRegisterAndAuthenticate() : void
+    public function testUserCanRegisterAndAfterwardsIsAuthenticated() : void
     {
         $isUserRegistered = new class implements IsUserRegistered
         {
@@ -63,7 +63,7 @@ class UserAuthenticationTest extends TestCase
     /**
      * @throws CannotRegisterUser
      */
-    public function testRegisterFailsWithNonUniqueEmailAddress() : void
+    public function testUserRegistrationFailsWhenEmailAddressAlreadyRegistered() : void
     {
         $isUserRegistered = new class implements IsUserRegistered
         {
@@ -95,7 +95,7 @@ class UserAuthenticationTest extends TestCase
         $register->__invoke($emailAddress, $password);
     }
 
-    public function testUserNotFound() : void
+    public function testUserIsNotAuthenticatedWhenEmailAddressNotFound() : void
     {
         $userRepository = new class implements UserRepository
         {
@@ -118,7 +118,7 @@ class UserAuthenticationTest extends TestCase
         $this->assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
     }
 
-    public function testUserNotAuthenticated() : void
+    public function testUserIsNotAuthenticatedWithWrongPassword() : void
     {
         $userRepository = new class implements UserRepository
         {
