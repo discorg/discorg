@@ -1,7 +1,13 @@
-<phpunit bootstrap="vendor/autoload.php">
-	<testsuites>
-		<testsuite name="tests">
-			<directory>tests</directory>
-		</testsuite>
-	</testsuites>
+<phpunit
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        cacheResult="false"
+        verbose="true"
+        testdox="true"
+>
+    <testsuites>
+        <testsuite name="tests">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>
