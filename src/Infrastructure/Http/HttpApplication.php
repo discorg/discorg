@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
-class HttpApplication implements RequestHandlerInterface
+final class HttpApplication implements RequestHandlerInterface
 {
     /** @var MiddlewareInterface[] */
     private $middleware;

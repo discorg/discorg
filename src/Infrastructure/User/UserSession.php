@@ -6,7 +6,7 @@ namespace App\Infrastructure\User;
 
 use LogicException;
 
-class UserSession
+final class UserSession
 {
     /** @var string|null */
     private $spotifyAccessToken;

@@ -25,6 +25,8 @@
     "require-dev": {
         "jakub-onderka/php-parallel-lint": "^1.0",
         "phpstan/phpstan": "^0.11.7",
+        "phpstan/phpstan-strict-rules": "^0.11.1",
+        "localheinz/phpstan-rules": "^0.10.0",
         "phpunit/phpunit": "^8",
         "php-vcr/php-vcr": "^1.4"
     },

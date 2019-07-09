@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class RequestHandlingMiddleware implements MiddlewareInterface
+final class RequestHandlingMiddleware implements MiddlewareInterface
 {
     /** @var HandlerFactoryCollection */
     private $collection;

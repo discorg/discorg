@@ -18,7 +18,7 @@ use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
-class UserAuthenticationTest extends TestCase
+final class UserAuthenticationTest extends TestCase
 {
     /**
      * @throws CannotRegisterUser

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Spotify\Session;
 
-class SpotifySessionFactory
+final class SpotifySessionFactory
 {
     /** @var string */
     private $clientId;

@@ -8,7 +8,7 @@ use Assert\Assertion;
 use Psr\Http\Message\RequestInterface;
 use function sprintf;
 
-class HttpActionIdentifier
+final class HttpActionIdentifier
 {
     /** @var string */
     private $uriPath;

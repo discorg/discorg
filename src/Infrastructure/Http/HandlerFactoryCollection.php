@@ -8,7 +8,7 @@ use Assert\Assertion;
 use Closure;
 use function array_key_exists;
 
-class HandlerFactoryCollection
+final class HandlerFactoryCollection
 {
     /** @var Closure[] */
     private $handlerFactoriesByActionIdentifier = [];

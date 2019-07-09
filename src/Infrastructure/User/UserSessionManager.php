@@ -11,7 +11,7 @@ use function array_key_exists;
 use function serialize;
 use function unserialize;
 
-class UserSessionManager
+final class UserSessionManager
 {
     private const COOKIE_NAME = 'userSession';
 

@@ -3,3 +3,9 @@ parameters:
 	paths:
 		- src
 		- tests
+	classesAllowedToBeExtended:
+	    - RuntimeException
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/localheinz/phpstan-rules/rules.neon

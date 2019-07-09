@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class Get implements RequestHandlerInterface
+final class Get implements RequestHandlerInterface
 {
     /** @var ResponseFactoryInterface */
     private $responseFactory;

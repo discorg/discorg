@@ -9,7 +9,7 @@ use function array_merge;
 use function count;
 use function min;
 
-class SpotifyUserLibraryFacade
+final class SpotifyUserLibraryFacade
 {
     private const MAXIMUM_BATCH_SIZE = 50;
 

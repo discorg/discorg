@@ -14,7 +14,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use VCR\VCR;
 use function serialize;
 
-class EndToEndTest extends TestCase
+final class EndToEndTest extends TestCase
 {
     /** @var ServiceContainer */
     private $container;

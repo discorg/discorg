@@ -8,7 +8,7 @@ use App\Domain\UserAuthentication\EmailAddress;
 use RuntimeException;
 use function sprintf;
 
-class CannotRegisterUser extends RuntimeException
+final class CannotRegisterUser extends RuntimeException
 {
     public static function emailAddressAlreadyRegistered(EmailAddress $emailAddress) : self
     {

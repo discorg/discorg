@@ -15,7 +15,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function sprintf;
 use function substr;
 
-class GetAlbums implements RequestHandlerInterface
+final class GetAlbums implements RequestHandlerInterface
 {
     /** @var SpotifyUserLibraryFacade */
     private $spotifyUserLibrary;

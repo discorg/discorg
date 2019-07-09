@@ -17,6 +17,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
+use function array_key_exists;
 
 final class SpotifySessionMiddleware implements MiddlewareInterface
 {
@@ -37,7 +38,7 @@ final class SpotifySessionMiddleware implements MiddlewareInterface
         try {
             if (! $userSession->isInitialized()) {
                 $requestQueryParameters = $request->getQueryParams();
-                if (isset($requestQueryParameters['code'])) {
+                if (array_key_exists('code', $requestQueryParameters)) {
                     $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));
 
                     $code = $requestQueryParameters['code'];
