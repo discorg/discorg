@@ -21,9 +21,6 @@ final class AuthorizedSpotifySession
         $this->accessToken = $accessToken;
     }
 
-    /**
-     * @param string[] $authorizationScopes
-     */
     public static function fromValues(
         string $clientId,
         string $clientSecret,

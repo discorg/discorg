@@ -6,16 +6,15 @@ namespace App\Infrastructure\Http;
 
 use Assert\Assertion;
 use Closure;
-use Psr\Http\Server\RequestHandlerInterface;
 use function array_key_exists;
 
 class HandlerFactoryCollection
 {
-    /** @var RequestHandlerInterface[] */
+    /** @var Closure[] */
     private $handlerFactoriesByActionIdentifier = [];
 
     /**
-     * @param RequestHandlerInterface[] $handlerFactoriesByActionIdentifier
+     * @param Closure[] $handlerFactoriesByActionIdentifier
      */
     private function __construct(array $handlerFactoriesByActionIdentifier)
     {
@@ -23,7 +22,7 @@ class HandlerFactoryCollection
     }
 
     /**
-     * @param RequestHandlerInterface[] $handlerFactoriesByActionIdentifier
+     * @param Closure[] $handlerFactoriesByActionIdentifier
      */
     public static function fromArray(array $handlerFactoriesByActionIdentifier) : self
     {

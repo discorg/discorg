@@ -3,7 +3,7 @@ build: vendor
 vendor:
 	composer install --no-interaction
 
-all: vendor lint check-code-style tests
+all: vendor lint check-code-style phpstan tests
 
 .PHONY: lint
 lint:

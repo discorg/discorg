@@ -45,6 +45,10 @@ class UserAuthenticationTest extends TestCase
 
             public function get(EmailAddress $emailAddress) : User
             {
+                if ($this->savedUser === null) {
+                    throw new LogicException('User should have been saved.');
+                }
+
                 return $this->savedUser;
             }
         };
