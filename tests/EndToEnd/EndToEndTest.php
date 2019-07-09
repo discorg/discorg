@@ -9,7 +9,6 @@ use App\Infrastructure\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
 use VCR\VCR;
@@ -27,16 +26,16 @@ class EndToEndTest extends TestCase
         $request = new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/'));
         $response = $application->handle($request);
 
-        Assert::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
 
         $userSessionHeader = $response->getHeaderLine('Set-Cookie');
-        Assert::assertSame(
+        self::assertSame(
             SetCookie::thatStaysForever('userSession', serialize(new UserSession()))->toHeaderValue(),
             $userSessionHeader,
         );
 
         $spotifyHeader = $response->getHeaderLine('Refresh');
-        Assert::assertSame(
+        self::assertSame(
             '1;'
             . 'https://accounts.spotify.com/authorize/'
             . '?client_id=10000000001000000000100000000010'
@@ -49,7 +48,7 @@ class EndToEndTest extends TestCase
             $spotifyHeader,
         );
 
-        Assert::assertSame('Redirecting to spotify.', (string) $response->getBody());
+        self::assertSame('Redirecting to spotify.', (string) $response->getBody());
     }
 
     public function testClientGetsMessageAndSpotifySessionIsInitializedWhenClientReturnsFromSpotify() : void
@@ -64,7 +63,7 @@ class EndToEndTest extends TestCase
 
         $response = $application->handle($request);
 
-        Assert::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
 
         $expectedUserSession = new UserSession();
         $expectedUserSession->setupSpotify(
@@ -72,12 +71,12 @@ class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
         $userSessionHeader = $response->getHeaderLine('Set-Cookie');
-        Assert::assertSame(
+        self::assertSame(
             SetCookie::thatStaysForever('userSession', serialize($expectedUserSession))->toHeaderValue(),
             $userSessionHeader,
         );
 
-        Assert::assertSame('Authorizing spotify session with code.', (string) $response->getBody());
+        self::assertSame('Authorizing spotify session with code.', (string) $response->getBody());
     }
 
     public function testClientGetsHelloWorldWithValidSpotifyToken() : void
@@ -100,9 +99,9 @@ class EndToEndTest extends TestCase
 
         $response = $application->handle($request);
 
-        Assert::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
 
-        Assert::assertSame('Hello world', (string) $response->getBody());
+        self::assertSame('Hello world', (string) $response->getBody());
     }
 
     public function testClientGetsHelloWorldAndSpotifyTokenGetsRefreshedWhenExpired() : void
@@ -125,9 +124,9 @@ class EndToEndTest extends TestCase
 
         $response = $application->handle($request);
 
-        Assert::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
 
-        Assert::assertSame('Hello world', (string) $response->getBody());
+        self::assertSame('Hello world', (string) $response->getBody());
     }
 
     public function testClientGetsAlbums() : void
@@ -151,9 +150,9 @@ class EndToEndTest extends TestCase
 
         $response = $application->handle($request);
 
-        Assert::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
 
-        Assert::assertStringEqualsFile(
+        self::assertStringEqualsFile(
             __DIR__ . '/fixtures/expectedAlbumsResponseBody.html',
             (string) $response->getBody()
         );
@@ -180,7 +179,7 @@ class EndToEndTest extends TestCase
 
         $response = $application->handle($request);
 
-        Assert::assertSame(404, $response->getStatusCode());
+        self::assertSame(404, $response->getStatusCode());
     }
 
     protected function setUp() : void

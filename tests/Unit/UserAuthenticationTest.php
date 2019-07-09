@@ -57,7 +57,7 @@ class UserAuthenticationTest extends TestCase
 
         $register->__invoke($emailAddress, $password);
 
-        $this->assertTrue($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertTrue($isUserAuthenticated->__invoke($emailAddress, $password));
     }
 
     /**
@@ -91,7 +91,7 @@ class UserAuthenticationTest extends TestCase
         $emailAddress = EmailAddress::fromString('ondrej@sample.com');
         $password = PlaintextUserPassword::fromString('1234567');
 
-        $this->expectException(CannotRegisterUser::class);
+        self::expectException(CannotRegisterUser::class);
         $register->__invoke($emailAddress, $password);
     }
 
@@ -115,7 +115,7 @@ class UserAuthenticationTest extends TestCase
         $emailAddress = EmailAddress::fromString('ondrej@sample.com');
         $password = PlaintextUserPassword::fromString('1234567');
 
-        $this->assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
     }
 
     public function testUserIsNotAuthenticatedWithWrongPassword() : void
@@ -141,6 +141,6 @@ class UserAuthenticationTest extends TestCase
         $emailAddress = EmailAddress::fromString('ondrej@sample.com');
         $password = PlaintextUserPassword::fromString('1234567');
 
-        $this->assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
     }
 }
