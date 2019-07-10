@@ -28,7 +28,8 @@
         "phpstan/phpstan-strict-rules": "^0.11.1",
         "localheinz/phpstan-rules": "^0.10.0",
         "phpunit/phpunit": "^8",
-        "php-vcr/php-vcr": "^1.4"
+        "php-vcr/php-vcr": "^1.4",
+        "phpstan/phpstan-phpunit": "^0.11.2"
     },
     "autoload": {
         "psr-4": {
