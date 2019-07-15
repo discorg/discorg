@@ -19,7 +19,7 @@ fix-code-style:
 
 .PHONY: phpstan
 phpstan:
-	vendor/bin/phpstan analyse -c phpstan.neon
+	vendor/bin/phpstan analyse
 
 .PHONY: tests
 tests:

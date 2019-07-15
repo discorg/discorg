@@ -1,13 +1,27 @@
 parameters:
-	level: 7
-	paths:
-		- src
-		- tests
-	classesAllowedToBeExtended:
-	    - RuntimeException
+    level: 7
+    paths:
+        - src
+        - tests
+    classesAllowedToBeExtended:
+        - RuntimeException
+    exceptionRules:
+        uncheckedExceptions:
+            - LogicException
+            - Assert\AssertionFailedException
+            - PHPUnit\Framework\ExpectationFailedException
+        methodThrowTypeDeclarations:
+            SpotifyWebAPI\SpotifyWebAPI:
+                me:
+                    - SpotifyWebAPI\SpotifyWebAPIException
+    ignoreErrors:
+        -
+            message: '#Missing .* annotation#'
+            path: %currentWorkingDirectory%/tests/
 
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/localheinz/phpstan-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/pepakriz/phpstan-exception-rules/extension.neon

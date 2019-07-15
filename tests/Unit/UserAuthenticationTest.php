@@ -20,9 +20,6 @@ use PHPUnit\Framework\TestCase;
 
 final class UserAuthenticationTest extends TestCase
 {
-    /**
-     * @throws CannotRegisterUser
-     */
     public function testUserCanRegisterAndAfterwardsIsAuthenticated() : void
     {
         $isUserRegistered = new class implements IsUserRegistered
@@ -43,6 +40,9 @@ final class UserAuthenticationTest extends TestCase
                 $this->savedUser = $user;
             }
 
+            /**
+             * @throws void
+             */
             public function get(EmailAddress $emailAddress) : User
             {
                 if ($this->savedUser === null) {
@@ -64,9 +64,6 @@ final class UserAuthenticationTest extends TestCase
         self::assertTrue($isUserAuthenticated->__invoke($emailAddress, $password));
     }
 
-    /**
-     * @throws CannotRegisterUser
-     */
     public function testUserRegistrationFailsWhenEmailAddressAlreadyRegistered() : void
     {
         $isUserRegistered = new class implements IsUserRegistered
@@ -84,6 +81,9 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
+            /**
+             * @throws void
+             */
             public function get(EmailAddress $emailAddress) : User
             {
                 throw new LogicException('Should not be called.');
@@ -108,6 +108,9 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
+            /**
+             * @throws void
+             */
             public function get(EmailAddress $emailAddress) : User
             {
                 throw UserNotFound::byEmailAddress($emailAddress);
@@ -131,6 +134,9 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
+            /**
+             * @throws void
+             */
             public function get(EmailAddress $emailAddress) : User
             {
                 $password = PlaintextUserPassword::fromString('abcdefgh');

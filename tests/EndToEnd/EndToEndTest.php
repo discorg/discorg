@@ -7,10 +7,12 @@ namespace Tests\EndToEnd;
 use App\Infrastructure\ServiceContainer;
 use App\Infrastructure\User\UserSession;
 use HansOtt\PSR7Cookies\SetCookie;
+use LogicException;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Dotenv\Exception\PathException;
 use VCR\VCR;
 use function serialize;
 
@@ -187,7 +189,11 @@ final class EndToEndTest extends TestCase
         parent::setUp();
 
         $dotenv = new Dotenv();
-        $dotenv->load(__DIR__ . '/fixtures/.env');
+        try {
+            $dotenv->load(__DIR__ . '/fixtures/.env');
+        } catch (PathException $e) {
+            throw new LogicException($e->getMessage(), 0, $e);
+        }
 
         $this->container = (new ServiceContainer());
 
