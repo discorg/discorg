@@ -24,7 +24,9 @@ final class UserSessionManager
         }
 
         $unserializedSession = unserialize($cookies['userSession'], [
-            UserSession::class,
+            'allowed_classes' => [
+                UserSession::class,
+            ],
         ]);
 
         if (! $unserializedSession instanceof UserSession) {
