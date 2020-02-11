@@ -12,11 +12,9 @@ use App\Domain\UserAuthentication\Repository\UserRepository;
 
 final class IsUserAuthenticated
 {
-    /** @var UserRepository */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /** @var PasswordHashing */
-    private $passwordHashing;
+    private PasswordHashing $passwordHashing;
 
     public function __construct(UserRepository $userRepository, PasswordHashing $passwordHashing)
     {

@@ -12,11 +12,9 @@ use App\Domain\UserAuthentication\UserPasswordHash;
 
 final class User
 {
-    /** @var EmailAddress */
-    private $emailAddress;
+    private EmailAddress $emailAddress;
 
-    /** @var UserPasswordHash */
-    private $passwordHash;
+    private UserPasswordHash $passwordHash;
 
     private function __construct(EmailAddress $emailAddress, UserPasswordHash $passwordHash)
     {

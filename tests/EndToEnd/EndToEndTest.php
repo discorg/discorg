@@ -18,8 +18,7 @@ use function serialize;
 
 final class EndToEndTest extends TestCase
 {
-    /** @var ServiceContainer */
-    private $container;
+    private ServiceContainer $container;
 
     public function testClientGetsRedirectedToSpotifyWhenSpotifySessionNotInitalized() : void
     {

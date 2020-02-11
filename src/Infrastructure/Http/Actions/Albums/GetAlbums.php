@@ -12,16 +12,15 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function assert;
 use function sprintf;
 use function substr;
 
 final class GetAlbums implements RequestHandlerInterface
 {
-    /** @var SpotifyUserLibraryFacade */
-    private $spotifyUserLibrary;
+    private SpotifyUserLibraryFacade $spotifyUserLibrary;
 
-    /** @var ResponseFactoryInterface */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(SpotifyUserLibraryFacade $spotifyUserLibrary, ResponseFactoryInterface $responseFactory)
     {
@@ -31,8 +30,8 @@ final class GetAlbums implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        /** @var AuthorizedSpotifySession $spotifySession */
         $spotifySession = $request->getAttribute(AuthorizedSpotifySession::class);
+        assert($spotifySession instanceof AuthorizedSpotifySession);
         Assertion::isInstanceOf($spotifySession, AuthorizedSpotifySession::class);
 
         $responseBody = '';

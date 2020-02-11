@@ -10,11 +10,9 @@ use function sprintf;
 
 final class HttpActionIdentifier
 {
-    /** @var string */
-    private $uriPath;
+    private string $uriPath;
 
-    /** @var string */
-    private $httpMethod;
+    private string $httpMethod;
 
     private function __construct(string $uriPath, string $httpMethod)
     {

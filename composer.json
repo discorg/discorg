@@ -10,7 +10,6 @@
     ],
     "require": {
         "beberlei/assert": "^2.9",
-        "doctrine/coding-standard": "^6.0",
         "hansott/psr7-cookies": "^3.0",
         "jwilsson/spotify-web-api-php": "^3",
         "nyholm/psr7": "^1.1",
@@ -24,6 +23,7 @@
         "zendframework/zend-httphandlerrunner": "^1.1"
     },
     "require-dev": {
+        "doctrine/coding-standard": "^7.0",
         "ergebnis/phpstan-rules": "^0.14",
         "jakub-onderka/php-parallel-lint": "^1.0",
         "pepakriz/phpstan-exception-rules": "^0.10",

@@ -9,11 +9,9 @@ use SpotifyWebAPI\Session;
 
 final class AuthorizedSpotifySession
 {
-    /** @var Session */
-    private $session;
+    private Session $session;
 
-    /** @var string */
-    private $accessToken;
+    private string $accessToken;
 
     private function __construct(Session $session, string $accessToken)
     {

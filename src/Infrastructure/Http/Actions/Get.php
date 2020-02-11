@@ -12,8 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class Get implements RequestHandlerInterface
 {
-    /** @var ResponseFactoryInterface */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {

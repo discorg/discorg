@@ -8,11 +8,9 @@ use LogicException;
 
 final class UserSession
 {
-    /** @var string|null */
-    private $spotifyAccessToken;
+    private ?string $spotifyAccessToken = null;
 
-    /** @var string|null */
-    private $spotifyRefreshToken;
+    private ?string $spotifyRefreshToken = null;
 
     public function setupSpotify(string $accessToken, string $refreshToken) : void
     {

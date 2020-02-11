@@ -16,7 +16,7 @@ use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 final class HttpApplication implements RequestHandlerInterface
 {
     /** @var MiddlewareInterface[] */
-    private $middleware;
+    private array $middleware;
 
     public function __construct(MiddlewareInterface ...$middleware)
     {

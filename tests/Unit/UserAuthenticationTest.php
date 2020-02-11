@@ -32,8 +32,7 @@ final class UserAuthenticationTest extends TestCase
 
         $userRepository = new class implements UserRepository
         {
-            /** @var User|null */
-            private $savedUser;
+            private ?User $savedUser = null;
 
             public function save(User $user) : void
             {

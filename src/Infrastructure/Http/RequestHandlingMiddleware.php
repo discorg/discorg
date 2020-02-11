@@ -9,11 +9,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function assert;
 
 final class RequestHandlingMiddleware implements MiddlewareInterface
 {
-    /** @var HandlerFactoryCollection */
-    private $collection;
+    private HandlerFactoryCollection $collection;
 
     public function __construct(HandlerFactoryCollection $collection)
     {
@@ -30,8 +30,8 @@ final class RequestHandlingMiddleware implements MiddlewareInterface
             return (new Psr17Factory())->createResponse(404);
         }
 
-        /** @var RequestHandlerInterface $handler */
         $handler = $handlerFactory();
+        assert($handler instanceof RequestHandlerInterface);
 
         return $handler->handle($request);
     }

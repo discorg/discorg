@@ -14,14 +14,11 @@ use App\Domain\UserAuthentication\Repository\UserRepository;
 
 final class RegisterUser
 {
-    /** @var IsUserRegistered */
-    private $isUserRegistered;
+    private IsUserRegistered $isUserRegistered;
 
-    /** @var UserRepository */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /** @var PasswordHashing */
-    private $passwordHashing;
+    private PasswordHashing $passwordHashing;
 
     public function __construct(
         IsUserRegistered $isUserRegistered,

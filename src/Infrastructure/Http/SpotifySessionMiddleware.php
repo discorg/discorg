@@ -18,11 +18,11 @@ use RuntimeException;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
 use function array_key_exists;
+use function assert;
 
 final class SpotifySessionMiddleware implements MiddlewareInterface
 {
-    /** @var SpotifySessionFactory */
-    private $spotifySessionFactory;
+    private SpotifySessionFactory $spotifySessionFactory;
 
     public function __construct(SpotifySessionFactory $spotifySessionFactory)
     {
@@ -31,8 +31,8 @@ final class SpotifySessionMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
-        /** @var UserSession $userSession */
         $userSession = $request->getAttribute(UserSession::class);
+        assert($userSession instanceof UserSession);
         Assertion::isInstanceOf($userSession, UserSession::class);
 
         try {

@@ -6,8 +6,7 @@ namespace App\Domain\UserAuthentication;
 
 final class UserPasswordHash
 {
-    /** @var string */
-    private $hash;
+    private string $hash;
 
     private function __construct(string $hash)
     {

@@ -8,8 +8,7 @@ use Assert\Assertion;
 
 final class PlaintextUserPassword
 {
-    /** @var string */
-    private $password;
+    private string $password;
 
     private function __construct(string $password)
     {

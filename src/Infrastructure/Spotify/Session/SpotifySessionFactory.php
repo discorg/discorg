@@ -6,14 +6,12 @@ namespace App\Infrastructure\Spotify\Session;
 
 final class SpotifySessionFactory
 {
-    /** @var string */
-    private $clientId;
+    private string $clientId;
 
-    /** @var string */
-    private $clientSecret;
+    private string $clientSecret;
 
     /** @var string[] */
-    private $authorizationScopes = [];
+    private array $authorizationScopes = [];
 
     /**
      * @param string[] $authorizationScopes

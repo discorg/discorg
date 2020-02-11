@@ -11,7 +11,7 @@ use function array_key_exists;
 final class HandlerFactoryCollection
 {
     /** @var Closure[] */
-    private $handlerFactoriesByActionIdentifier = [];
+    private array $handlerFactoriesByActionIdentifier = [];
 
     /**
      * @param Closure[] $handlerFactoriesByActionIdentifier

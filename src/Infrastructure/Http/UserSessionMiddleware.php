@@ -13,8 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class UserSessionMiddleware implements MiddlewareInterface
 {
-    /** @var UserSessionManager */
-    private $userSessionManager;
+    private UserSessionManager $userSessionManager;
 
     public function __construct(UserSessionManager $userSessionManager)
     {

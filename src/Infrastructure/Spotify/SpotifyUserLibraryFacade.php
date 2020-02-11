@@ -13,8 +13,7 @@ final class SpotifyUserLibraryFacade
 {
     private const MAXIMUM_BATCH_SIZE = 50;
 
-    /** @var SpotifyWebAPI */
-    private $api;
+    private SpotifyWebAPI $api;
 
     public function __construct(SpotifyWebAPI $api)
     {

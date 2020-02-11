@@ -9,11 +9,10 @@ use SpotifyWebAPI\Session;
 
 final class AuthorizableSpotifySession
 {
-    /** @var Session */
-    private $session;
+    private Session $session;
 
     /** @var string[] */
-    private $authorizationScopes = [];
+    private array $authorizationScopes = [];
 
     /**
      * @param string[] $authorizationScopes

@@ -6,9 +6,9 @@ namespace App\Infrastructure\UserAuthentication;
 
 use App\Domain\UserAuthentication\PasswordHashing;
 use LogicException;
-use const PASSWORD_DEFAULT;
 use function password_hash;
 use function password_verify;
+use const PASSWORD_DEFAULT;
 
 final class PhpPasswordHashing implements PasswordHashing
 {
