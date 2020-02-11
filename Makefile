@@ -28,3 +28,7 @@ tests:
 .PHONY: run
 run:
 	php -S localhost:8000 -t public/
+
+.PHONY: dependencies-to-update
+dependencies-to-update:
+	composer show --direct --outdated
