@@ -39,7 +39,7 @@ final class EndToEndTest extends TestCase
         $spotifyHeader = $response->getHeaderLine('Refresh');
         self::assertSame(
             '1;'
-            . 'https://accounts.spotify.com/authorize/'
+            . 'https://accounts.spotify.com/authorize'
             . '?client_id=10000000001000000000100000000010'
             . '&redirect_uri=http%3A%2F%2Ffinder-keeper.bouda.dev'
             . '&response_type=code'
@@ -197,9 +197,13 @@ final class EndToEndTest extends TestCase
 
         $this->container = (new ServiceContainer());
 
-        VCR::turnOn();
         // no http requests should be made
         VCR::configure()->setMode('none');
+
+        // so that soap extensions is not needed
+        VCR::configure()->enableLibraryHooks(['stream_wrapper', 'curl']);
+
+        VCR::turnOn();
     }
 
     protected function tearDown() : void
