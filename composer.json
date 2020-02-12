@@ -31,7 +31,8 @@
         "phpstan/phpstan": "^0.12",
         "phpstan/phpstan-phpunit": "dev-master",
         "phpstan/phpstan-strict-rules": "dev-master",
-        "phpunit/phpunit": "^8"
+        "phpunit/phpunit": "^8",
+        "sensiolabs-de/deptrac-shim": "^0.6.0"
     },
     "autoload": {
         "psr-4": {

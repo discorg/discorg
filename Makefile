@@ -3,7 +3,7 @@ build: vendor
 vendor:
 	composer install --no-interaction
 
-all: vendor lint check-code-style phpstan tests
+all: vendor lint check-code-style phpstan deptrac tests
 
 .PHONY: lint
 lint:
@@ -20,6 +20,10 @@ fix-code-style:
 .PHONY: phpstan
 phpstan:
 	vendor/bin/phpstan analyse
+
+.PHONY: deptrac
+deptrac:
+	vendor/bin/deptrac --no-cache
 
 .PHONY: tests
 tests:
