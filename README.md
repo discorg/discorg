@@ -46,7 +46,7 @@ This is as much a tool that I really need as a playground for trying new tech.
     * https://github.com/middlewares/awesome-psr15-middlewares
     * https://github.com/middlewares/psr15-middlewares
     * https://github.com/thephpleague/route
-* architecture
+* application architecture
     - [x] strictly separated domain, application and infrastructure layers
     - [ ] command bus, query bus?, (async) events
     - [ ] DDD - aggregates, repositories, value objects
@@ -55,3 +55,8 @@ This is as much a tool that I really need as a playground for trying new tech.
     - [ ] behat/gherkin for acceptance testing of behaviour
     - [ ] proper unit tests (no mocks, no brittle single-class tests)
     - [ ] phpspec?
+* infrastructure
+    - [ ] CI - GitHub Actions
+    - [ ] set up production environment
+    - [ ] CD - deploy to production automatically on successful build
+
