@@ -1,5 +1,6 @@
+/docu/
 /vendor/
 /var/cache/*
-!var/cache/.gitkeep
+!var/cache/.gitignore
 
 /config/.env
