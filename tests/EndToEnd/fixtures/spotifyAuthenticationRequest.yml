@@ -4,7 +4,7 @@
         url: 'https://accounts.spotify.com/api/token'
         headers:
             Host: accounts.spotify.com
-        body: 'client_id=10000000001000000000100000000010&client_secret=20000000002000000000200000000020&code=koMDcP0ddBuWQlI1bFBWbbNc3j--NFs&grant_type=authorization_code&redirect_uri=http%3A%2F%2Ffinder-keeper.bouda.dev'
+        body: 'client_id=10000000001000000000100000000010&client_secret=20000000002000000000200000000020&code=koMDcP0ddBuWQlI1bFBWbbNc3j--NFs&grant_type=authorization_code&redirect_uri=http%3A%2F%2Fdiscorg.bouda.life'
     response:
         status:
             http_version: '2'

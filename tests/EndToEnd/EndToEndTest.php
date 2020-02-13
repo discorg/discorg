@@ -24,7 +24,7 @@ final class EndToEndTest extends TestCase
     {
         $application = $this->container->httpApplication();
 
-        $request = new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/'));
+        $request = new ServerRequest('GET', new Uri('http://discorg.bouda.life/'));
         $response = $application->handle($request);
 
         self::assertSame(200, $response->getStatusCode());
@@ -40,7 +40,7 @@ final class EndToEndTest extends TestCase
             '1;'
             . 'https://accounts.spotify.com/authorize'
             . '?client_id=10000000001000000000100000000010'
-            . '&redirect_uri=http%3A%2F%2Ffinder-keeper.bouda.dev'
+            . '&redirect_uri=http%3A%2F%2Fdiscorg.bouda.life'
             . '&response_type=code'
             . '&scope=user-library-read+user-library-modify+playlist-read-private+playlist-modify-public'
             . '+playlist-modify-private+playlist-read-collaborative+user-read-recently-played+user-top-read'
@@ -59,7 +59,7 @@ final class EndToEndTest extends TestCase
 
         $application = $this->container->httpApplication();
 
-        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/?code=some-code')))
+        $request = (new ServerRequest('GET', new Uri('http://discorg.bouda.life/?code=some-code')))
             ->withQueryParams(['code' => 'koMDcP0ddBuWQlI1bFBWbbNc3j--NFs']);
 
         $response = $application->handle($request);
@@ -93,7 +93,7 @@ final class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/')))
+        $request = (new ServerRequest('GET', new Uri('http://discorg.bouda.life/')))
             ->withCookieParams([
                 'userSession' => serialize($userSession),
             ]);
@@ -118,7 +118,7 @@ final class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/')))
+        $request = (new ServerRequest('GET', new Uri('http://discorg.bouda.life/')))
             ->withCookieParams([
                 'userSession' => serialize($userSession),
             ]);
@@ -143,7 +143,7 @@ final class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/albums')))
+        $request = (new ServerRequest('GET', new Uri('http://discorg.bouda.life/albums')))
             ->withQueryParams(['action' => 'albums'])
             ->withCookieParams([
                 'userSession' => serialize($userSession),
@@ -172,7 +172,7 @@ final class EndToEndTest extends TestCase
             'AQCRYYgWRUcbSxnIuBSpbDiqy0S1Myc',
         );
 
-        $request = (new ServerRequest('GET', new Uri('http://finder-keeper.bouda.dev/nonexistent')))
+        $request = (new ServerRequest('GET', new Uri('http://discorg.bouda.life/nonexistent')))
             ->withQueryParams(['action' => 'nonexistent'])
             ->withCookieParams([
                 'userSession' => serialize($userSession),
