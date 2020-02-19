@@ -59,4 +59,4 @@ This is as much a tool that I really need as a playground for trying new tech.
     - [ ] CI - GitHub Actions
     - [ ] set up production environment
     - [ ] CD - deploy to production automatically on successful build
-
+    - [ ] platform - GCP, AWS, Lambda/Bref?
