@@ -9,6 +9,7 @@ use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
+use App\Infrastructure\Http\MiddlewareStackByUriPath;
 use App\Infrastructure\Http\RequestHandlingMiddleware;
 use App\Infrastructure\Http\SpotifySessionMiddleware;
 use App\Infrastructure\Http\UserSessionMiddleware;
@@ -25,10 +26,13 @@ final class ServiceContainer
     public function httpApplication() : HttpApplication
     {
         return new HttpApplication(
-            MiddlewareStack::fromArray(
-                $this->userSessionMiddleware(),
-                $this->spotifySessionMiddleware(),
-                $this->requestHandlingMiddleware(),
+            MiddlewareStackByUriPath::from(
+                '/',
+                MiddlewareStack::fromArray(
+                    $this->userSessionMiddleware(),
+                    $this->spotifySessionMiddleware(),
+                    $this->requestHandlingMiddleware(),
+                ),
             ),
         );
     }

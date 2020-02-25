@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
+use LogicException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
@@ -11,14 +12,16 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
+use function sprintf;
 
 final class HttpApplication implements RequestHandlerInterface
 {
-    private MiddlewareStack $middlewareStack;
+    /** @var MiddlewareStackByUriPath[] */
+    private array $middlewareStacksByUriPath;
 
-    public function __construct(MiddlewareStack $middlewareStack)
+    public function __construct(MiddlewareStackByUriPath ...$middlewareStacksByUriPath)
     {
-        $this->middlewareStack = $middlewareStack;
+        $this->middlewareStacksByUriPath = $middlewareStacksByUriPath;
     }
 
     public function run() : void
@@ -41,8 +44,16 @@ final class HttpApplication implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $relay = new Relay($this->middlewareStack->toArray());
+        $uri = $request->getUri();
 
-        return $relay->handle($request);
+        foreach ($this->middlewareStacksByUriPath as $middlewareStackByUriPath) {
+            if ($middlewareStackByUriPath->uriMatches($uri)) {
+                $relay = new Relay($middlewareStackByUriPath->getStack()->toArray());
+
+                return $relay->handle($request);
+            }
+        }
+
+        throw new LogicException(sprintf('No matching middleware stack found for uri "%s".', (string) $uri));
     }
 }
