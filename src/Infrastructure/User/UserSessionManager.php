@@ -17,23 +17,18 @@ final class UserSessionManager
 
     public function initialize(ServerRequestInterface $request) : UserSession
     {
+        /** @var string[] $cookies */
         $cookies = $request->getCookieParams();
 
         if (! array_key_exists(self::COOKIE_NAME, $cookies)) {
             return new UserSession();
         }
 
-        $unserializedSession = unserialize($cookies['userSession'], [
+        return unserialize($cookies['userSession'], [
             'allowed_classes' => [
                 UserSession::class,
             ],
         ]);
-
-        if (! $unserializedSession instanceof UserSession) {
-            return new UserSession();
-        }
-
-        return $unserializedSession;
     }
 
     public function saveSession(ResponseInterface $response, UserSession $userSession) : ResponseInterface

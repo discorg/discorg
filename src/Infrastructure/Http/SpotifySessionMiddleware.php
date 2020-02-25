@@ -37,6 +37,7 @@ final class SpotifySessionMiddleware implements MiddlewareInterface
 
         try {
             if (! $userSession->isInitialized()) {
+                /** @var string[] $requestQueryParameters */
                 $requestQueryParameters = $request->getQueryParams();
                 if (array_key_exists('code', $requestQueryParameters)) {
                     $spotifySession = $this->spotifySessionFactory->createAuthorizable($this->getRedirectUri($request));
