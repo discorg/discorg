@@ -8,6 +8,7 @@ use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
+use App\Infrastructure\Http\MiddlewareStack;
 use App\Infrastructure\Http\RequestHandlingMiddleware;
 use App\Infrastructure\Http\SpotifySessionMiddleware;
 use App\Infrastructure\Http\UserSessionMiddleware;
@@ -24,9 +25,11 @@ final class ServiceContainer
     public function httpApplication() : HttpApplication
     {
         return new HttpApplication(
-            $this->userSessionMiddleware(),
-            $this->spotifySessionMiddleware(),
-            $this->requestHandlingMiddleware(),
+            MiddlewareStack::fromArray(
+                $this->userSessionMiddleware(),
+                $this->spotifySessionMiddleware(),
+                $this->requestHandlingMiddleware(),
+            ),
         );
     }
 

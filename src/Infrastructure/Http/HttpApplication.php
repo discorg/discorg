@@ -8,19 +8,17 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 
 final class HttpApplication implements RequestHandlerInterface
 {
-    /** @var MiddlewareInterface[] */
-    private array $middleware;
+    private MiddlewareStack $middlewareStack;
 
-    public function __construct(MiddlewareInterface ...$middleware)
+    public function __construct(MiddlewareStack $middlewareStack)
     {
-        $this->middleware = $middleware;
+        $this->middlewareStack = $middlewareStack;
     }
 
     public function run() : void
@@ -43,7 +41,7 @@ final class HttpApplication implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $relay = new Relay($this->middleware);
+        $relay = new Relay($this->middlewareStack->toArray());
 
         return $relay->handle($request);
     }
