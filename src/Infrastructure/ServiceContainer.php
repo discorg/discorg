@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
+use App\Infrastructure\Http\Actions\Api\CreateSession;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\HandlerFactoryCollection;
@@ -49,6 +50,12 @@ final class ServiceContainer
         return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
             'GET /api/v1' => function () : RequestHandlerInterface {
                 return new GetHealthCheck(
+                    $this->psr17factory(),
+                );
+            },
+            'POST /api/v1/session' => function () : RequestHandlerInterface {
+                return new CreateSession(
+                    $this->psr17factory(),
                     $this->psr17factory(),
                 );
             },
