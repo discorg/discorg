@@ -27,14 +27,25 @@ final class ServiceContainer
     {
         return new HttpApplication(
             MiddlewareStackByUriPath::from(
+                '/api/',
+                MiddlewareStack::fromArray(
+                    $this->apiRequestHandlingMiddleware(),
+                ),
+            ),
+            MiddlewareStackByUriPath::from(
                 '/',
                 MiddlewareStack::fromArray(
                     $this->userSessionMiddleware(),
                     $this->spotifySessionMiddleware(),
-                    $this->requestHandlingMiddleware(),
+                    $this->webRequestHandlingMiddleware(),
                 ),
             ),
         );
+    }
+
+    private function apiRequestHandlingMiddleware() : RequestHandlingMiddleware
+    {
+        return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([]));
     }
 
     private function userSessionMiddleware() : UserSessionMiddleware
@@ -47,7 +58,7 @@ final class ServiceContainer
         return new SpotifySessionMiddleware($this->spotifySessionFactory());
     }
 
-    private function requestHandlingMiddleware() : RequestHandlingMiddleware
+    private function webRequestHandlingMiddleware() : RequestHandlingMiddleware
     {
         return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
             'GET /' => function () : RequestHandlerInterface {
