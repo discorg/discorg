@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
+use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
@@ -45,7 +46,13 @@ final class ServiceContainer
 
     private function apiRequestHandlingMiddleware() : RequestHandlingMiddleware
     {
-        return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([]));
+        return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
+            'GET /api/v1' => function () : RequestHandlerInterface {
+                return new GetHealthCheck(
+                    $this->psr17factory(),
+                );
+            },
+        ]));
     }
 
     private function userSessionMiddleware() : UserSessionMiddleware
@@ -114,7 +121,9 @@ final class ServiceContainer
 
     private function psr17factory() : Psr17Factory
     {
-        return new Psr17Factory();
+        static $factory;
+
+        return $factory ?? $factory = new Psr17Factory();
     }
 
     private function spotifyUserLibrary() : SpotifyUserLibraryFacade

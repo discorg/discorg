@@ -13,12 +13,12 @@ final class HealthCheckTest extends TestCase
 {
     private ServiceContainer $container;
 
-    public function testHealthCheckEndpointDoesNotExistYet() : void
+    public function testHealthCheck() : void
     {
         $request = new ServerRequest('GET', new Uri('http://discorg.bouda.life/api/v1'));
         $response = $this->container->httpApplication()->handle($request);
 
-        self::assertSame(404, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     protected function setUp() : void
