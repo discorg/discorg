@@ -20,6 +20,9 @@ parameters:
         -
             message: '#Missing .* annotation#'
             path: %currentWorkingDirectory%/tests/
+        -
+            message: '#Throwable is never thrown in the corresponding try block#'
+            path: %currentWorkingDirectory%/src/Infrastructure/ServiceContainer.php
 
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon

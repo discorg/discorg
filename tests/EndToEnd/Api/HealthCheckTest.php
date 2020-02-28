@@ -15,7 +15,11 @@ final class HealthCheckTest extends TestCase
 
     public function testHealthCheck() : void
     {
-        $request = new ServerRequest('GET', new Uri('http://discorg.bouda.life/api/v1'));
+        $request = new ServerRequest(
+            'GET',
+            new Uri('http://discorg.bouda.life/api/v1/health-check'),
+            ['content-type' => 'application/json'],
+        );
         $response = $this->container->httpApplication()->handle($request);
 
         self::assertSame(200, $response->getStatusCode());

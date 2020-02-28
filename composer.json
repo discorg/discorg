@@ -12,6 +12,7 @@
         "beberlei/assert": "^2.9",
         "hansott/psr7-cookies": "^3.0",
         "jwilsson/spotify-web-api-php": "^3",
+        "league/openapi-psr7-validator": "^0.7.0",
         "nyholm/psr7": "^1.1",
         "nyholm/psr7-server": "@dev",
         "php": "^7.4",

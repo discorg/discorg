@@ -15,7 +15,11 @@ final class AuthenticationTest extends TestCase
 
     public function testLoginWithInvalidJson1() : void
     {
-        $request = new ServerRequest('POST', new Uri('http://discorg.bouda.life/api/v1/session'));
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/session'),
+            ['content-type' => 'application/json'],
+        );
         $response = $this->container->httpApplication()->handle($request);
 
         self::assertSame(400, $response->getStatusCode());
@@ -26,7 +30,7 @@ final class AuthenticationTest extends TestCase
         $request = new ServerRequest(
             'POST',
             new Uri('http://discorg.bouda.life/api/v1/session'),
-            [],
+            ['content-type' => 'application/json'],
             '{',
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -39,7 +43,7 @@ final class AuthenticationTest extends TestCase
         $request = new ServerRequest(
             'POST',
             new Uri('http://discorg.bouda.life/api/v1/session'),
-            [],
+            ['content-type' => 'application/json'],
             '{}',
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -52,7 +56,7 @@ final class AuthenticationTest extends TestCase
         $request = new ServerRequest(
             'POST',
             new Uri('http://discorg.bouda.life/api/v1/session'),
-            [],
+            ['content-type' => 'application/json'],
             '{"email":"elias@bouda.life","password":"tucek"}',
         );
         $response = $this->container->httpApplication()->handle($request);

@@ -1,0 +1,46 @@
+openapi: 3.0.1
+info:
+  title: Discorg
+  version: 1.0.0
+servers:
+  - url: 'http://discorg.bouda.life/api/v1'
+paths:
+  /health-check:
+    get:
+      responses:
+        '200':
+          description: Health check
+          content: {}
+  /session:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: Login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSession'
+components:
+  schemas:
+    UserCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    UserSession:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token

@@ -10,6 +10,7 @@ use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
+use App\Infrastructure\Http\JsonRequestValidatingMiddleware;
 use App\Infrastructure\Http\MiddlewareStack;
 use App\Infrastructure\Http\MiddlewareStackByUriPath;
 use App\Infrastructure\Http\RequestHandlingMiddleware;
@@ -18,10 +19,16 @@ use App\Infrastructure\Http\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
+use League\OpenAPIValidation\PSR7\ServerRequestValidator;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+use LogicException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Server\RequestHandlerInterface;
 use SpotifyWebAPI\SpotifyWebAPI;
+use Throwable;
+use function file_get_contents;
 use function getenv;
+use function sprintf;
 
 final class ServiceContainer
 {
@@ -31,6 +38,7 @@ final class ServiceContainer
             MiddlewareStackByUriPath::from(
                 '/api/',
                 MiddlewareStack::fromArray(
+                    $this->jsonRequestValidatingMiddleware(),
                     $this->apiRequestHandlingMiddleware(),
                 ),
             ),
@@ -45,10 +53,39 @@ final class ServiceContainer
         );
     }
 
+    private function jsonRequestValidatingMiddleware() : JsonRequestValidatingMiddleware
+    {
+        return new JsonRequestValidatingMiddleware(
+            $this->serverRequestValidator(),
+            $this->psr17factory(),
+        );
+    }
+
+    private function serverRequestValidator() : ServerRequestValidator
+    {
+        $specificationFilename = __DIR__ . '/Http/Actions/Api/openapi.yaml';
+        $specification = file_get_contents($specificationFilename);
+
+        if ($specification === false) {
+            throw new LogicException(sprintf(
+                'Api specification not found at "%s".',
+                $specificationFilename,
+            ));
+        }
+
+        static $validator;
+        try {
+            return $validator
+                ?? $validator = (new ValidatorBuilder())->fromYaml($specification)->getServerRequestValidator();
+        } catch (Throwable $e) {
+            throw new LogicException('Json server request validator initialization failed.', 0, $e);
+        }
+    }
+
     private function apiRequestHandlingMiddleware() : RequestHandlingMiddleware
     {
         return new RequestHandlingMiddleware(HandlerFactoryCollection::fromArray([
-            'GET /api/v1' => function () : RequestHandlerInterface {
+            'GET /api/v1/health-check' => function () : RequestHandlerInterface {
                 return new GetHealthCheck(
                     $this->psr17factory(),
                 );
