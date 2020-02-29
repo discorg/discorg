@@ -9,11 +9,23 @@ use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 
-final class AuthenticationTest extends TestCase
+final class CommonApiTest extends TestCase
 {
     private ServiceContainer $container;
 
-    public function testLoginWithInvalidJson1() : void
+    public function testNonexistentEndpoint() : void
+    {
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/nonexistent'),
+            ['content-type' => 'application/json'],
+        );
+        $response = $this->container->httpApplication()->handle($request);
+
+        self::assertSame(400, $response->getStatusCode());
+    }
+
+    public function testInvalidJson1() : void
     {
         $request = new ServerRequest(
             'POST',
@@ -25,7 +37,7 @@ final class AuthenticationTest extends TestCase
         self::assertSame(400, $response->getStatusCode());
     }
 
-    public function testLoginWithInvalidJson2() : void
+    public function testInvalidJson2() : void
     {
         $request = new ServerRequest(
             'POST',
@@ -38,7 +50,7 @@ final class AuthenticationTest extends TestCase
         self::assertSame(400, $response->getStatusCode());
     }
 
-    public function testLoginWithValidJsonButInvalidData() : void
+    public function testInvalidJson3() : void
     {
         $request = new ServerRequest(
             'POST',
@@ -51,7 +63,7 @@ final class AuthenticationTest extends TestCase
         self::assertSame(400, $response->getStatusCode());
     }
 
-    public function testLoginWithValidJson() : void
+    public function testValidJson() : void
     {
         $request = new ServerRequest(
             'POST',
@@ -62,7 +74,6 @@ final class AuthenticationTest extends TestCase
         $response = $this->container->httpApplication()->handle($request);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame('{"token":"12345"}', (string) $response->getBody());
     }
 
     protected function setUp() : void
