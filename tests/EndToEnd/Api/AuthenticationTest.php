@@ -17,7 +17,7 @@ final class AuthenticationTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/session'),
+            new Uri('http://discorg.bouda.life/api/v1/sessions'),
             ['content-type' => 'application/json'],
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -29,7 +29,7 @@ final class AuthenticationTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/session'),
+            new Uri('http://discorg.bouda.life/api/v1/sessions'),
             ['content-type' => 'application/json'],
             '{',
         );
@@ -42,7 +42,7 @@ final class AuthenticationTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/session'),
+            new Uri('http://discorg.bouda.life/api/v1/sessions'),
             ['content-type' => 'application/json'],
             '{}',
         );
@@ -55,7 +55,7 @@ final class AuthenticationTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/session'),
+            new Uri('http://discorg.bouda.life/api/v1/sessions'),
             ['content-type' => 'application/json'],
             '{"email":"elias@bouda.life","password":"tucek"}',
         );

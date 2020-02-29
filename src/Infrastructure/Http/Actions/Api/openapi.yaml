@@ -11,7 +11,7 @@ paths:
         '200':
           description: Health check
           content: {}
-  /session:
+  /sessions:
     post:
       requestBody:
         content:
