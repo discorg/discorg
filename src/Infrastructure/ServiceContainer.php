@@ -8,9 +8,9 @@ use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Api\CreateSession;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Get;
+use App\Infrastructure\Http\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
-use App\Infrastructure\Http\JsonRequestValidatingMiddleware;
 use App\Infrastructure\Http\MiddlewareStack;
 use App\Infrastructure\Http\MiddlewareStackByUriPath;
 use App\Infrastructure\Http\RequestHandlingMiddleware;
@@ -19,6 +19,7 @@ use App\Infrastructure\Http\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
+use League\OpenAPIValidation\PSR7\ResponseValidator;
 use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use LogicException;
@@ -38,7 +39,7 @@ final class ServiceContainer
             MiddlewareStackByUriPath::from(
                 '/api/',
                 MiddlewareStack::fromArray(
-                    $this->jsonRequestValidatingMiddleware(),
+                    $this->apiRequestAndResponseValidatingMiddleware(),
                     $this->apiRequestHandlingMiddleware(),
                 ),
             ),
@@ -53,25 +54,18 @@ final class ServiceContainer
         );
     }
 
-    private function jsonRequestValidatingMiddleware() : JsonRequestValidatingMiddleware
+    private function apiRequestAndResponseValidatingMiddleware() : ApiRequestAndResponseValidatingMiddleware
     {
-        return new JsonRequestValidatingMiddleware(
+        return new ApiRequestAndResponseValidatingMiddleware(
             $this->serverRequestValidator(),
+            $this->responseValidator(),
             $this->psr17factory(),
         );
     }
 
     private function serverRequestValidator() : ServerRequestValidator
     {
-        $specificationFilename = __DIR__ . '/Http/Actions/Api/openapi.yaml';
-        $specification = file_get_contents($specificationFilename);
-
-        if ($specification === false) {
-            throw new LogicException(sprintf(
-                'Api specification not found at "%s".',
-                $specificationFilename,
-            ));
-        }
+        $specification = $this->apiSpecificationFileContents();
 
         static $validator;
         try {
@@ -80,6 +74,36 @@ final class ServiceContainer
         } catch (Throwable $e) {
             throw new LogicException('Json server request validator initialization failed.', 0, $e);
         }
+    }
+
+    private function responseValidator() : ResponseValidator
+    {
+        $specification = $this->apiSpecificationFileContents();
+
+        static $validator;
+        try {
+            return $validator
+                ?? $validator = (new ValidatorBuilder())->fromYaml($specification)->getResponseValidator();
+        } catch (Throwable $e) {
+            throw new LogicException('Json response validator initialization failed.', 0, $e);
+        }
+    }
+
+    private function apiSpecificationFileContents() : string
+    {
+        $specificationFilename = __DIR__ . '/Http/Actions/Api/openapi.yaml';
+        $specification = file_get_contents($specificationFilename);
+
+        if ($specification === false) {
+            throw new LogicException(
+                sprintf(
+                    'Api specification not found at "%s".',
+                    $specificationFilename,
+                )
+            );
+        }
+
+        return $specification;
     }
 
     private function apiRequestHandlingMiddleware() : RequestHandlingMiddleware

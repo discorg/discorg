@@ -46,6 +46,7 @@ final class CreateSession implements RequestHandlerInterface
 
         return $response = $this->responseFactory
             ->createResponse(200)
+            ->withHeader('Content-Type', 'application/json')
             ->withBody($responseBodyAsStream);
     }
 }
