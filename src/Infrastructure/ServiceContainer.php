@@ -114,7 +114,7 @@ final class ServiceContainer
                     $this->psr17factory(),
                 );
             },
-            'POST /api/v1/sessions' => function () : RequestHandlerInterface {
+            'POST /api/v1/user/me/session' => function () : RequestHandlerInterface {
                 return new CreateSession(
                     $this->psr17factory(),
                     $this->psr17factory(),

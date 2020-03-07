@@ -22,7 +22,7 @@ final class HealthCheckTest extends TestCase
         );
         $response = $this->container->httpApplication()->handle($request);
 
-        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
     }
 
     protected function setUp() : void

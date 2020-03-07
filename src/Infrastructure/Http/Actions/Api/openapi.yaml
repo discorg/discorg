@@ -4,15 +4,42 @@ info:
   version: 1.0.0
 servers:
   - url: 'http://discorg.bouda.life/api/v1'
+security:
+  - bearerAuth: []
 paths:
   /health-check:
     get:
+      security: []
       responses:
         '200':
           description: Health check
           content: {}
-  /sessions:
+  /user:
     post:
+      operationId: userRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: User registered
+          content: {}
+  /user/me:
+    get:
+      operationId: userInfo
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/me/session:
+    post:
+      security:
+        - loginBasicAuth: []
       requestBody:
         content:
           application/json:
@@ -25,7 +52,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSession'
+    get:
+      responses:
+        '200':
+          description: Get existing sessions for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSession'
 components:
+  securitySchemes:
+    loginBasicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: custom
   schemas:
     UserCredentials:
       type: object
@@ -37,6 +80,13 @@ components:
       required:
         - email
         - password
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
     UserSession:
       type: object
       properties:
