@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\UserAuthentication\RegisterUser;
+use App\Domain\UserAuthentication\PasswordHashing;
+use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
+use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Api\CreateSession;
 use App\Infrastructure\Http\Actions\Api\CreateUser;
@@ -21,6 +25,9 @@ use App\Infrastructure\Http\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
 use App\Infrastructure\Spotify\SpotifyUserLibraryFacade;
 use App\Infrastructure\User\UserSessionManager;
+use App\Infrastructure\UserAuthentication\InMemoryUserRepository;
+use App\Infrastructure\UserAuthentication\IsUserRegisteredUsingRepository;
+use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
 use League\OpenAPIValidation\PSR7\ResponseValidator;
 use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
@@ -118,6 +125,7 @@ final class ServiceContainer
             },
             'POST /api/v1/user' => function () : RequestHandlerInterface {
                 return new CreateUser(
+                    $this->registerUser(),
                     $this->psr17factory(),
                 );
             },
@@ -218,5 +226,31 @@ final class ServiceContainer
         $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
 
         return $api;
+    }
+
+    private function registerUser() : RegisterUser
+    {
+        return new RegisterUser(
+            $this->isUserRegistered(),
+            $this->userRepository(),
+            $this->passwordHashing()
+        );
+    }
+
+    private function isUserRegistered() : IsUserRegistered
+    {
+        return new IsUserRegisteredUsingRepository($this->userRepository());
+    }
+
+    private function userRepository() : UserRepository
+    {
+        static $instance;
+
+        return $instance ?? $instance = new InMemoryUserRepository();
+    }
+
+    private function passwordHashing() : PasswordHashing
+    {
+        return new PhpPasswordHashing();
     }
 }

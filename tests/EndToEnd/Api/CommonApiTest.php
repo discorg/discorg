@@ -81,7 +81,7 @@ final class CommonApiTest extends TestCase
             'POST',
             new Uri('http://discorg.bouda.life/api/v1/user'),
             ['content-type' => 'application/json'],
-            '{"email":"elias@bouda.life","password":"tucek"}',
+            '{"email":"elias@bouda.life","password":"secret123"}',
         );
         $response = $this->container->httpApplication()->handle($request);
 

@@ -50,7 +50,7 @@ final class User
         return $this->passwordHash->matches($password, $passwordHashing);
     }
 
-    public function getUsername() : EmailAddress
+    public function getEmailAddress() : EmailAddress
     {
         return $this->emailAddress;
     }
