@@ -24,6 +24,7 @@
         "zendframework/zend-httphandlerrunner": "^1.1"
     },
     "require-dev": {
+        "behat/behat": "^3.6",
         "doctrine/coding-standard": "^7.0",
         "ergebnis/phpstan-rules": "^0.14",
         "jakub-onderka/php-parallel-lint": "^1.0",

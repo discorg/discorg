@@ -1,0 +1,7 @@
+default:
+  suites:
+    authentication:
+      contexts:
+        - 'Tests\Specification\AuthenticationContext'
+      paths:
+        - 'features/authentication.feature'

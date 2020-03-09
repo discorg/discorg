@@ -3,7 +3,7 @@ build: vendor
 vendor:
 	composer install --no-interaction
 
-all: vendor lint check-code-style phpstan deptrac tests
+all: vendor lint check-code-style phpstan deptrac tests behat
 
 .PHONY: lint
 lint:
@@ -28,6 +28,10 @@ deptrac:
 .PHONY: tests
 tests:
 	vendor/bin/phpunit
+
+.PHONY: behat
+behat:
+	vendor/bin/behat
 
 .PHONY: run
 run:
