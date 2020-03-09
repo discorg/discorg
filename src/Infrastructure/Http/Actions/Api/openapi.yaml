@@ -16,6 +16,7 @@ paths:
           content: {}
   /user:
     post:
+      security: []
       operationId: userRegistration
       requestBody:
         content:
@@ -40,11 +41,6 @@ paths:
     post:
       security:
         - loginBasicAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCredentials'
       responses:
         '200':
           description: Login

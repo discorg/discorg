@@ -29,7 +29,7 @@ final class CommonApiTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            new Uri('http://discorg.bouda.life/api/v1/user'),
             ['content-type' => 'application/json'],
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -41,11 +41,8 @@ final class CommonApiTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => 'Basic dXNlckBleGFtcGxlLmNvbTphcGlfdG9rZW5fc3RyaW5n',
-            ],
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
         );
         $response = $this->container->httpApplication()->handle($request);
 
@@ -56,11 +53,8 @@ final class CommonApiTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => 'Basic dXNlckBleGFtcGxlLmNvbTphcGlfdG9rZW5fc3RyaW5n',
-            ],
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
             '{',
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -72,11 +66,8 @@ final class CommonApiTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => 'Basic dXNlckBleGFtcGxlLmNvbTphcGlfdG9rZW5fc3RyaW5n',
-            ],
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
             '{}',
         );
         $response = $this->container->httpApplication()->handle($request);
@@ -88,11 +79,8 @@ final class CommonApiTest extends TestCase
     {
         $request = new ServerRequest(
             'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => 'Basic dXNlckBleGFtcGxlLmNvbTphcGlfdG9rZW5fc3RyaW5n',
-            ],
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
             '{"email":"elias@bouda.life","password":"tucek"}',
         );
         $response = $this->container->httpApplication()->handle($request);
