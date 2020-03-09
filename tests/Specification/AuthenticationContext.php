@@ -4,10 +4,29 @@ declare(strict_types=1);
 
 namespace Tests\Specification;
 
+use App\Infrastructure\ServiceContainer;
 use Behat\Behat\Context\Context;
+use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\Uri;
+use PHPUnit\Framework\Assert;
+use function base64_encode;
+use function json_decode;
+use function json_encode;
+use function sprintf;
+use const JSON_THROW_ON_ERROR;
 
 final class AuthenticationContext implements Context
 {
+    private static ServiceContainer $container;
+    /** @var string[] */
+    private array $tokensByEmail = [];
+
+    /** @BeforeFeature */
+    public static function setup() : void
+    {
+        self::$container = new ServiceContainer();
+    }
+
     /**
      * @Given /^there are no registered users$/
      */
@@ -20,6 +39,18 @@ final class AuthenticationContext implements Context
      */
     public function userRegistersWithUsernameAndPassword(string $emailAddress, string $password) : void
     {
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
+            json_encode([
+                'email' => $emailAddress,
+                'password' => $password,
+            ], JSON_THROW_ON_ERROR),
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
     }
 
     /**
@@ -27,6 +58,19 @@ final class AuthenticationContext implements Context
      */
     public function userStartsASessionWithUsernameAndPassword(string $emailAddress, string $password) : void
     {
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $emailAddress, $password))),
+            ],
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+
+        $this->tokensByEmail[$emailAddress] = json_decode((string) $response->getBody(), true)['token'];
     }
 
     /**
@@ -34,5 +78,16 @@ final class AuthenticationContext implements Context
      */
     public function userSessionIsStarted(string $emailAddress) : void
     {
+        $request = new ServerRequest(
+            'GET',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+            ],
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
     }
 }

@@ -12,7 +12,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use function json_encode;
 
-final class CreateSession implements RequestHandlerInterface
+final class GetSession implements RequestHandlerInterface
 {
     private StreamFactoryInterface $streamFactory;
     private ResponseFactoryInterface $responseFactory;
