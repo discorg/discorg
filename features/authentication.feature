@@ -8,3 +8,8 @@ Feature: User can register and manage their sessions
     When user registers with email address "ondrej@bouda.life" and password "secret123"
     And user starts a session with email address "ondrej@bouda.life" and password "secret123"
     Then user session is started for user "ondrej@bouda.life"
+
+  Scenario: User cannot register twice with the same email address
+    Given there are no registered users
+    When user registers with email address "ondrej@bouda.life" and password "secret123"
+    Then another registration with email address "ondrej@bouda.life" fails

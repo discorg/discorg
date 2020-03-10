@@ -42,6 +42,9 @@ use function sprintf;
 
 final class ServiceContainer
 {
+    /** @var mixed[] */
+    private array $reusableServicesByType = [];
+
     public function httpApplication() : HttpApplication
     {
         return new HttpApplication(
@@ -244,9 +247,8 @@ final class ServiceContainer
 
     private function userRepository() : UserRepository
     {
-        static $instance;
-
-        return $instance ?? $instance = new InMemoryUserRepository();
+        return $this->reusableServicesByType[InMemoryUserRepository::class]
+            ?? $this->reusableServicesByType[InMemoryUserRepository::class] = new InMemoryUserRepository();
     }
 
     private function passwordHashing() : PasswordHashing

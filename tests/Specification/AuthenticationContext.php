@@ -6,6 +6,7 @@ namespace Tests\Specification;
 
 use App\Infrastructure\ServiceContainer;
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
@@ -21,7 +22,7 @@ final class AuthenticationContext implements Context
     /** @var string[] */
     private array $tokensByEmail = [];
 
-    /** @BeforeFeature */
+    /** @BeforeScenario */
     public static function setup() : void
     {
         self::$container = new ServiceContainer();
@@ -51,6 +52,29 @@ final class AuthenticationContext implements Context
         $response = self::$container->httpApplication()->handle($request);
 
         Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+    }
+
+    /**
+     * @Then /^another registration with email address "([^"]*)" fails$/
+     */
+    public function anotherRegistrationWithEmailAddressFails(string $emailAddress) : void
+    {
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/user'),
+            ['content-type' => 'application/json'],
+            json_encode([
+                'email' => $emailAddress,
+                'password' => 'secret456',
+            ], JSON_THROW_ON_ERROR),
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(400, $response->getStatusCode());
+        Assert::assertSame(
+            'Email address "ondrej@bouda.life" has already been registered.',
+            $response->getReasonPhrase(),
+        );
     }
 
     /**

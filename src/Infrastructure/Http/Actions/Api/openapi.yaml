@@ -27,6 +27,8 @@ paths:
         '200':
           description: User registered
           content: {}
+        '400':
+          description: Registration failed
   /user/me:
     get:
       operationId: userInfo
