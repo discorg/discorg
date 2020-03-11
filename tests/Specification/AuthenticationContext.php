@@ -6,7 +6,6 @@ namespace Tests\Specification;
 
 use App\Infrastructure\ServiceContainer;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
@@ -113,5 +112,38 @@ final class AuthenticationContext implements Context
         $response = self::$container->httpApplication()->handle($request);
 
         Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+    }
+
+    /**
+     * @Given /^there is a previously registered user that registered with username "([^"]*)" and password "([^"]*)"$/
+     */
+    public function thereIsAPreviouslyRegisteredUserThatRegisteredWithUsernameAndPassword(
+        string $emailAddress,
+        string $password
+    ) : void {
+        $this->userRegistersWithUsernameAndPassword($emailAddress, $password);
+    }
+
+    /**
+     * @Then /^there are two different sessions started for user "([^"]*)"$/
+     */
+    public function thereAreTwoDifferentSessionsStartedForUser(string $emailAddress) : void
+    {
+        $request = new ServerRequest(
+            'GET',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+            ],
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+
+        $sessionCollection = json_decode((string) $response->getBody(), true);
+
+        Assert::assertCount(2, $sessionCollection);
+        Assert::assertNotSame($sessionCollection[0]['token'], $sessionCollection[1]['token']);
     }
 }

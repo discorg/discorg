@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserSession'
+                $ref: '#/components/schemas/UserSessionCollection'
 components:
   securitySchemes:
     loginBasicAuth:
@@ -92,3 +92,7 @@ components:
           type: string
       required:
         - token
+    UserSessionCollection:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserSession'

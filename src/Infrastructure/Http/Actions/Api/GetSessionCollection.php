@@ -10,9 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function array_map;
 use function json_encode;
 
-final class GetSession implements RequestHandlerInterface
+final class GetSessionCollection implements RequestHandlerInterface
 {
     private StreamFactoryInterface $streamFactory;
     private ResponseFactoryInterface $responseFactory;
@@ -25,9 +26,14 @@ final class GetSession implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $token = '12345';
+        $tokens = ['12345', '67890'];
 
-        $responsePayload = json_encode(['token' => $token]);
+        $responsePayload = json_encode(
+            array_map(
+                static fn(string $token) => ['token' => $token],
+                $tokens,
+            ),
+        );
         if ($responsePayload === false) {
             throw new LogicException('Json encode failed.');
         }

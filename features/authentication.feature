@@ -13,3 +13,9 @@ Feature: User can register and manage their sessions
     Given there are no registered users
     When user registers with email address "ondrej@bouda.life" and password "secret123"
     Then another registration with email address "ondrej@bouda.life" fails
+
+  Scenario: User can start multiple sessions
+    Given there is a previously registered user that registered with username "ondrej@bouda.life" and password "secret123"
+    When user starts a session with email address "ondrej@bouda.life" and password "secret123"
+    And user starts a session with email address "ondrej@bouda.life" and password "secret123"
+    Then there are two different sessions started for user "ondrej@bouda.life"

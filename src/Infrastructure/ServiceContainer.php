@@ -12,7 +12,7 @@ use App\Infrastructure\Http\Actions\Albums\GetAlbums;
 use App\Infrastructure\Http\Actions\Api\CreateSession;
 use App\Infrastructure\Http\Actions\Api\CreateUser;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
-use App\Infrastructure\Http\Actions\Api\GetSession;
+use App\Infrastructure\Http\Actions\Api\GetSessionCollection;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
@@ -139,7 +139,7 @@ final class ServiceContainer
                 );
             },
             'GET /api/v1/user/me/session' => function () : RequestHandlerInterface {
-                return new GetSession(
+                return new GetSessionCollection(
                     $this->psr17factory(),
                     $this->psr17factory(),
                 );
