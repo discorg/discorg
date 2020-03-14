@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\StartUserSession;
+use App\Application\UserAuthentication\IsUserAuthenticated;
 use App\Application\UserAuthentication\RegisterUser;
+use App\Domain\Clock;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserRepository;
@@ -14,7 +17,9 @@ use App\Infrastructure\Http\Actions\Api\CreateUser;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Api\GetSessionCollection;
 use App\Infrastructure\Http\Actions\Get;
+use App\Infrastructure\Http\Api\ApiOperationFindingMiddleware;
 use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
+use App\Infrastructure\Http\Authentication\BasicUserAuthenticationMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
@@ -28,14 +33,19 @@ use App\Infrastructure\User\UserSessionManager;
 use App\Infrastructure\UserAuthentication\InMemoryUserRepository;
 use App\Infrastructure\UserAuthentication\IsUserRegisteredUsingRepository;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Schema;
 use League\OpenAPIValidation\PSR7\ResponseValidator;
+use League\OpenAPIValidation\PSR7\SchemaFactory\YamlFactory;
 use League\OpenAPIValidation\PSR7\ServerRequestValidator;
+use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use LogicException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Server\RequestHandlerInterface;
 use SpotifyWebAPI\SpotifyWebAPI;
 use Throwable;
+use function array_key_exists;
 use function file_get_contents;
 use function getenv;
 use function sprintf;
@@ -51,6 +61,8 @@ final class ServiceContainer
             MiddlewareStackByUriPath::from(
                 '/api/',
                 MiddlewareStack::fromArray(
+                    $this->apiOperationFindingMiddleware(),
+                    $this->basicUserAuthenticationMiddleware(),
                     $this->apiRequestAndResponseValidatingMiddleware(),
                     $this->apiRequestHandlingMiddleware(),
                 ),
@@ -66,6 +78,20 @@ final class ServiceContainer
         );
     }
 
+    private function apiOperationFindingMiddleware() : ApiOperationFindingMiddleware
+    {
+        return new ApiOperationFindingMiddleware($this->apiSchema(), $this->psr17factory());
+    }
+
+    private function basicUserAuthenticationMiddleware() : BasicUserAuthenticationMiddleware
+    {
+        return new BasicUserAuthenticationMiddleware(
+            $this->specFinder(),
+            $this->psr17factory(),
+            $this->isUserAuthenticated(),
+        );
+    }
+
     private function apiRequestAndResponseValidatingMiddleware() : ApiRequestAndResponseValidatingMiddleware
     {
         return new ApiRequestAndResponseValidatingMiddleware(
@@ -77,12 +103,12 @@ final class ServiceContainer
 
     private function serverRequestValidator() : ServerRequestValidator
     {
-        $specification = $this->apiSpecificationFileContents();
+        $schema = $this->apiSchema();
 
         static $validator;
         try {
             return $validator
-                ?? $validator = (new ValidatorBuilder())->fromYaml($specification)->getServerRequestValidator();
+                ?? $validator = (new ValidatorBuilder())->fromSchema($schema)->getServerRequestValidator();
         } catch (Throwable $e) {
             throw new LogicException('Json server request validator initialization failed.', 0, $e);
         }
@@ -90,19 +116,23 @@ final class ServiceContainer
 
     private function responseValidator() : ResponseValidator
     {
-        $specification = $this->apiSpecificationFileContents();
+        $schema = $this->apiSchema();
 
         static $validator;
         try {
             return $validator
-                ?? $validator = (new ValidatorBuilder())->fromYaml($specification)->getResponseValidator();
+                ?? $validator = (new ValidatorBuilder())->fromSchema($schema)->getResponseValidator();
         } catch (Throwable $e) {
             throw new LogicException('Json response validator initialization failed.', 0, $e);
         }
     }
 
-    private function apiSpecificationFileContents() : string
+    private function apiSchema() : OpenApi
     {
+        if (array_key_exists(Schema::class, $this->reusableServicesByType)) {
+            return $this->reusableServicesByType[Schema::class];
+        }
+
         $specificationFilename = __DIR__ . '/Http/Actions/Api/openapi.yaml';
         $specification = file_get_contents($specificationFilename);
 
@@ -115,7 +145,15 @@ final class ServiceContainer
             );
         }
 
-        return $specification;
+        $schema = (new YamlFactory($specification))->createSchema();
+        $this->reusableServicesByType[Schema::class] = $schema;
+
+        return $schema;
+    }
+
+    private function specFinder() : SpecFinder
+    {
+        return new SpecFinder($this->apiSchema());
     }
 
     private function apiRequestHandlingMiddleware() : RequestHandlingMiddleware
@@ -134,6 +172,7 @@ final class ServiceContainer
             },
             'POST /api/v1/user/me/session' => function () : RequestHandlerInterface {
                 return new CreateSession(
+                    $this->startUserSession(),
                     $this->psr17factory(),
                     $this->psr17factory(),
                 );
@@ -254,5 +293,23 @@ final class ServiceContainer
     private function passwordHashing() : PasswordHashing
     {
         return new PhpPasswordHashing();
+    }
+
+    private function startUserSession() : StartUserSession
+    {
+        return new StartUserSession(
+            $this->userRepository(),
+            $this->clock(),
+        );
+    }
+
+    private function clock() : Clock
+    {
+        return new PhpClock();
+    }
+
+    private function isUserAuthenticated() : IsUserAuthenticated
+    {
+        return new IsUserAuthenticated($this->userRepository(), $this->passwordHashing());
     }
 }

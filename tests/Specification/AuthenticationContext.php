@@ -146,4 +146,25 @@ final class AuthenticationContext implements Context
         Assert::assertCount(2, $sessionCollection);
         Assert::assertNotSame($sessionCollection[0]['token'], $sessionCollection[1]['token']);
     }
+
+    /**
+     * @Then /^starting a session with email address "([^"]*)" and password "([^"]*)" fails$/
+     */
+    public function startingASessionWithEmailAddressAndPasswordFails(
+        string $emailAddress,
+        string $password
+    ) : void {
+        $request = new ServerRequest(
+            'POST',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $emailAddress, $password))),
+            ],
+        );
+        $response = self::$container->httpApplication()->handle($request);
+
+        Assert::assertSame(401, $response->getStatusCode(), $response->getReasonPhrase());
+        Assert::assertSame('Unauthorized', $response->getReasonPhrase());
+    }
 }

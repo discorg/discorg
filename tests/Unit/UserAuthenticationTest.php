@@ -13,6 +13,7 @@ use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
 use LogicException;
@@ -55,12 +56,11 @@ final class UserAuthenticationTest extends TestCase
         $register = new RegisterUser($isUserRegistered, $userRepository, new PhpPasswordHashing());
         $isUserAuthenticated = new IsUserAuthenticated($userRepository, new PhpPasswordHashing());
 
-        $emailAddress = EmailAddress::fromString('ondrej@sample.com');
-        $password = PlaintextUserPassword::fromString('1234567');
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
-        $register->__invoke($emailAddress, $password);
+        $register->__invoke($credentials);
 
-        self::assertTrue($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertTrue($isUserAuthenticated->__invoke($credentials));
     }
 
     public function testUserRegistrationFailsWhenEmailAddressAlreadyRegistered() : void
@@ -91,11 +91,10 @@ final class UserAuthenticationTest extends TestCase
 
         $register = new RegisterUser($isUserRegistered, $userRepository, new PhpPasswordHashing());
 
-        $emailAddress = EmailAddress::fromString('ondrej@sample.com');
-        $password = PlaintextUserPassword::fromString('1234567');
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
         self::expectException(CannotRegisterUser::class);
-        $register->__invoke($emailAddress, $password);
+        $register->__invoke($credentials);
     }
 
     public function testUserIsNotAuthenticatedWhenEmailAddressNotFound() : void
@@ -118,10 +117,9 @@ final class UserAuthenticationTest extends TestCase
 
         $isUserAuthenticated = new IsUserAuthenticated($userRepository, new PhpPasswordHashing());
 
-        $emailAddress = EmailAddress::fromString('ondrej@sample.com');
-        $password = PlaintextUserPassword::fromString('1234567');
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
-        self::assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertFalse($isUserAuthenticated->__invoke($credentials));
     }
 
     public function testUserIsNotAuthenticatedWithWrongPassword() : void
@@ -147,9 +145,8 @@ final class UserAuthenticationTest extends TestCase
 
         $isUserAuthenticated = new IsUserAuthenticated($userRepository, new PhpPasswordHashing());
 
-        $emailAddress = EmailAddress::fromString('ondrej@sample.com');
-        $password = PlaintextUserPassword::fromString('1234567');
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
-        self::assertFalse($isUserAuthenticated->__invoke($emailAddress, $password));
+        self::assertFalse($isUserAuthenticated->__invoke($credentials));
     }
 }

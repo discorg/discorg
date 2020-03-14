@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication;
 
-use Assert\Assertion;
-
 final class EmailAddress
 {
     private string $emailAddress;
 
     private function __construct(string $emailAddress)
     {
-        Assertion::email($emailAddress);
-
+        // TODO: validation
         $this->emailAddress = $emailAddress;
     }
 

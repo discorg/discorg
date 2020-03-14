@@ -22,7 +22,7 @@ final class CommonApiTest extends TestCase
         );
         $response = $this->container->httpApplication()->handle($request);
 
-        self::assertSame(400, $response->getStatusCode(), $response->getReasonPhrase());
+        self::assertSame(404, $response->getStatusCode(), $response->getReasonPhrase());
     }
 
     public function testMissingAuthentication() : void

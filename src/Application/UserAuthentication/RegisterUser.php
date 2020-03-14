@@ -6,11 +6,10 @@ namespace App\Application\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\CannotRegisterUser;
 use App\Domain\UserAuthentication\Aggregate\User;
-use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
-use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\UserCredentials;
 
 final class RegisterUser
 {
@@ -33,9 +32,9 @@ final class RegisterUser
     /**
      * @throws CannotRegisterUser
      */
-    public function __invoke(EmailAddress $username, PlaintextUserPassword $password) : void
+    public function __invoke(UserCredentials $credentials) : void
     {
-        $user = User::register($username, $password, $this->isUserRegistered, $this->passwordHashing);
+        $user = User::register($credentials, $this->isUserRegistered, $this->passwordHashing);
 
         $this->userRepository->save($user);
     }

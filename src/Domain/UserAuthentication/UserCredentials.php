@@ -9,25 +9,15 @@ final class UserCredentials
     private EmailAddress $emailAddress;
     private PlaintextUserPassword $password;
 
-    private function __construct()
+    private function __construct(EmailAddress $emailAddress, PlaintextUserPassword $password)
     {
-    }
-
-    public static function fromEmailAddressAndPassword(
-        EmailAddress $emailAddress,
-        PlaintextUserPassword $password
-    ) : self {
-        $instance = new self();
-        $instance->emailAddress = $emailAddress;
-        $instance->password = $password;
-
-        return $instance;
+        $this->emailAddress = $emailAddress;
+        $this->password = $password;
     }
 
     public static function fromStrings(string $emailAddress, string $password) : self
     {
-        return self::fromEmailAddressAndPassword(
-            // TODO: use non-validating constructors
+        return new self(
             EmailAddress::fromString($emailAddress),
             PlaintextUserPassword::fromString($password),
         );
