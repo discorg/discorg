@@ -14,7 +14,7 @@ use App\Infrastructure\Http\Actions\Api\CreateUser;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Api\GetSessionCollection;
 use App\Infrastructure\Http\Actions\Get;
-use App\Infrastructure\Http\ApiRequestAndResponseValidatingMiddleware;
+use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
