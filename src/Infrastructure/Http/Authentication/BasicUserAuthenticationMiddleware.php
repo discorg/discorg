@@ -36,6 +36,35 @@ final class BasicUserAuthenticationMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
+        if (! $this->isAuthenticationRequired($request)) {
+            return $handler->handle($request);
+        }
+
+        try {
+            $authentication = BasicAuthentication::fromRequestHeader($request);
+        } catch (CannotParseAuthentication $e) {
+            return $this->response401();
+        }
+
+        $credentials = UserCredentials::fromStrings(
+            $authentication->username(),
+            $authentication->password(),
+        );
+
+        if (! $this->isUserAuthenticated->__invoke($credentials)) {
+            return $this->response401();
+        }
+
+        $request = $request->withAttribute(
+            AuthenticatedUserIdentifier::class,
+            AuthenticatedUserIdentifier::fromEmailAddress($credentials->emailAddress()),
+        );
+
+        return $handler->handle($request);
+    }
+
+    private function isAuthenticationRequired(ServerRequestInterface $request) : bool
+    {
         $operationAddress = $request->getAttribute(OperationAddress::class);
         assert($operationAddress instanceof OperationAddress);
 
@@ -45,43 +74,24 @@ final class BasicUserAuthenticationMiddleware implements MiddlewareInterface
             throw new LogicException($e->getMessage());
         }
 
-        if ($securitySpecs === []) {
-            return $handler->handle($request);
-        }
-
         $securitySchemesSpecs = $this->specFinder->findSecuritySchemesSpecs();
 
         foreach ($securitySpecs as $securitySpec) {
             foreach ($securitySpec->getSerializableData() as $securitySchemeName => $scopes) {
                 $securityScheme = $securitySchemesSpecs[$securitySchemeName];
-                if ($securityScheme->type !== 'http' || $securityScheme->scheme !== 'basic') {
-                    return $handler->handle($request);
+                if ($securityScheme->type === 'http' && $securityScheme->scheme === 'basic') {
+                    return true;
                 }
             }
         }
 
-        try {
-            $authentication = BasicAuthentication::fromRequestHeader($request);
-        } catch (CannotParseAuthentication $e) {
-            return $this->responseFactory->createResponse(401)
-                ->withHeader('WWW-Authenticate', 'Basic realm="Login"');
-        }
+        return false;
+    }
 
-        $credentials = UserCredentials::fromStrings(
-            $authentication->username(),
-            $authentication->password(),
-        );
-
-        if (! $this->isUserAuthenticated->__invoke($credentials)) {
-            return $this->responseFactory->createResponse(401)
-                ->withHeader('WWW-Authenticate', 'Basic realm="Login"');
-        }
-
-        $request = $request->withAttribute(
-            AuthenticatedUserIdentifier::class,
-            AuthenticatedUserIdentifier::fromEmailAddress($credentials->emailAddress()),
-        );
-
-        return $handler->handle($request);
+    private function response401() : ResponseInterface
+    {
+        return $this->responseFactory
+            ->createResponse(401)
+            ->withHeader('WWW-Authenticate', 'Basic realm="Login"');
     }
 }
