@@ -23,3 +23,11 @@ Feature: User can register and manage their sessions
   Scenario: User cannot log in with incorrect password
     Given there is a previously registered user that registered with username "ondrej@bouda.life" and password "secret123"
     Then starting a session with email address "ondrej@bouda.life" and password "bad" fails
+
+  Scenario: Different users can start session
+    Given there is a previously registered user that registered with username "marie@example.com" and password "secret123"
+    And there is a previously registered user that registered with username "kamil@example.com" and password "secret567"
+    When user starts a session with email address "marie@example.com" and password "secret123"
+    When user starts a session with email address "kamil@example.com" and password "secret567"
+    Then user session is started for user "marie@example.com"
+    And user session is started for user "kamil@example.com"
