@@ -9,10 +9,14 @@ use Behat\Behat\Context\Context;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
+use Psr\Http\Message\ResponseInterface;
+use function array_pop;
 use function base64_encode;
+use function end;
 use function json_decode;
 use function json_encode;
 use function sprintf;
+use function substr;
 use const JSON_THROW_ON_ERROR;
 
 final class AuthenticationContext implements Context
@@ -20,6 +24,8 @@ final class AuthenticationContext implements Context
     private static ServiceContainer $container;
     /** @var string[] */
     private array $tokensByEmail = [];
+    /** @var ResponseInterface[]  */
+    private array $responses = [];
 
     /** @BeforeScenario */
     public static function setup() : void
@@ -48,36 +54,11 @@ final class AuthenticationContext implements Context
                 'password' => $password,
             ], JSON_THROW_ON_ERROR),
         );
-        $response = self::$container->httpApplication()->handle($request);
-
-        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+        $this->handleRequest($request);
     }
 
     /**
-     * @Then /^another registration with email address "([^"]*)" fails$/
-     */
-    public function anotherRegistrationWithEmailAddressFails(string $emailAddress) : void
-    {
-        $request = new ServerRequest(
-            'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user'),
-            ['content-type' => 'application/json'],
-            json_encode([
-                'email' => $emailAddress,
-                'password' => 'secret456',
-            ], JSON_THROW_ON_ERROR),
-        );
-        $response = self::$container->httpApplication()->handle($request);
-
-        Assert::assertSame(400, $response->getStatusCode());
-        Assert::assertSame(
-            'Email address "ondrej@bouda.life" has already been registered.',
-            $response->getReasonPhrase(),
-        );
-    }
-
-    /**
-     * @Given /^user starts a session with email address "([^"]*)" and password "([^"]*)"$/
+     * @When /^user starts a session with email address "([^"]*)" and password "([^"]*)"$/
      */
     public function userStartsASessionWithUsernameAndPassword(string $emailAddress, string $password) : void
     {
@@ -89,11 +70,13 @@ final class AuthenticationContext implements Context
                 'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $emailAddress, $password))),
             ],
         );
-        $response = self::$container->httpApplication()->handle($request);
+        $this->handleRequest($request);
 
-        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+        if (! $this->isResponseSuccessful($this->getLastResponse())) {
+            return;
+        }
 
-        $this->tokensByEmail[$emailAddress] = json_decode((string) $response->getBody(), true)['token'];
+        $this->tokensByEmail[$emailAddress] = json_decode((string) $this->getLastResponse()->getBody(), true)['token'];
     }
 
     /**
@@ -109,9 +92,7 @@ final class AuthenticationContext implements Context
                 'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
             ],
         );
-        $response = self::$container->httpApplication()->handle($request);
-
-        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+        $this->handleRequest($request);
     }
 
     /**
@@ -137,9 +118,8 @@ final class AuthenticationContext implements Context
                 'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
             ],
         );
-        $response = self::$container->httpApplication()->handle($request);
-
-        Assert::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+        $this->handleRequest($request);
+        $response = $this->getLastResponse();
 
         $sessionCollection = json_decode((string) $response->getBody(), true);
 
@@ -148,23 +128,58 @@ final class AuthenticationContext implements Context
     }
 
     /**
-     * @Then /^starting a session with email address "([^"]*)" and password "([^"]*)" fails$/
+     * @Then /^the action fails as user error$/
      */
-    public function startingASessionWithEmailAddressAndPasswordFails(
-        string $emailAddress,
-        string $password
-    ) : void {
-        $request = new ServerRequest(
-            'POST',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $emailAddress, $password))),
-            ],
+    public function theActionFailsAsUserError() : void
+    {
+        $response = $this->popLastResponse();
+
+        Assert::assertSame(400, $response->getStatusCode());
+        Assert::assertSame(
+            'Email address "ondrej@bouda.life" has already been registered.',
+            $response->getReasonPhrase(),
         );
-        $response = self::$container->httpApplication()->handle($request);
+    }
+
+    /**
+     * @Then /^the action fails as not authorized$/
+     */
+    public function theActionFailsAsNotAuthorized() : void
+    {
+        $response = $this->popLastResponse();
 
         Assert::assertSame(401, $response->getStatusCode(), $response->getReasonPhrase());
         Assert::assertSame('Unauthorized', $response->getReasonPhrase());
+    }
+
+    private function handleRequest(ServerRequest $request) : void
+    {
+        $this->responses[] = self::$container->httpApplication()->handle($request);
+    }
+
+    private function getLastResponse() : ?ResponseInterface
+    {
+        return end($this->responses);
+    }
+
+    private function popLastResponse() : ?ResponseInterface
+    {
+        return array_pop($this->responses);
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function allRequestsWereSuccessful() : void
+    {
+        foreach ($this->responses as $response) {
+            Assert::assertTrue($this->isResponseSuccessful($response), $response->getReasonPhrase());
+        }
+    }
+
+    private function isResponseSuccessful(ResponseInterface $response) : bool
+    {
+        // 2XX status code
+        return substr((string) $response->getStatusCode(), 0, 1) === '2';
     }
 }

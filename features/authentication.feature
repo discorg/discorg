@@ -12,7 +12,8 @@ Feature: User can register and manage their sessions
   Scenario: User cannot register twice with the same email address
     Given there are no registered users
     When user registers with email address "ondrej@bouda.life" and password "secret123"
-    Then another registration with email address "ondrej@bouda.life" fails
+    And user registers with email address "ondrej@bouda.life" and password "secret123"
+    Then the action fails as user error
 
   Scenario: User can start multiple sessions
     Given there is a previously registered user that registered with username "ondrej@bouda.life" and password "secret123"
@@ -20,14 +21,15 @@ Feature: User can register and manage their sessions
     And user starts a session with email address "ondrej@bouda.life" and password "secret123"
     Then there are two different sessions started for user "ondrej@bouda.life"
 
-  Scenario: User cannot log in with incorrect password
+  Scenario: User cannot start a session with incorrect password
     Given there is a previously registered user that registered with username "ondrej@bouda.life" and password "secret123"
-    Then starting a session with email address "ondrej@bouda.life" and password "bad" fails
+    When user starts a session with email address "ondrej@bouda.life" and password "bad"
+    Then the action fails as not authorized
 
   Scenario: Different users can start session
     Given there is a previously registered user that registered with username "marie@example.com" and password "secret123"
     And there is a previously registered user that registered with username "kamil@example.com" and password "secret567"
     When user starts a session with email address "marie@example.com" and password "secret123"
-    When user starts a session with email address "kamil@example.com" and password "secret567"
+    And user starts a session with email address "kamil@example.com" and password "secret567"
     Then user session is started for user "marie@example.com"
     And user session is started for user "kamil@example.com"
