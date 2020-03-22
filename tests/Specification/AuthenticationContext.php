@@ -12,7 +12,6 @@ use PHPUnit\Framework\Assert;
 use Psr\Http\Message\ResponseInterface;
 use function array_pop;
 use function base64_encode;
-use function end;
 use function json_decode;
 use function json_encode;
 use function sprintf;
@@ -70,13 +69,13 @@ final class AuthenticationContext implements Context
                 'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $emailAddress, $password))),
             ],
         );
-        $this->handleRequest($request);
+        $response = $this->handleRequest($request);
 
-        if (! $this->isResponseSuccessful($this->getLastResponse())) {
+        if (! $this->isResponseSuccessful($response)) {
             return;
         }
 
-        $this->tokensByEmail[$emailAddress] = json_decode((string) $this->getLastResponse()->getBody(), true)['token'];
+        $this->tokensByEmail[$emailAddress] = json_decode((string) $response->getBody(), true)['token'];
     }
 
     /**
@@ -118,8 +117,7 @@ final class AuthenticationContext implements Context
                 'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
             ],
         );
-        $this->handleRequest($request);
-        $response = $this->getLastResponse();
+        $response = $this->handleRequest($request);
 
         $sessionCollection = json_decode((string) $response->getBody(), true);
 
@@ -180,19 +178,20 @@ final class AuthenticationContext implements Context
         Assert::assertSame('Unauthorized', $response->getReasonPhrase());
     }
 
-    private function handleRequest(ServerRequest $request) : void
+    private function handleRequest(ServerRequest $request) : ResponseInterface
     {
-        $this->responses[] = self::$container->httpApplication()->handle($request);
+        $response = self::$container->httpApplication()->handle($request);
+        $this->responses[] = $response;
+
+        return $response;
     }
 
-    private function getLastResponse() : ?ResponseInterface
+    private function popLastResponse() : ResponseInterface
     {
-        return end($this->responses);
-    }
+        $result = array_pop($this->responses);
+        Assert::assertNotNull($result);
 
-    private function popLastResponse() : ?ResponseInterface
-    {
-        return array_pop($this->responses);
+        return $result;
     }
 
     /**
