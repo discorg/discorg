@@ -43,7 +43,7 @@ final class CreateUser implements RequestHandlerInterface
         }
 
         return $this->responseFactory
-            ->createResponse(200)
+            ->createResponse(204)
             ->withHeader('Content-Type', 'application/json');
     }
 }

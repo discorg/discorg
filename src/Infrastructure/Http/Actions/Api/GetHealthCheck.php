@@ -21,6 +21,6 @@ final class GetHealthCheck implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         return $response = $this->responseFactory
-            ->createResponse(200);
+            ->createResponse(204);
     }
 }

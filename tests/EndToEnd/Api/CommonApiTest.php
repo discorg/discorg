@@ -85,7 +85,7 @@ final class CommonApiTest extends TestCase
         );
         $response = $this->container->httpApplication()->handle($request);
 
-        self::assertSame(200, $response->getStatusCode(), $response->getReasonPhrase());
+        self::assertSame(204, $response->getStatusCode(), $response->getReasonPhrase());
     }
 
     protected function setUp() : void
