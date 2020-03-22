@@ -128,9 +128,37 @@ final class AuthenticationContext implements Context
     }
 
     /**
-     * @Then /^the action fails as user error$/
+     * @Then /^the action fails with invalid email address error "([^"]*)"$/
      */
-    public function theActionFailsAsUserError() : void
+    public function theActionFailsWithInvalidEmailAddressError(string $emailAddress) : void
+    {
+        $response = $this->popLastResponse();
+
+        Assert::assertSame(400, $response->getStatusCode());
+        Assert::assertSame(
+            sprintf('Value \'%s\' does not match format email of type string', $emailAddress),
+            $response->getReasonPhrase(),
+        );
+    }
+
+    /**
+     * @Then /^the action fails with invalid password error "([^"]*)"$/
+     */
+    public function theActionFailsWithInvalidPasswordError(string $password) : void
+    {
+        $response = $this->popLastResponse();
+
+        Assert::assertSame(400, $response->getStatusCode());
+        Assert::assertSame(
+            sprintf('Keyword validation failed: Length of \'%s\' must be longer or equal to 7', $password),
+            $response->getReasonPhrase(),
+        );
+    }
+
+    /**
+     * @Then /^the action fails with already registered error$/
+     */
+    public function theActionFailsWithAlreadyRegisteredError() : void
     {
         $response = $this->popLastResponse();
 

@@ -34,7 +34,14 @@ final class ApiRequestAndResponseValidatingMiddleware implements MiddlewareInter
         try {
             $operation = $this->requestValidator->validate($request);
         } catch (ValidationFailed $e) {
-            return $this->responseFactory->createResponse(400, $e->getMessage());
+            $reason = $e->getMessage();
+
+            $previous = $e->getPrevious();
+            if ($previous !== null) {
+                $reason = $previous->getMessage();
+            }
+
+            return $this->responseFactory->createResponse(400, $reason);
         }
 
         $response = $handler->handle($request);
@@ -42,7 +49,7 @@ final class ApiRequestAndResponseValidatingMiddleware implements MiddlewareInter
         try {
             $this->responseValidator->validate($operation, $response);
         } catch (ValidationFailed $e) {
-            return $this->responseFactory->createResponse(500, $e->getMessage());
+            return $this->responseFactory->createResponse(500);
         }
 
         return $response;
