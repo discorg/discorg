@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication;
 
+use Ramsey\Uuid\Uuid;
+
 final class UserSessionToken
 {
     private string $token;
@@ -15,7 +17,7 @@ final class UserSessionToken
 
     public static function generate() : self
     {
-        return new self('12345');
+        return new self(Uuid::uuid4()->toString());
     }
 
     public static function fromStoredValue(string $token) : self
@@ -26,5 +28,10 @@ final class UserSessionToken
     public function toString() : string
     {
         return $this->token;
+    }
+
+    public function equals(UserSessionToken $token) : bool
+    {
+        return $this->token === $token->token;
     }
 }
