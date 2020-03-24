@@ -43,3 +43,26 @@ Feature: User can register and manage their sessions
     And user starts a session with email address "kamil@example.com" and password "secret567"
     Then user session is started for user "marie@example.com"
     And user session is started for user "kamil@example.com"
+
+  Scenario: User session expires
+    Given clock is frozen at "2020-03-03 12:00:00"
+    And there is a previously registered user that registered with username "marie@example.com" and password "secret123"
+    And user starts a session with email address "marie@example.com" and password "secret123"
+    When clock is frozen at "2020-03-05 12:00:00"
+    Then user "marie@example.com" is not authorized
+
+  Scenario: User session can be renewed
+    Given clock is frozen at "2020-03-03 12:00:00"
+    And there is a previously registered user that registered with username "marie@example.com" and password "secret123"
+    And user starts a session with email address "marie@example.com" and password "secret123"
+    When clock is frozen at "2020-03-04 11:00:00"
+    And user "marie@example.com" uses the application
+    And clock is frozen at "2020-03-05 10:00:00"
+    And user "marie@example.com" uses the application
+    And clock is frozen at "2020-03-06 9:00:00"
+    Then user session is started for user "marie@example.com"
+
+  Scenario: User can end session
+    Given user "ondrej@bouda.life" has a session started
+    When user "ondrej@bouda.life" ends the session
+    Then user "ondrej@bouda.life" is not authorized

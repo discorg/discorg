@@ -5,21 +5,24 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\StartUserSession;
+use App\Application\UserAuthentication\EndUserSession;
 use App\Application\UserAuthentication\IsUserAuthenticated;
 use App\Application\UserAuthentication\RegisterUser;
-use App\Domain\Clock;
+use App\Application\UserAuthentication\RenewUserSession;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Infrastructure\Http\Actions\Albums\GetAlbums;
-use App\Infrastructure\Http\Actions\Api\CreateSession;
 use App\Infrastructure\Http\Actions\Api\CreateUser;
+use App\Infrastructure\Http\Actions\Api\CreateUserSession;
+use App\Infrastructure\Http\Actions\Api\DeleteUserSession;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
 use App\Infrastructure\Http\Actions\Api\GetSessionCollection;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\Api\ApiOperationFindingMiddleware;
 use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\Authentication\BasicUserAuthenticationMiddleware;
+use App\Infrastructure\Http\Authentication\TokenUserAuthenticationMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
@@ -181,7 +184,7 @@ final class ServiceContainer
                 );
             },
             'POST /api/v1/user/me/session' => function () : RequestHandlerInterface {
-                return new CreateSession(
+                return new CreateUserSession(
                     $this->startUserSession(),
                     $this->psr17factory(),
                     $this->psr17factory(),
@@ -190,6 +193,12 @@ final class ServiceContainer
             'GET /api/v1/user/me/session' => function () : RequestHandlerInterface {
                 return new GetSessionCollection(
                     $this->psr17factory(),
+                    $this->psr17factory(),
+                );
+            },
+            'DELETE /api/v1/user/me/session' => function () : RequestHandlerInterface {
+                return new DeleteUserSession(
+                    $this->endUserSession(),
                     $this->psr17factory(),
                 );
             },
@@ -313,13 +322,27 @@ final class ServiceContainer
         );
     }
 
-    private function clock() : Clock
+    private function endUserSession() : EndUserSession
     {
-        return new PhpClock();
+        return new EndUserSession(
+            $this->userRepository(),
+            $this->clock(),
+        );
+    }
+
+    public function clock() : FreezableClock
+    {
+        return $this->reusableServicesByType[FreezableClock::class]
+            ?? $this->reusableServicesByType[FreezableClock::class] = new FreezableClock(new PhpClock());
     }
 
     private function isUserAuthenticated() : IsUserAuthenticated
     {
         return new IsUserAuthenticated($this->userRepository(), $this->passwordHashing());
+    }
+
+    private function renewUserSession() : RenewUserSession
+    {
+        return new RenewUserSession($this->userRepository(), $this->clock());
     }
 }

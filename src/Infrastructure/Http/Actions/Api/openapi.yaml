@@ -58,6 +58,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSessionCollection'
+    delete:
+      responses:
+        '204':
+          description: Session ended
+          content: {}
+
 components:
   securitySchemes:
     loginBasicAuth:

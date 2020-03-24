@@ -33,6 +33,7 @@ final class StartUserSession
             throw CannotStartUserSession::incorrectUserCredentials();
         }
 
+        // TODO: pass frozen time
         $user->startSession($token, $this->clock->getCurrentTime());
 
         $this->userRepository->save($user);

@@ -9,7 +9,7 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use function strlen;
 
-class UserSessionTokenTest extends TestCase
+final class UserSessionTokenTest extends TestCase
 {
     public function testGeneratedTokensAreDifferent() : void
     {

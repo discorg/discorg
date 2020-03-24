@@ -8,6 +8,8 @@ use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\UserSessionToken;
+use DateTimeImmutable;
 use function array_key_exists;
 
 final class InMemoryUserRepository implements UserRepository
@@ -27,5 +29,16 @@ final class InMemoryUserRepository implements UserRepository
         }
 
         return $this->usersByEmailAddress[$emailAddress->toString()];
+    }
+
+    public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
+    {
+        foreach ($this->usersByEmailAddress as $user) {
+            if ($user->isAuthenticatedByToken($token, $at)) {
+                return $user;
+            }
+        }
+
+        throw UserNotFound::byToken($token);
     }
 }

@@ -6,6 +6,7 @@ namespace Tests\Specification;
 
 use App\Infrastructure\ServiceContainer;
 use Behat\Behat\Context\Context;
+use DateTimeImmutable;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
@@ -79,7 +80,18 @@ final class AuthenticationContext implements Context
     }
 
     /**
+     * @Given /^user "([^"]*)" has a session started$/
+     */
+    public function userHasASessionStarted(string $emailAddress) : void
+    {
+        $password = 'some-insignificant-password';
+        $this->userRegistersWithUsernameAndPassword($emailAddress, $password);
+        $this->userStartsASessionWithUsernameAndPassword($emailAddress, $password);
+    }
+
+    /**
      * @Then /^user session is started for user "([^"]*)"$/
+     * @Then /^user "([^"]*)" uses the application$/
      */
     public function userSessionIsStarted(string $emailAddress) : void
     {
@@ -123,6 +135,42 @@ final class AuthenticationContext implements Context
 
         Assert::assertCount(2, $sessionCollection);
         Assert::assertNotSame($sessionCollection[0]['token'], $sessionCollection[1]['token']);
+    }
+
+    /**
+     * @When /^user "([^"]*)" ends the session$/
+     */
+    public function userEndsTheSession(string $emailAddress) : void
+    {
+        $request = new ServerRequest(
+            'DELETE',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+            ],
+        );
+        $this->handleRequest($request);
+    }
+
+    /**
+     * @Then /^user "([^"]*)" is not authorized$/
+     */
+    public function userIsNotAuthorized(string $emailAddress) : void
+    {
+        $request = new ServerRequest(
+            'GET',
+            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            [
+                'content-type' => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+            ],
+        );
+        $this->handleRequest($request);
+        $response = $this->popLastResponse();
+
+        Assert::assertSame(401, $response->getStatusCode(), $response->getReasonPhrase());
+        Assert::assertSame('Unauthorized', $response->getReasonPhrase());
     }
 
     /**
@@ -208,5 +256,13 @@ final class AuthenticationContext implements Context
     {
         // 2XX status code
         return substr((string) $response->getStatusCode(), 0, 1) === '2';
+    }
+
+    /**
+     * @Given /^clock is frozen at "([^"]*)"$/
+     */
+    public function clockIsFrozenAt(string $time) : void
+    {
+        self::$container->clock()->freeze(new DateTimeImmutable($time));
     }
 }

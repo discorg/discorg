@@ -15,7 +15,9 @@ use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserPasswordHash;
+use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
+use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -50,6 +52,11 @@ final class UserAuthenticationTest extends TestCase
                 }
 
                 return $this->savedUser;
+            }
+
+            public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
+            {
+                throw new LogicException('Should not be called.');
             }
         };
 
@@ -87,6 +94,11 @@ final class UserAuthenticationTest extends TestCase
             {
                 throw new LogicException('Should not be called.');
             }
+
+            public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
+            {
+                throw new LogicException('Should not be called.');
+            }
         };
 
         $register = new RegisterUser($isUserRegistered, $userRepository, new PhpPasswordHashing());
@@ -112,6 +124,11 @@ final class UserAuthenticationTest extends TestCase
             public function get(EmailAddress $emailAddress) : User
             {
                 throw UserNotFound::byEmailAddress($emailAddress);
+            }
+
+            public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
+            {
+                throw new LogicException('Should not be called.');
             }
         };
 
@@ -140,6 +157,11 @@ final class UserAuthenticationTest extends TestCase
                 $passwordHash =  UserPasswordHash::fromPassword($password, new PhpPasswordHashing());
 
                 return User::fromStoredValues($emailAddress, $passwordHash);
+            }
+
+            public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
+            {
+                throw new LogicException('Should not be called.');
             }
         };
 

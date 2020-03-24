@@ -6,6 +6,8 @@ namespace App\Domain\UserAuthentication\Repository;
 
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\EmailAddress;
+use App\Domain\UserAuthentication\UserSessionToken;
+use DateTimeImmutable;
 
 interface UserRepository
 {
@@ -15,4 +17,9 @@ interface UserRepository
      * @throws UserNotFound
      */
     public function get(EmailAddress $emailAddress) : User;
+
+    /**
+     * @throws UserNotFound
+     */
+    public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User;
 }
