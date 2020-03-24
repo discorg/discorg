@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Actions\Api;
 
-use App\Application\StartUserSession;
+use App\Application\UserAuthentication\StartUserSession;
 use App\Domain\UserAuthentication\Aggregate\CannotStartUserSession;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\UserSessionToken;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Application\StartUserSession;
 use App\Application\UserAuthentication\EndUserSession;
 use App\Application\UserAuthentication\IsUserAuthenticated;
 use App\Application\UserAuthentication\RegisterUser;
 use App\Application\UserAuthentication\RenewUserSession;
+use App\Application\UserAuthentication\StartUserSession;
 use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\Repository\UserRepository;
