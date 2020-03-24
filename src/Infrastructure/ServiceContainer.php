@@ -63,6 +63,7 @@ final class ServiceContainer
                 MiddlewareStack::fromArray(
                     $this->apiOperationFindingMiddleware(),
                     $this->basicUserAuthenticationMiddleware(),
+                    $this->tokenUserAuthenticationMiddleware(),
                     $this->apiRequestAndResponseValidatingMiddleware(),
                     $this->apiRequestHandlingMiddleware(),
                 ),
@@ -89,6 +90,15 @@ final class ServiceContainer
             $this->specFinder(),
             $this->psr17factory(),
             $this->isUserAuthenticated(),
+        );
+    }
+
+    private function tokenUserAuthenticationMiddleware() : TokenUserAuthenticationMiddleware
+    {
+        return new TokenUserAuthenticationMiddleware(
+            $this->specFinder(),
+            $this->psr17factory(),
+            $this->renewUserSession(),
         );
     }
 
