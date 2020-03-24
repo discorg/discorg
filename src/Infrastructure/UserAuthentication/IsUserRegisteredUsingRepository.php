@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\UserAuthentication;
 
+use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\EmailAddress;
-use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 

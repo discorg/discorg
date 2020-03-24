@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Domain\UserAuthentication\Aggregate\CannotModifySession;
+use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\EmailAddress;
-use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;

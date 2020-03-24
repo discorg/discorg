@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\UserAuthentication\ReadModel;
+namespace App\Domain\UserAuthentication\Aggregate;
 
 use App\Domain\UserAuthentication\EmailAddress;
 

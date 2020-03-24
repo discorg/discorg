@@ -7,7 +7,6 @@ namespace App\Domain\UserAuthentication\Aggregate;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
-use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Domain\UserAuthentication\UserSessionToken;

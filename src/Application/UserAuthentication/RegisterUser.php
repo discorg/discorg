@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Application\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\CannotRegisterUser;
+use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\PasswordHashing;
-use App\Domain\UserAuthentication\ReadModel\IsUserRegistered;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserCredentials;
 
