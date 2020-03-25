@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication\Aggregate;
 
+use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
@@ -74,9 +75,18 @@ final class User
         return new self($emailAddress, $passwordHash);
     }
 
-    public function isAuthenticatedBy(PlaintextUserPassword $password, PasswordHashing $passwordHashing) : bool
-    {
-        return $this->passwordHash->matches($password, $passwordHashing);
+    /**
+     * @throws UserCannotBeAuthenticated
+     */
+    public function getAuthenticatedIdentifier(
+        PlaintextUserPassword $password,
+        PasswordHashing $passwordHashing
+    ) : AuthenticatedUserIdentifier {
+        if (! $this->passwordHash->matches($password, $passwordHashing)) {
+            throw UserCannotBeAuthenticated::passwordDoesNotMatch();
+        }
+
+        return AuthenticatedUserIdentifier::fromEmailAddress($this->emailAddress);
     }
 
     public function isAuthenticatedByToken(UserSessionToken $token, DateTimeImmutable $at) : bool

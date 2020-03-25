@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Authentication;
 
-use App\Application\UserAuthentication\IsUserAuthenticated;
+use App\Application\UserAuthentication\GetUserAuthenticatedByCredentials;
+use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
-use App\Domain\UserAuthentication\UserCredentials;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
@@ -22,16 +22,16 @@ final class BasicUserAuthenticationMiddleware implements MiddlewareInterface
 {
     private SpecFinder $specFinder;
     private ResponseFactoryInterface $responseFactory;
-    private IsUserAuthenticated $isUserAuthenticated;
+    private GetUserAuthenticatedByCredentials $getUserAuthenticatedByCredentials;
 
     public function __construct(
         SpecFinder $specFinder,
         ResponseFactoryInterface $responseFactory,
-        IsUserAuthenticated $isUserAuthenticated
+        GetUserAuthenticatedByCredentials $getUserAuthenticatedByCredentials
     ) {
         $this->specFinder = $specFinder;
         $this->responseFactory = $responseFactory;
-        $this->isUserAuthenticated = $isUserAuthenticated;
+        $this->getUserAuthenticatedByCredentials = $getUserAuthenticatedByCredentials;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
@@ -46,18 +46,18 @@ final class BasicUserAuthenticationMiddleware implements MiddlewareInterface
             return $this->response401();
         }
 
-        $credentials = UserCredentials::fromStrings(
-            $authentication->username(),
-            $authentication->password(),
-        );
-
-        if (! $this->isUserAuthenticated->__invoke($credentials)) {
+        try {
+            $userId = $this->getUserAuthenticatedByCredentials->__invoke(
+                $authentication->username(),
+                $authentication->password(),
+            );
+        } catch (UserCannotBeAuthenticated $e) {
             return $this->response401();
         }
 
         $request = $request->withAttribute(
             AuthenticatedUserIdentifier::class,
-            AuthenticatedUserIdentifier::fromEmailAddress($credentials->emailAddress()),
+            $userId,
         );
 
         return $handler->handle($request);
