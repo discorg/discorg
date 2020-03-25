@@ -9,7 +9,7 @@ use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\EmailAddress;
-use App\Domain\UserAuthentication\UserCredentials;
+use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
 use DateTimeImmutable;
@@ -174,7 +174,8 @@ final class UserSessionTest extends TestCase
     private function createUser() : User
     {
         return User::register(
-            UserCredentials::fromStrings('mario@napoli.it', 'amatriciana'),
+            EmailAddress::fromString('mario@napoli.it'),
+            PlaintextUserPassword::fromString('amatriciana'),
             $this->fakeIsUserRegistered(),
             new PhpPasswordHashing(),
         );

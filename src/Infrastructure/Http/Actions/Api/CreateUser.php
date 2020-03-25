@@ -6,7 +6,8 @@ namespace App\Infrastructure\Http\Actions\Api;
 
 use App\Application\UserAuthentication\RegisterUser;
 use App\Domain\UserAuthentication\Aggregate\CannotRegisterUser;
-use App\Domain\UserAuthentication\UserCredentials;
+use App\Domain\UserAuthentication\EmailAddress;
+use App\Domain\UserAuthentication\PlaintextUserPassword;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,14 +30,11 @@ final class CreateUser implements RequestHandlerInterface
         $requestPayloadString = (string) $request->getBody();
         $requestPayload = json_decode($requestPayloadString, true);
 
-        // TODO: handle validation
-        $credentials = UserCredentials::fromStrings(
-            (string) $requestPayload['email'],
-            (string) $requestPayload['password'],
-        );
-
         try {
-            $this->registerUser->__invoke($credentials);
+            $this->registerUser->__invoke(
+                EmailAddress::fromString($requestPayload['email']),
+                PlaintextUserPassword::fromString($requestPayload['password']),
+            );
         } catch (CannotRegisterUser $e) {
             return $this->responseFactory
                 ->createResponse(400, $e->getMessage());

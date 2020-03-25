@@ -8,7 +8,6 @@ use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
-use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Domain\UserAuthentication\UserSessionToken;
 use DateTimeImmutable;
@@ -30,17 +29,18 @@ final class User
      * @throws CannotRegisterUser
      */
     public static function register(
-        UserCredentials $credentials,
+        EmailAddress $emailAddress,
+        PlaintextUserPassword $password,
         IsUserRegistered $isUserRegistered,
         PasswordHashing $hashing
     ) : self {
-        if ($isUserRegistered($credentials->emailAddress())) {
-            throw CannotRegisterUser::emailAddressAlreadyRegistered($credentials->emailAddress());
+        if ($isUserRegistered($emailAddress)) {
+            throw CannotRegisterUser::emailAddressAlreadyRegistered($emailAddress);
         }
 
-        $passwordHash = UserPasswordHash::fromPassword($credentials->password(), $hashing);
+        $passwordHash = UserPasswordHash::fromPassword($password, $hashing);
 
-        return new self($credentials->emailAddress(), $passwordHash);
+        return new self($emailAddress, $passwordHash);
     }
 
     public function startSession(
