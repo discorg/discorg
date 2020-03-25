@@ -15,6 +15,7 @@ use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\UserCredentials;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
@@ -70,7 +71,8 @@ final class UserAuthenticationTest extends TestCase
             PlaintextUserPassword::fromString($password),
         );
 
-        $this->assertUserIsAuthenticated($userRepository, $username, $password);
+        $credentials = UserCredentials::fromStrings($username, $password);
+        $this->assertUserIsAuthenticated($userRepository, $credentials);
     }
 
     public function testUserRegistrationFailsWhenEmailAddressAlreadyRegistered() : void
@@ -139,11 +141,10 @@ final class UserAuthenticationTest extends TestCase
             }
         };
 
-        $username = 'ondrej@sample.com';
-        $password = '1234567';
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
         self::expectException(UserCannotBeAuthenticated::class);
-        $this->assertUserIsAuthenticated($userRepository, $username, $password);
+        $this->assertUserIsAuthenticated($userRepository, $credentials);
     }
 
     public function testUserIsNotAuthenticatedWithWrongPassword() : void
@@ -172,17 +173,15 @@ final class UserAuthenticationTest extends TestCase
             }
         };
 
-        $username = 'ondrej@sample.com';
-        $password = '1234567';
+        $credentials = UserCredentials::fromStrings('ondrej@sample.com', '1234567');
 
         self::expectException(UserCannotBeAuthenticated::class);
-        $this->assertUserIsAuthenticated($userRepository, $username, $password);
+        $this->assertUserIsAuthenticated($userRepository, $credentials);
     }
 
     private function assertUserIsAuthenticated(
         UserRepository $userRepository,
-        string $username,
-        string $password
+        UserCredentials $credentials
     ) : void {
         $getUserAuthenticatedByCredentials = new GetUserAuthenticatedByCredentials(
             $userRepository,
@@ -190,8 +189,8 @@ final class UserAuthenticationTest extends TestCase
         );
 
         self::assertEquals(
-            AuthenticatedUserIdentifier::fromEmailAddress(EmailAddress::fromString($username)),
-            $getUserAuthenticatedByCredentials->__invoke($username, $password),
+            AuthenticatedUserIdentifier::fromEmailAddress(EmailAddress::fromString($credentials->username())),
+            $getUserAuthenticatedByCredentials->__invoke($credentials),
         );
     }
 }

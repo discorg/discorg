@@ -11,6 +11,7 @@ use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\UserCredentials;
 
 final class GetUserAuthenticatedByCredentials
 {
@@ -27,16 +28,17 @@ final class GetUserAuthenticatedByCredentials
     /**
      * @throws UserCannotBeAuthenticated
      */
-    public function __invoke(string $username, string $password) : AuthenticatedUserIdentifier
+    public function __invoke(UserCredentials $credentials) : AuthenticatedUserIdentifier
     {
         try {
-            $user = $this->userRepository->get(EmailAddress::fromStoredValue($username));
+            // TODO: get by username
+            $user = $this->userRepository->get(EmailAddress::fromStoredValue($credentials->username()));
         } catch (UserNotFound $e) {
             throw UserCannotBeAuthenticated::usernameNotFound();
         }
 
         return $user->getAuthenticatedIdentifier(
-            PlaintextUserPassword::fromStoredValue($password),
+            PlaintextUserPassword::fromStoredValue($credentials->password()),
             $this->passwordHashing,
         );
     }

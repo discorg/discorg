@@ -7,6 +7,7 @@ namespace App\Infrastructure\Http\Authentication;
 use App\Application\UserAuthentication\GetUserAuthenticatedByCredentials;
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\UserCredentials;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
@@ -48,8 +49,10 @@ final class BasicUserAuthenticationMiddleware implements MiddlewareInterface
 
         try {
             $userId = $this->getUserAuthenticatedByCredentials->__invoke(
-                $authentication->username(),
-                $authentication->password(),
+                UserCredentials::fromStrings(
+                    $authentication->username(),
+                    $authentication->password(),
+                ),
             );
         } catch (UserCannotBeAuthenticated $e) {
             return $this->response401();

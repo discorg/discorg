@@ -6,29 +6,26 @@ namespace App\Domain\UserAuthentication;
 
 final class UserCredentials
 {
-    private EmailAddress $emailAddress;
-    private PlaintextUserPassword $password;
+    private string $username;
+    private string $password;
 
-    private function __construct(EmailAddress $emailAddress, PlaintextUserPassword $password)
+    private function __construct(string $username, string $password)
     {
-        $this->emailAddress = $emailAddress;
+        $this->username = $username;
         $this->password = $password;
     }
 
-    public static function fromStrings(string $emailAddress, string $password) : self
+    public static function fromStrings(string $username, string $password) : self
     {
-        return new self(
-            EmailAddress::fromString($emailAddress),
-            PlaintextUserPassword::fromString($password),
-        );
+        return new self($username, $password);
     }
 
-    public function emailAddress() : EmailAddress
+    public function username() : string
     {
-        return $this->emailAddress;
+        return $this->username;
     }
 
-    public function password() : PlaintextUserPassword
+    public function password() : string
     {
         return $this->password;
     }
