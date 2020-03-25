@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Authentication;
 
+use App\Domain\UserAuthentication\UserCredentials;
 use Psr\Http\Message\ServerRequestInterface;
 use function base64_decode;
 use function count;
@@ -12,24 +13,15 @@ use function strlen;
 use function strpos;
 use function substr;
 
-final class BasicAuthentication
+final class ParseCredentialsFromBasicAuthenticationHeader
 {
     private const HEADER_NAME = 'Authorization';
     private const PREFIX = 'Basic ';
 
-    private string $username;
-    private string $password;
-
-    private function __construct(string $username, string $password)
-    {
-        $this->username = $username;
-        $this->password = $password;
-    }
-
     /**
      * @throws CannotParseAuthentication
      */
-    public static function fromRequestHeader(ServerRequestInterface $request) : self
+    public function __invoke(ServerRequestInterface $request) : UserCredentials
     {
         $rawHeader = $request->getHeaderLine(self::HEADER_NAME);
 
@@ -52,16 +44,6 @@ final class BasicAuthentication
             throw CannotParseAuthentication::invalidCredentialsString();
         }
 
-        return new self($explodedCredentials[0], $explodedCredentials[1]);
-    }
-
-    public function username() : string
-    {
-        return $this->username;
-    }
-
-    public function password() : string
-    {
-        return $this->password;
+        return UserCredentials::fromStrings($explodedCredentials[0], $explodedCredentials[1]);
     }
 }

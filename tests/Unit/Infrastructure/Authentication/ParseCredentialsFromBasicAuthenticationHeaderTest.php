@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Authentication;
 
-use App\Infrastructure\Http\Authentication\BasicAuthentication;
+use App\Domain\UserAuthentication\UserCredentials;
 use App\Infrastructure\Http\Authentication\CannotParseAuthentication;
+use App\Infrastructure\Http\Authentication\ParseCredentialsFromBasicAuthenticationHeader;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
@@ -13,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use function base64_encode;
 use function sprintf;
 
-final class BasicAuthenticationTest extends TestCase
+final class ParseCredentialsFromBasicAuthenticationHeaderTest extends TestCase
 {
     public function testSuccess() : void
     {
@@ -24,10 +25,12 @@ final class BasicAuthenticationTest extends TestCase
             'Authorization' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', $username, $password))),
         ]);
 
-        $authentication = BasicAuthentication::fromRequestHeader($request);
+        $credentials = (new ParseCredentialsFromBasicAuthenticationHeader())->__invoke($request);
 
-        Assert::assertSame($username, $authentication->username());
-        Assert::assertSame($password, $authentication->password());
+        Assert::assertEquals(
+            UserCredentials::fromStrings($username, $password),
+            $credentials,
+        );
     }
 
     public function testFailWithHeaderNotFound() : void
@@ -35,7 +38,7 @@ final class BasicAuthenticationTest extends TestCase
         $request = $this->createRequest([]);
 
         $this->expectException(CannotParseAuthentication::class);
-        BasicAuthentication::fromRequestHeader($request);
+        (new ParseCredentialsFromBasicAuthenticationHeader())->__invoke($request);
     }
 
     public function testFailWithIncorrectlyEncodedCredentials() : void
@@ -48,7 +51,7 @@ final class BasicAuthenticationTest extends TestCase
         ]);
 
         $this->expectException(CannotParseAuthentication::class);
-        BasicAuthentication::fromRequestHeader($request);
+        (new ParseCredentialsFromBasicAuthenticationHeader())->__invoke($request);
     }
 
     /**
@@ -61,7 +64,7 @@ final class BasicAuthenticationTest extends TestCase
         ]);
 
         $this->expectException(CannotParseAuthentication::class);
-        BasicAuthentication::fromRequestHeader($request);
+        (new ParseCredentialsFromBasicAuthenticationHeader())->__invoke($request);
     }
 
     /**

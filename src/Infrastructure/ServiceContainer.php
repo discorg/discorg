@@ -22,6 +22,7 @@ use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\Api\ApiOperationFindingMiddleware;
 use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\Authentication\BasicUserAuthenticationMiddleware;
+use App\Infrastructure\Http\Authentication\ParseCredentialsFromBasicAuthenticationHeader;
 use App\Infrastructure\Http\Authentication\TokenUserAuthenticationMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
@@ -92,6 +93,7 @@ final class ServiceContainer
         return new BasicUserAuthenticationMiddleware(
             $this->specFinder(),
             $this->psr17factory(),
+            $this->parseCredentialsFromBasicAuthenticationHeader(),
             $this->getUserAuthenticatedByCredentials(),
         );
     }
@@ -334,6 +336,11 @@ final class ServiceContainer
     {
         return $this->reusableServicesByType[FreezableClock::class]
             ?? $this->reusableServicesByType[FreezableClock::class] = new FreezableClock(new PhpClock());
+    }
+
+    private function parseCredentialsFromBasicAuthenticationHeader() : ParseCredentialsFromBasicAuthenticationHeader
+    {
+        return new ParseCredentialsFromBasicAuthenticationHeader();
     }
 
     private function getUserAuthenticatedByCredentials() : GetUserAuthenticatedByCredentials
