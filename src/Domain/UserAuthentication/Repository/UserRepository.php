@@ -16,7 +16,7 @@ interface UserRepository
     /**
      * @throws UserNotFound
      */
-    public function get(EmailAddress $emailAddress) : User;
+    public function getByEmailAddress(EmailAddress $emailAddress) : User;
 
     /**
      * @throws UserNotFound

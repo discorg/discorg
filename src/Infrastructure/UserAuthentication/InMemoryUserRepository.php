@@ -22,7 +22,7 @@ final class InMemoryUserRepository implements UserRepository
         $this->usersByEmailAddress[$user->getEmailAddress()->toString()] = $user;
     }
 
-    public function get(EmailAddress $emailAddress) : User
+    public function getByEmailAddress(EmailAddress $emailAddress) : User
     {
         if (! array_key_exists($emailAddress->toString(), $this->usersByEmailAddress)) {
             throw UserNotFound::byEmailAddress($emailAddress);

@@ -47,7 +47,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function get(EmailAddress $emailAddress) : User
+            public function getByEmailAddress(EmailAddress $emailAddress) : User
             {
                 if ($this->savedUser === null) {
                     throw new LogicException('User should have been saved.');
@@ -95,7 +95,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function get(EmailAddress $emailAddress) : User
+            public function getByEmailAddress(EmailAddress $emailAddress) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -130,7 +130,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function get(EmailAddress $emailAddress) : User
+            public function getByEmailAddress(EmailAddress $emailAddress) : User
             {
                 throw UserNotFound::byEmailAddress($emailAddress);
             }
@@ -159,7 +159,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function get(EmailAddress $emailAddress) : User
+            public function getByEmailAddress(EmailAddress $emailAddress) : User
             {
                 $password = PlaintextUserPassword::fromString('abcdefgh');
                 $passwordHash =  UserPasswordHash::fromPassword($password, new PhpPasswordHashing());

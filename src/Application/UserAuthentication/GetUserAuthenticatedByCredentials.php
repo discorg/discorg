@@ -32,7 +32,7 @@ final class GetUserAuthenticatedByCredentials
     {
         try {
             // TODO: get by username
-            $user = $this->userRepository->get(EmailAddress::fromStoredValue($credentials->username()));
+            $user = $this->userRepository->getByEmailAddress(EmailAddress::fromStoredValue($credentials->username()));
         } catch (UserNotFound $e) {
             throw UserCannotBeAuthenticated::usernameNotFound();
         }

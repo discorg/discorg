@@ -28,7 +28,7 @@ final class StartUserSession
     public function __invoke(AuthenticatedUserIdentifier $identifier, UserSessionToken $token) : void
     {
         try {
-            $user = $this->userRepository->get($identifier->emailAddress());
+            $user = $this->userRepository->getByEmailAddress($identifier->emailAddress());
         } catch (UserNotFound $e) {
             throw CannotStartUserSession::incorrectUserCredentials();
         }

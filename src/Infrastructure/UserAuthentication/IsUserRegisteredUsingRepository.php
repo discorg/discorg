@@ -21,7 +21,7 @@ final class IsUserRegisteredUsingRepository implements IsUserRegistered
     public function __invoke(EmailAddress $emailAddress) : bool
     {
         try {
-            $this->userRepository->get($emailAddress);
+            $this->userRepository->getByEmailAddress($emailAddress);
 
             return true;
         } catch (UserNotFound $exception) {
