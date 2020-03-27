@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\User;
+use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
@@ -20,6 +21,11 @@ final class InMemoryUserRepository implements UserRepository
     public function save(User $user) : void
     {
         $this->usersByEmailAddress[$user->getEmailAddress()->toString()] = $user;
+    }
+
+    public function get(AuthenticatedUserIdentifier $identifier) : User
+    {
+        return $this->getByEmailAddress($identifier->emailAddress());
     }
 
     public function getByEmailAddress(EmailAddress $emailAddress) : User

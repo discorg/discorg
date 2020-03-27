@@ -17,4 +17,9 @@ final class UserCannotBeAuthenticated extends RuntimeException
     {
         return new self('User cannot be authenticated');
     }
+
+    public static function validTokenNotFound() : self
+    {
+        return new self('User cannot be authenticated');
+    }
 }

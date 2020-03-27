@@ -7,6 +7,7 @@ namespace App\Application\UserAuthentication;
 use App\Domain\Clock;
 use App\Domain\UserAuthentication\Aggregate\CannotModifySession;
 use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
+use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserSessionToken;
@@ -27,10 +28,9 @@ final class EndUserSession
      * @throws SessionNotFound
      * @throws CannotModifySession
      */
-    public function __invoke(UserSessionToken $token) : void
+    public function __invoke(AuthenticatedUserIdentifier $identifier, UserSessionToken $token) : void
     {
-        // TODO: pass frozen time
-        $user = $this->userRepository->getByValidSessionToken($token, $this->clock->getCurrentTime());
+        $user = $this->userRepository->get($identifier);
         // TODO: pass frozen time
         $user->endSession($token, $this->clock->getCurrentTime());
 

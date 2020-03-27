@@ -89,6 +89,20 @@ final class User
         return AuthenticatedUserIdentifier::fromEmailAddress($this->emailAddress);
     }
 
+    /**
+     * @throws UserCannotBeAuthenticated
+     */
+    public function getAuthenticatedIdentifierByToken(
+        UserSessionToken $token,
+        DateTimeImmutable $at
+    ) : AuthenticatedUserIdentifier {
+        if (! $this->isAuthenticatedByToken($token, $at)) {
+            throw UserCannotBeAuthenticated::passwordDoesNotMatch();
+        }
+
+        return AuthenticatedUserIdentifier::fromEmailAddress($this->emailAddress);
+    }
+
     public function isAuthenticatedByToken(UserSessionToken $token, DateTimeImmutable $at) : bool
     {
         return $this->sessions->hasValid($token, $at);

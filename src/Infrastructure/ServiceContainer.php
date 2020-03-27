@@ -6,6 +6,7 @@ namespace App\Infrastructure;
 
 use App\Application\UserAuthentication\EndUserSession;
 use App\Application\UserAuthentication\GetUserAuthenticatedByCredentials;
+use App\Application\UserAuthentication\GetUserAuthenticatedByToken;
 use App\Application\UserAuthentication\RegisterUser;
 use App\Application\UserAuthentication\RenewUserSession;
 use App\Application\UserAuthentication\StartUserSession;
@@ -103,6 +104,7 @@ final class ServiceContainer
         return new TokenUserAuthenticationMiddleware(
             $this->specFinder(),
             $this->psr17factory(),
+            $this->getUserAuthenticatedByToken(),
             $this->renewUserSession(),
         );
     }
@@ -346,6 +348,11 @@ final class ServiceContainer
     private function getUserAuthenticatedByCredentials() : GetUserAuthenticatedByCredentials
     {
         return new GetUserAuthenticatedByCredentials($this->userRepository(), $this->passwordHashing());
+    }
+
+    private function getUserAuthenticatedByToken() : GetUserAuthenticatedByToken
+    {
+        return new GetUserAuthenticatedByToken($this->userRepository(), $this->clock());
     }
 
     private function renewUserSession() : RenewUserSession

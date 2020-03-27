@@ -44,6 +44,11 @@ final class UserAuthenticationTest extends TestCase
                 $this->savedUser = $user;
             }
 
+            public function get(AuthenticatedUserIdentifier $identifier) : User
+            {
+                throw new LogicException('Should not be called.');
+            }
+
             /**
              * @throws void
              */
@@ -92,6 +97,11 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
+            public function get(AuthenticatedUserIdentifier $identifier) : User
+            {
+                throw new LogicException('Should not be called.');
+            }
+
             /**
              * @throws void
              */
@@ -127,6 +137,11 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
+            public function get(AuthenticatedUserIdentifier $identifier) : User
+            {
+                throw new LogicException('Should not be called.');
+            }
+
             /**
              * @throws void
              */
@@ -152,6 +167,11 @@ final class UserAuthenticationTest extends TestCase
         $userRepository = new class implements UserRepository
         {
             public function save(User $user) : void
+            {
+                throw new LogicException('Should not be called.');
+            }
+
+            public function get(AuthenticatedUserIdentifier $identifier) : User
             {
                 throw new LogicException('Should not be called.');
             }

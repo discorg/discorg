@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Application\UserAuthentication;
 
 use App\Domain\Clock;
-use App\Domain\UserAuthentication\Aggregate\CannotStartUserSession;
+use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserSessionToken;
 
-final class StartUserSession
+final class GetUserAuthenticatedByToken
 {
     private UserRepository $userRepository;
     private Clock $clock;
@@ -23,19 +23,18 @@ final class StartUserSession
     }
 
     /**
-     * @throws CannotStartUserSession
+     * @throws UserCannotBeAuthenticated
      */
-    public function __invoke(AuthenticatedUserIdentifier $identifier, UserSessionToken $token) : void
+    public function __invoke(UserSessionToken $token) : AuthenticatedUserIdentifier
     {
         try {
-            $user = $this->userRepository->get($identifier);
+            // TODO: pass frozen time
+            $user = $this->userRepository->getByValidSessionToken($token, $this->clock->getCurrentTime());
         } catch (UserNotFound $e) {
-            throw CannotStartUserSession::incorrectUserCredentials();
+            throw UserCannotBeAuthenticated::validTokenNotFound();
         }
 
         // TODO: pass frozen time
-        $user->startSession($token, $this->clock->getCurrentTime());
-
-        $this->userRepository->save($user);
+        return $user->getAuthenticatedIdentifierByToken($token, $this->clock->getCurrentTime());
     }
 }
