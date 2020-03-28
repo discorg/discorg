@@ -6,7 +6,7 @@ namespace App\Application\UserAuthentication;
 
 use App\Domain\Clock;
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserSessionToken;
@@ -25,7 +25,7 @@ final class GetUserAuthenticatedByToken
     /**
      * @throws UserCannotBeAuthenticated
      */
-    public function __invoke(UserSessionToken $token) : AuthenticatedUserIdentifier
+    public function __invoke(UserSessionToken $token) : AuthenticatedUserId
     {
         try {
             // TODO: pass frozen time
@@ -35,6 +35,6 @@ final class GetUserAuthenticatedByToken
         }
 
         // TODO: pass frozen time
-        return $user->getAuthenticatedIdentifierByToken($token, $this->clock->getCurrentTime());
+        return $user->authenticateByToken($token, $this->clock->getCurrentTime());
     }
 }

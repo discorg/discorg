@@ -10,7 +10,7 @@ use App\Domain\UserAuthentication\Aggregate\CannotRegisterUser;
 use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
@@ -46,7 +46,7 @@ final class UserAuthenticationTest extends TestCase
                 $this->savedUser = $user;
             }
 
-            public function get(AuthenticatedUserIdentifier $identifier) : User
+            public function get(AuthenticatedUserId $id) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -99,7 +99,7 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
-            public function get(AuthenticatedUserIdentifier $identifier) : User
+            public function get(AuthenticatedUserId $id) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -139,7 +139,7 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
-            public function get(AuthenticatedUserIdentifier $identifier) : User
+            public function get(AuthenticatedUserId $id) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -173,7 +173,7 @@ final class UserAuthenticationTest extends TestCase
                 throw new LogicException('Should not be called.');
             }
 
-            public function get(AuthenticatedUserIdentifier $identifier) : User
+            public function get(AuthenticatedUserId $id) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -211,7 +211,7 @@ final class UserAuthenticationTest extends TestCase
         );
 
         self::assertEquals(
-            AuthenticatedUserIdentifier::fromId(UserId::fromString($credentials->username())),
+            AuthenticatedUserId::fromId(UserId::fromString($credentials->username())),
             $getUserAuthenticatedByCredentials->__invoke($credentials),
         );
     }

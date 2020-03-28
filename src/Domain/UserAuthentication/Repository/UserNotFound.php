@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication\Repository;
 
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserSessionToken;
 use RuntimeException;
@@ -12,7 +12,7 @@ use function sprintf;
 
 final class UserNotFound extends RuntimeException
 {
-    public static function byId(AuthenticatedUserIdentifier $id) : self
+    public static function byId(AuthenticatedUserId $id) : self
     {
         return new self(sprintf('User not found by id "%s".', $id->toString()));
     }

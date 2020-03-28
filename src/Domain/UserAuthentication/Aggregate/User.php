@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication\Aggregate;
 
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
@@ -81,29 +81,29 @@ final class User
     /**
      * @throws UserCannotBeAuthenticated
      */
-    public function getAuthenticatedIdentifier(
+    public function authenticateByCredentials(
         PlaintextUserPassword $password,
         PasswordHashing $passwordHashing
-    ) : AuthenticatedUserIdentifier {
+    ) : AuthenticatedUserId {
         if (! $this->passwordHash->matches($password, $passwordHashing)) {
             throw UserCannotBeAuthenticated::passwordDoesNotMatch();
         }
 
-        return AuthenticatedUserIdentifier::fromId($this->id());
+        return AuthenticatedUserId::fromId($this->id());
     }
 
     /**
      * @throws UserCannotBeAuthenticated
      */
-    public function getAuthenticatedIdentifierByToken(
+    public function authenticateByToken(
         UserSessionToken $token,
         DateTimeImmutable $at
-    ) : AuthenticatedUserIdentifier {
+    ) : AuthenticatedUserId {
         if (! $this->isAuthenticatedByToken($token, $at)) {
             throw UserCannotBeAuthenticated::passwordDoesNotMatch();
         }
 
-        return AuthenticatedUserIdentifier::fromId($this->id());
+        return AuthenticatedUserId::fromId($this->id());
     }
 
     public function isAuthenticatedByToken(UserSessionToken $token, DateTimeImmutable $at) : bool

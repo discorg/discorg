@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
@@ -28,7 +28,7 @@ final class GetUserAuthenticatedByCredentials
     /**
      * @throws UserCannotBeAuthenticated
      */
-    public function __invoke(UserCredentials $credentials) : AuthenticatedUserIdentifier
+    public function __invoke(UserCredentials $credentials) : AuthenticatedUserId
     {
         try {
             $user = $this->userRepository->getByUsername(Username::fromString($credentials->username()));
@@ -36,7 +36,7 @@ final class GetUserAuthenticatedByCredentials
             throw UserCannotBeAuthenticated::usernameNotFound();
         }
 
-        return $user->getAuthenticatedIdentifier(
+        return $user->authenticateByCredentials(
             PlaintextUserPassword::fromStoredValue($credentials->password()),
             $this->passwordHashing,
         );

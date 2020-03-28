@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\User;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\Username;
@@ -23,7 +23,7 @@ final class InMemoryUserRepository implements UserRepository
         $this->usersById[$user->id()->toString()] = $user;
     }
 
-    public function get(AuthenticatedUserIdentifier $id) : User
+    public function get(AuthenticatedUserId $id) : User
     {
         if (! array_key_exists($id->toString(), $this->usersById)) {
             throw UserNotFound::byId($id);

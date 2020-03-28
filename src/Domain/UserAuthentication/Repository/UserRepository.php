@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\UserAuthentication\Repository;
 
 use App\Domain\UserAuthentication\Aggregate\User;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserSessionToken;
 use DateTimeImmutable;
@@ -17,7 +17,7 @@ interface UserRepository
     /**
      * @throws UserNotFound
      */
-    public function get(AuthenticatedUserIdentifier $identifier) : User;
+    public function get(AuthenticatedUserId $id) : User;
 
     /**
      * @throws UserNotFound

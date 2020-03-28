@@ -9,7 +9,7 @@ use App\Application\UserAuthentication\RenewUserSession;
 use App\Domain\UserAuthentication\Aggregate\CannotModifySession;
 use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
-use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
+use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\UserSessionToken;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
@@ -57,21 +57,21 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
         $token = UserSessionToken::fromStoredValue($authentication->token());
 
         try {
-            $userIdentifier = $this->getUserAuthenticatedByToken->__invoke($token);
+            $userId = $this->getUserAuthenticatedByToken->__invoke($token);
         } catch (UserCannotBeAuthenticated $e) {
             return $this->response401();
         }
 
         try {
-            $this->renewUserSession->__invoke($userIdentifier, $token);
+            $this->renewUserSession->__invoke($userId, $token);
         } catch (UserNotFound|SessionNotFound|CannotModifySession $e) {
             return $this->responseFactory
                 ->createResponse(500);
         }
 
         $request = $request->withAttribute(
-            AuthenticatedUserIdentifier::class,
-            $userIdentifier,
+            AuthenticatedUserId::class,
+            $userId,
         );
 
         $request = $request->withAttribute(

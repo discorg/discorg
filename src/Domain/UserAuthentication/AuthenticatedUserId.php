@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication;
 
-final class AuthenticatedUserIdentifier
+final class AuthenticatedUserId
 {
     private UserId $userId;
 
