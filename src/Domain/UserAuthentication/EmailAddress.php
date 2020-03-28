@@ -22,11 +22,6 @@ final class EmailAddress
         return new self($emailAddress);
     }
 
-    public static function fromStoredValue(string $emailAddress) : self
-    {
-        return new self($emailAddress);
-    }
-
     public function toString() : string
     {
         return $this->emailAddress;

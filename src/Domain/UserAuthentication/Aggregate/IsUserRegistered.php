@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\UserAuthentication\Aggregate;
 
-use App\Domain\UserAuthentication\EmailAddress;
+use App\Domain\UserAuthentication\Username;
 
 interface IsUserRegistered
 {
-    public function __invoke(EmailAddress $emailAddress) : bool;
+    public function __invoke(Username $username) : bool;
 }

@@ -16,6 +16,8 @@ use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserCredentials;
+use App\Domain\UserAuthentication\UserId;
+use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
@@ -29,7 +31,7 @@ final class UserAuthenticationTest extends TestCase
     {
         $isUserRegistered = new class implements IsUserRegistered
         {
-            public function __invoke(EmailAddress $emailAddress) : bool
+            public function __invoke(Username $username) : bool
             {
                 return false;
             }
@@ -52,7 +54,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function getByEmailAddress(EmailAddress $emailAddress) : User
+            public function getByUsername(Username $username) : User
             {
                 if ($this->savedUser === null) {
                     throw new LogicException('User should have been saved.');
@@ -84,7 +86,7 @@ final class UserAuthenticationTest extends TestCase
     {
         $isUserRegistered = new class implements IsUserRegistered
         {
-            public function __invoke(EmailAddress $emailAddress) : bool
+            public function __invoke(Username $username) : bool
             {
                 return true;
             }
@@ -105,7 +107,7 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function getByEmailAddress(EmailAddress $emailAddress) : User
+            public function getByUsername(Username $username) : User
             {
                 throw new LogicException('Should not be called.');
             }
@@ -145,9 +147,9 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function getByEmailAddress(EmailAddress $emailAddress) : User
+            public function getByUsername(Username $username) : User
             {
-                throw UserNotFound::byEmailAddress($emailAddress);
+                throw UserNotFound::byUsername($username);
             }
 
             public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
@@ -179,12 +181,12 @@ final class UserAuthenticationTest extends TestCase
             /**
              * @throws void
              */
-            public function getByEmailAddress(EmailAddress $emailAddress) : User
+            public function getByUsername(Username $username) : User
             {
                 $password = PlaintextUserPassword::fromString('abcdefgh');
                 $passwordHash =  UserPasswordHash::fromPassword($password, new PhpPasswordHashing());
 
-                return User::fromStoredValues($emailAddress, $passwordHash);
+                return User::fromStoredValues(EmailAddress::fromString($username->toString()), $passwordHash);
             }
 
             public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
@@ -209,7 +211,7 @@ final class UserAuthenticationTest extends TestCase
         );
 
         self::assertEquals(
-            AuthenticatedUserIdentifier::fromEmailAddress(EmailAddress::fromString($credentials->username())),
+            AuthenticatedUserIdentifier::fromId(UserId::fromString($credentials->username())),
             $getUserAuthenticatedByCredentials->__invoke($credentials),
         );
     }

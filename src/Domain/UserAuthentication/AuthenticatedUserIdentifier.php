@@ -6,22 +6,20 @@ namespace App\Domain\UserAuthentication;
 
 final class AuthenticatedUserIdentifier
 {
-    private EmailAddress $emailAddress;
+    private UserId $userId;
 
-    private function __construct()
+    private function __construct(UserId $userId)
     {
+        $this->userId = $userId;
     }
 
-    public static function fromEmailAddress(EmailAddress $emailAddress) : self
+    public static function fromId(UserId $userId) : self
     {
-        $instance = new self();
-        $instance->emailAddress = $emailAddress;
-
-        return $instance;
+        return new self($userId);
     }
 
-    public function emailAddress() : EmailAddress
+    public function toString() : string
     {
-        return $this->emailAddress;
+        return $this->userId->toString();
     }
 }

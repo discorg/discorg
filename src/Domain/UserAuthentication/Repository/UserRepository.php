@@ -6,7 +6,7 @@ namespace App\Domain\UserAuthentication\Repository;
 
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
-use App\Domain\UserAuthentication\EmailAddress;
+use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserSessionToken;
 use DateTimeImmutable;
 
@@ -22,7 +22,7 @@ interface UserRepository
     /**
      * @throws UserNotFound
      */
-    public function getByEmailAddress(EmailAddress $emailAddress) : User;
+    public function getByUsername(Username $username) : User;
 
     /**
      * @throws UserNotFound

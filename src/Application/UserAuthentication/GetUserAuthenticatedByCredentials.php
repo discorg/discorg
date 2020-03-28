@@ -6,12 +6,12 @@ namespace App\Application\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
-use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
 use App\Domain\UserAuthentication\UserCredentials;
+use App\Domain\UserAuthentication\Username;
 
 final class GetUserAuthenticatedByCredentials
 {
@@ -31,8 +31,7 @@ final class GetUserAuthenticatedByCredentials
     public function __invoke(UserCredentials $credentials) : AuthenticatedUserIdentifier
     {
         try {
-            // TODO: get by username
-            $user = $this->userRepository->getByEmailAddress(EmailAddress::fromStoredValue($credentials->username()));
+            $user = $this->userRepository->getByUsername(Username::fromString($credentials->username()));
         } catch (UserNotFound $e) {
             throw UserCannotBeAuthenticated::usernameNotFound();
         }

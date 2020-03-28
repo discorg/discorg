@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\IsUserRegistered;
-use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\Username;
 
 final class IsUserRegisteredUsingRepository implements IsUserRegistered
 {
@@ -18,10 +18,10 @@ final class IsUserRegisteredUsingRepository implements IsUserRegistered
         $this->userRepository = $userRepository;
     }
 
-    public function __invoke(EmailAddress $emailAddress) : bool
+    public function __invoke(Username $username) : bool
     {
         try {
-            $this->userRepository->getByEmailAddress($emailAddress);
+            $this->userRepository->getByUsername($username);
 
             return true;
         } catch (UserNotFound $exception) {

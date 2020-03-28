@@ -10,6 +10,7 @@ use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
+use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
 use DateTimeImmutable;
@@ -185,7 +186,7 @@ final class UserSessionTest extends TestCase
     {
         return new class implements IsUserRegistered
         {
-            public function __invoke(EmailAddress $emailAddress) : bool
+            public function __invoke(Username $username) : bool
             {
                 return false;
             }

@@ -8,6 +8,8 @@ use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
 use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\PasswordHashing;
 use App\Domain\UserAuthentication\PlaintextUserPassword;
+use App\Domain\UserAuthentication\UserId;
+use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserPasswordHash;
 use App\Domain\UserAuthentication\UserSessionToken;
 use DateTimeImmutable;
@@ -34,7 +36,8 @@ final class User
         IsUserRegistered $isUserRegistered,
         PasswordHashing $hashing
     ) : self {
-        if ($isUserRegistered($emailAddress)) {
+        $username = Username::fromEmailAddress($emailAddress);
+        if ($isUserRegistered->__invoke($username)) {
             throw CannotRegisterUser::emailAddressAlreadyRegistered($emailAddress);
         }
 
@@ -86,7 +89,7 @@ final class User
             throw UserCannotBeAuthenticated::passwordDoesNotMatch();
         }
 
-        return AuthenticatedUserIdentifier::fromEmailAddress($this->emailAddress);
+        return AuthenticatedUserIdentifier::fromId($this->id());
     }
 
     /**
@@ -100,7 +103,7 @@ final class User
             throw UserCannotBeAuthenticated::passwordDoesNotMatch();
         }
 
-        return AuthenticatedUserIdentifier::fromEmailAddress($this->emailAddress);
+        return AuthenticatedUserIdentifier::fromId($this->id());
     }
 
     public function isAuthenticatedByToken(UserSessionToken $token, DateTimeImmutable $at) : bool
@@ -108,8 +111,19 @@ final class User
         return $this->sessions->hasValid($token, $at);
     }
 
-    public function getEmailAddress() : EmailAddress
+    /**
+     * @internal
+     */
+    public function id() : UserId
     {
-        return $this->emailAddress;
+        return UserId::fromString($this->emailAddress->toString());
+    }
+
+    /**
+     * @internal
+     */
+    public function matchesUsername(Username $username) : bool
+    {
+        return $this->emailAddress->toString() === $username->toString();
     }
 }

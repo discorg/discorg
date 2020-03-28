@@ -6,9 +6,9 @@ namespace App\Infrastructure\UserAuthentication;
 
 use App\Domain\UserAuthentication\Aggregate\User;
 use App\Domain\UserAuthentication\AuthenticatedUserIdentifier;
-use App\Domain\UserAuthentication\EmailAddress;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\Repository\UserRepository;
+use App\Domain\UserAuthentication\Username;
 use App\Domain\UserAuthentication\UserSessionToken;
 use DateTimeImmutable;
 use function array_key_exists;
@@ -16,30 +16,36 @@ use function array_key_exists;
 final class InMemoryUserRepository implements UserRepository
 {
     /** @var User[] */
-    private array $usersByEmailAddress = [];
+    private array $usersById = [];
 
     public function save(User $user) : void
     {
-        $this->usersByEmailAddress[$user->getEmailAddress()->toString()] = $user;
+        $this->usersById[$user->id()->toString()] = $user;
     }
 
-    public function get(AuthenticatedUserIdentifier $identifier) : User
+    public function get(AuthenticatedUserIdentifier $id) : User
     {
-        return $this->getByEmailAddress($identifier->emailAddress());
-    }
-
-    public function getByEmailAddress(EmailAddress $emailAddress) : User
-    {
-        if (! array_key_exists($emailAddress->toString(), $this->usersByEmailAddress)) {
-            throw UserNotFound::byEmailAddress($emailAddress);
+        if (! array_key_exists($id->toString(), $this->usersById)) {
+            throw UserNotFound::byId($id);
         }
 
-        return $this->usersByEmailAddress[$emailAddress->toString()];
+        return $this->usersById[$id->toString()];
+    }
+
+    public function getByUsername(Username $username) : User
+    {
+        foreach ($this->usersById as $user) {
+            if ($user->matchesUsername($username)) {
+                return $user;
+            }
+        }
+
+        throw UserNotFound::byUsername($username);
     }
 
     public function getByValidSessionToken(UserSessionToken $token, DateTimeImmutable $at) : User
     {
-        foreach ($this->usersByEmailAddress as $user) {
+        foreach ($this->usersById as $user) {
             if ($user->isAuthenticatedByToken($token, $at)) {
                 return $user;
             }
