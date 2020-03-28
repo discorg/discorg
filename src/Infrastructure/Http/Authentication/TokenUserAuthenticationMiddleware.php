@@ -12,6 +12,7 @@ use App\Domain\UserAuthentication\Aggregate\UserCannotBeAuthenticated;
 use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\UserSessionToken;
+use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
@@ -56,14 +57,16 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
 
         $token = UserSessionToken::fromStoredValue($authentication->token());
 
+        $requestTime = RequestTimeProvidingMiddleware::from($request);
+
         try {
-            $userId = $this->getUserAuthenticatedByToken->__invoke($token);
+            $userId = $this->getUserAuthenticatedByToken->__invoke($token, $requestTime);
         } catch (UserCannotBeAuthenticated $e) {
             return $this->response401();
         }
 
         try {
-            $this->renewUserSession->__invoke($userId, $token);
+            $this->renewUserSession->__invoke($userId, $token, $requestTime);
         } catch (UserNotFound|SessionNotFound|CannotModifySession $e) {
             return $this->responseFactory
                 ->createResponse(500);

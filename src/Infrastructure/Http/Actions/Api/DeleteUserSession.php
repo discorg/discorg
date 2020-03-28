@@ -10,6 +10,7 @@ use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
 use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\UserSessionToken;
+use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
 use Assert\Assertion;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -38,9 +39,10 @@ final class DeleteUserSession implements RequestHandlerInterface
         $token = $request->getAttribute(UserSessionToken::class);
         Assertion::isInstanceOf($token, UserSessionToken::class);
 
+        $requestTime = RequestTimeProvidingMiddleware::from($request);
+
         try {
-            // TODO: pass frozen time
-            $this->endUserSession->__invoke($userId, $token);
+            $this->endUserSession->__invoke($userId, $token, $requestTime);
         } catch (UserNotFound|SessionNotFound|CannotModifySession $e) {
             throw new LogicException('User should have already been authenticated in this context.', 0, $e);
         }

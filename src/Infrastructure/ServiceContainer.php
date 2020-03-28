@@ -30,6 +30,7 @@ use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
 use App\Infrastructure\Http\MiddlewareStackByUriPath;
 use App\Infrastructure\Http\RequestHandlingMiddleware;
+use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
 use App\Infrastructure\Http\SpotifySessionMiddleware;
 use App\Infrastructure\Http\UserSessionMiddleware;
 use App\Infrastructure\Spotify\Session\SpotifySessionFactory;
@@ -67,6 +68,7 @@ final class ServiceContainer
                 '/api/',
                 MiddlewareStack::fromArray(
                     $this->apiOperationFindingMiddleware(),
+                    $this->requestTimeProvidingMiddleware(),
                     $this->basicUserAuthenticationMiddleware(),
                     $this->tokenUserAuthenticationMiddleware(),
                     $this->apiRequestAndResponseValidatingMiddleware(),
@@ -82,6 +84,11 @@ final class ServiceContainer
                 ),
             ),
         );
+    }
+
+    private function requestTimeProvidingMiddleware() : RequestTimeProvidingMiddleware
+    {
+        return new RequestTimeProvidingMiddleware($this->clock());
     }
 
     private function apiOperationFindingMiddleware() : ApiOperationFindingMiddleware
@@ -322,7 +329,6 @@ final class ServiceContainer
     {
         return new StartUserSession(
             $this->userRepository(),
-            $this->clock(),
         );
     }
 
@@ -330,7 +336,6 @@ final class ServiceContainer
     {
         return new EndUserSession(
             $this->userRepository(),
-            $this->clock(),
         );
     }
 
@@ -352,11 +357,11 @@ final class ServiceContainer
 
     private function getUserAuthenticatedByToken() : GetUserAuthenticatedByToken
     {
-        return new GetUserAuthenticatedByToken($this->userRepository(), $this->clock());
+        return new GetUserAuthenticatedByToken($this->userRepository());
     }
 
     private function renewUserSession() : RenewUserSession
     {
-        return new RenewUserSession($this->userRepository(), $this->clock());
+        return new RenewUserSession($this->userRepository());
     }
 }

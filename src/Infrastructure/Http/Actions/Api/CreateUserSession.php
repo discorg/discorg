@@ -8,6 +8,7 @@ use App\Application\UserAuthentication\StartUserSession;
 use App\Domain\UserAuthentication\Aggregate\CannotStartUserSession;
 use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\UserSessionToken;
+use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
 use Assert\Assertion;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -37,10 +38,13 @@ final class CreateUserSession implements RequestHandlerInterface
     {
         $userId = $request->getAttribute(AuthenticatedUserId::class);
         Assertion::isInstanceOf($userId, AuthenticatedUserId::class);
+
         $token = UserSessionToken::generate();
 
+        $requestTime = RequestTimeProvidingMiddleware::from($request);
+
         try {
-            $this->startUserSession->__invoke($userId, $token);
+            $this->startUserSession->__invoke($userId, $token, $requestTime);
         } catch (CannotStartUserSession $e) {
             $this->responseFactory
                 ->createResponse(401)
