@@ -28,17 +28,20 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
 {
     private SpecFinder $specFinder;
     private ResponseFactoryInterface $responseFactory;
+    private ParseTokenFromBearerHeader $parseTokenFromBearerHeader;
     private GetUserAuthenticatedByToken $getUserAuthenticatedByToken;
     private RenewUserSession $renewUserSession;
 
     public function __construct(
         SpecFinder $specFinder,
         ResponseFactoryInterface $responseFactory,
+        ParseTokenFromBearerHeader $parseTokenFromBearerHeader,
         GetUserAuthenticatedByToken $getUserAuthenticatedByToken,
         RenewUserSession $renewUserSession
     ) {
         $this->specFinder = $specFinder;
         $this->responseFactory = $responseFactory;
+        $this->parseTokenFromBearerHeader = $parseTokenFromBearerHeader;
         $this->getUserAuthenticatedByToken = $getUserAuthenticatedByToken;
         $this->renewUserSession = $renewUserSession;
     }
@@ -50,12 +53,12 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
         }
 
         try {
-            $authentication = TokenAuthentication::fromRequestHeader($request);
+            $tokenString = $this->parseTokenFromBearerHeader->__invoke($request);
         } catch (CannotParseAuthentication $e) {
             return $this->response401();
         }
 
-        $token = UserSessionToken::fromStoredValue($authentication->token());
+        $token = UserSessionToken::fromStoredValue($tokenString);
 
         $requestTime = RequestTimeProvidingMiddleware::from($request);
 

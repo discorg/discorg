@@ -24,6 +24,7 @@ use App\Infrastructure\Http\Api\ApiOperationFindingMiddleware;
 use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
 use App\Infrastructure\Http\Authentication\BasicUserAuthenticationMiddleware;
 use App\Infrastructure\Http\Authentication\ParseCredentialsFromBasicAuthenticationHeader;
+use App\Infrastructure\Http\Authentication\ParseTokenFromBearerHeader;
 use App\Infrastructure\Http\Authentication\TokenUserAuthenticationMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
@@ -111,6 +112,7 @@ final class ServiceContainer
         return new TokenUserAuthenticationMiddleware(
             $this->specFinder(),
             $this->psr17factory(),
+            $this->parseTokenFromBearerHeader(),
             $this->getUserAuthenticatedByToken(),
             $this->renewUserSession(),
         );
@@ -348,6 +350,11 @@ final class ServiceContainer
     private function parseCredentialsFromBasicAuthenticationHeader() : ParseCredentialsFromBasicAuthenticationHeader
     {
         return new ParseCredentialsFromBasicAuthenticationHeader();
+    }
+
+    private function parseTokenFromBearerHeader() : ParseTokenFromBearerHeader
+    {
+        return new ParseTokenFromBearerHeader();
     }
 
     private function getUserAuthenticatedByCredentials() : GetUserAuthenticatedByCredentials

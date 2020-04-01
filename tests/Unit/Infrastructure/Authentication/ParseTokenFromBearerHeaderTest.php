@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Infrastructure\Authentication;
 
 use App\Infrastructure\Http\Authentication\CannotParseAuthentication;
-use App\Infrastructure\Http\Authentication\TokenAuthentication;
+use App\Infrastructure\Http\Authentication\ParseTokenFromBearerHeader;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\Uri;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
 
-final class TokenAuthenticationTest extends TestCase
+final class ParseTokenFromBearerHeaderTest extends TestCase
 {
     public function testSuccess() : void
     {
@@ -22,9 +22,7 @@ final class TokenAuthenticationTest extends TestCase
             'Authorization' => sprintf('Bearer %s', $token),
         ]);
 
-        $authentication = TokenAuthentication::fromRequestHeader($request);
-
-        Assert::assertSame($token, $authentication->token());
+        Assert::assertSame($token, (new ParseTokenFromBearerHeader())->__invoke($request));
     }
 
     public function testFailWithHeaderNotFound() : void
@@ -32,7 +30,7 @@ final class TokenAuthenticationTest extends TestCase
         $request = $this->createRequest([]);
 
         $this->expectException(CannotParseAuthentication::class);
-        TokenAuthentication::fromRequestHeader($request);
+        (new ParseTokenFromBearerHeader())->__invoke($request);
     }
 
     public function testFailWithInvalidCredentialsString() : void
@@ -42,7 +40,7 @@ final class TokenAuthenticationTest extends TestCase
         ]);
 
         $this->expectException(CannotParseAuthentication::class);
-        TokenAuthentication::fromRequestHeader($request);
+        (new ParseTokenFromBearerHeader())->__invoke($request);
     }
 
     /**

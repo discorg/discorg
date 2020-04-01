@@ -9,22 +9,15 @@ use function strlen;
 use function strpos;
 use function substr;
 
-final class TokenAuthentication
+final class ParseTokenFromBearerHeader
 {
     private const HEADER_NAME = 'Authorization';
     private const PREFIX = 'Bearer ';
 
-    private string $token;
-
-    private function __construct(string $token)
-    {
-        $this->token = $token;
-    }
-
     /**
      * @throws CannotParseAuthentication
      */
-    public static function fromRequestHeader(ServerRequestInterface $request) : self
+    public function __invoke(ServerRequestInterface $request) : string
     {
         $rawHeader = $request->getHeaderLine(self::HEADER_NAME);
 
@@ -38,11 +31,6 @@ final class TokenAuthentication
             throw CannotParseAuthentication::invalidCredentialsString();
         }
 
-        return new self($token);
-    }
-
-    public function token() : string
-    {
-        return $this->token;
+        return $token;
     }
 }
