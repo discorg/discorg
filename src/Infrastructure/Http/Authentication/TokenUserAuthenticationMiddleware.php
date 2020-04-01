@@ -13,33 +13,25 @@ use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
 use App\Domain\UserAuthentication\UserSessionToken;
 use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
-use League\OpenAPIValidation\PSR7\Exception\NoPath;
-use League\OpenAPIValidation\PSR7\OperationAddress;
-use League\OpenAPIValidation\PSR7\SpecFinder;
-use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use function assert;
 
 final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
 {
-    private SpecFinder $specFinder;
     private ResponseFactoryInterface $responseFactory;
     private ParseTokenFromBearerHeader $parseTokenFromBearerHeader;
     private GetUserAuthenticatedByToken $getUserAuthenticatedByToken;
     private RenewUserSession $renewUserSession;
 
     public function __construct(
-        SpecFinder $specFinder,
         ResponseFactoryInterface $responseFactory,
         ParseTokenFromBearerHeader $parseTokenFromBearerHeader,
         GetUserAuthenticatedByToken $getUserAuthenticatedByToken,
         RenewUserSession $renewUserSession
     ) {
-        $this->specFinder = $specFinder;
         $this->responseFactory = $responseFactory;
         $this->parseTokenFromBearerHeader = $parseTokenFromBearerHeader;
         $this->getUserAuthenticatedByToken = $getUserAuthenticatedByToken;
@@ -48,10 +40,6 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
-        if (! $this->isAuthenticationRequired($request)) {
-            return $handler->handle($request);
-        }
-
         try {
             $tokenString = $this->parseTokenFromBearerHeader->__invoke($request);
         } catch (CannotParseAuthentication $e) {
@@ -86,31 +74,6 @@ final class TokenUserAuthenticationMiddleware implements MiddlewareInterface
         );
 
         return $handler->handle($request);
-    }
-
-    private function isAuthenticationRequired(ServerRequestInterface $request) : bool
-    {
-        $operationAddress = $request->getAttribute(OperationAddress::class);
-        assert($operationAddress instanceof OperationAddress);
-
-        try {
-            $securitySpecs = $this->specFinder->findSecuritySpecs($operationAddress);
-        } catch (NoPath $e) {
-            throw new LogicException($e->getMessage());
-        }
-
-        $securitySchemesSpecs = $this->specFinder->findSecuritySchemesSpecs();
-
-        foreach ($securitySpecs as $securitySpec) {
-            foreach ($securitySpec->getSerializableData() as $securitySchemeName => $scopes) {
-                $securityScheme = $securitySchemesSpecs[$securitySchemeName];
-                if ($securityScheme->type === 'http' && $securityScheme->scheme === 'bearer') {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private function response401() : ResponseInterface

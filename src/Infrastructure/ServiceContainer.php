@@ -26,6 +26,7 @@ use App\Infrastructure\Http\Authentication\BasicUserAuthenticationMiddleware;
 use App\Infrastructure\Http\Authentication\ParseCredentialsFromBasicAuthenticationHeader;
 use App\Infrastructure\Http\Authentication\ParseTokenFromBearerHeader;
 use App\Infrastructure\Http\Authentication\TokenUserAuthenticationMiddleware;
+use App\Infrastructure\Http\Authentication\UserAuthenticationProvidingMiddleware;
 use App\Infrastructure\Http\HandlerFactoryCollection;
 use App\Infrastructure\Http\HttpApplication;
 use App\Infrastructure\Http\MiddlewareStack;
@@ -70,8 +71,7 @@ final class ServiceContainer
                 MiddlewareStack::fromArray(
                     $this->apiOperationFindingMiddleware(),
                     $this->requestTimeProvidingMiddleware(),
-                    $this->basicUserAuthenticationMiddleware(),
-                    $this->tokenUserAuthenticationMiddleware(),
+                    $this->userAuthenticationProvidingMiddleware(),
                     $this->apiRequestAndResponseValidatingMiddleware(),
                     $this->apiRequestHandlingMiddleware(),
                 ),
@@ -97,10 +97,18 @@ final class ServiceContainer
         return new ApiOperationFindingMiddleware($this->apiSchema(), $this->psr17factory());
     }
 
+    private function userAuthenticationProvidingMiddleware() : UserAuthenticationProvidingMiddleware
+    {
+        return new UserAuthenticationProvidingMiddleware(
+            $this->specFinder(),
+            $this->basicUserAuthenticationMiddleware(),
+            $this->tokenUserAuthenticationMiddleware()
+        );
+    }
+
     private function basicUserAuthenticationMiddleware() : BasicUserAuthenticationMiddleware
     {
         return new BasicUserAuthenticationMiddleware(
-            $this->specFinder(),
             $this->psr17factory(),
             $this->parseCredentialsFromBasicAuthenticationHeader(),
             $this->getUserAuthenticatedByCredentials(),
@@ -110,7 +118,6 @@ final class ServiceContainer
     private function tokenUserAuthenticationMiddleware() : TokenUserAuthenticationMiddleware
     {
         return new TokenUserAuthenticationMiddleware(
-            $this->specFinder(),
             $this->psr17factory(),
             $this->parseTokenFromBearerHeader(),
             $this->getUserAuthenticatedByToken(),
