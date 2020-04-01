@@ -47,10 +47,10 @@ final class User
     }
 
     public function startSession(
-        UserSessionToken $token,
+        UserSessionToken $tokenCandidate,
         DateTimeImmutable $at
     ) : void {
-        $session = UserSession::create($token, $at);
+        $session = UserSession::create($tokenCandidate, $at);
 
         $this->sessions = $this->sessions->with($session);
     }

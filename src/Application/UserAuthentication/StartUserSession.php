@@ -22,9 +22,8 @@ final class StartUserSession
 
     /**
      * @throws CannotStartUserSession
-     * TODO: rename token parameter to indicate new token
      */
-    public function __invoke(AuthenticatedUserId $id, UserSessionToken $token, DateTimeImmutable $at) : void
+    public function __invoke(AuthenticatedUserId $id, UserSessionToken $tokenCandidate, DateTimeImmutable $at) : void
     {
         try {
             $user = $this->userRepository->get($id);
@@ -32,7 +31,7 @@ final class StartUserSession
             throw CannotStartUserSession::incorrectUserCredentials();
         }
 
-        $user->startSession($token, $at);
+        $user->startSession($tokenCandidate, $at);
 
         $this->userRepository->save($user);
     }
