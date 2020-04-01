@@ -6,10 +6,9 @@ namespace App\Infrastructure\Http\Actions\Api;
 
 use App\Application\UserAuthentication\StartUserSession;
 use App\Domain\UserAuthentication\Aggregate\CannotStartUserSession;
-use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\UserSessionToken;
+use App\Infrastructure\Http\Authentication\UserAuthenticationProvidingMiddleware;
 use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
-use Assert\Assertion;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -36,11 +35,8 @@ final class CreateUserSession implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $userId = $request->getAttribute(AuthenticatedUserId::class);
-        Assertion::isInstanceOf($userId, AuthenticatedUserId::class);
-
+        $userId = UserAuthenticationProvidingMiddleware::userIdFrom($request);
         $token = UserSessionToken::generate();
-
         $requestTime = RequestTimeProvidingMiddleware::from($request);
 
         try {

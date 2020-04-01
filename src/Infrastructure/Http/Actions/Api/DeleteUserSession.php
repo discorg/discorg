@@ -7,11 +7,9 @@ namespace App\Infrastructure\Http\Actions\Api;
 use App\Application\UserAuthentication\EndUserSession;
 use App\Domain\UserAuthentication\Aggregate\CannotModifySession;
 use App\Domain\UserAuthentication\Aggregate\SessionNotFound;
-use App\Domain\UserAuthentication\AuthenticatedUserId;
 use App\Domain\UserAuthentication\Repository\UserNotFound;
-use App\Domain\UserAuthentication\UserSessionToken;
+use App\Infrastructure\Http\Authentication\UserAuthenticationProvidingMiddleware;
 use App\Infrastructure\Http\RequestTimeProvidingMiddleware;
-use Assert\Assertion;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -33,12 +31,8 @@ final class DeleteUserSession implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $userId = $request->getAttribute(AuthenticatedUserId::class);
-        Assertion::isInstanceOf($userId, AuthenticatedUserId::class);
-
-        $token = $request->getAttribute(UserSessionToken::class);
-        Assertion::isInstanceOf($token, UserSessionToken::class);
-
+        $userId = UserAuthenticationProvidingMiddleware::userIdFrom($request);
+        $token = UserAuthenticationProvidingMiddleware::userSessionTokenFrom($request);
         $requestTime = RequestTimeProvidingMiddleware::from($request);
 
         try {
