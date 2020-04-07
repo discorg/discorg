@@ -22,7 +22,7 @@ use const JSON_THROW_ON_ERROR;
 final class AuthenticationContext implements Context
 {
     private static ServiceContainer $container;
-    /** @var string[] */
+    /** @var string[][] */
     private array $tokensByEmail = [];
     /** @var ResponseInterface[]  */
     private array $responses = [];
@@ -76,7 +76,7 @@ final class AuthenticationContext implements Context
             return;
         }
 
-        $this->tokensByEmail[$emailAddress] = json_decode((string) $response->getBody(), true)['token'];
+        $this->tokensByEmail[$emailAddress][] = json_decode((string) $response->getBody(), true)['token'];
     }
 
     /**
@@ -97,10 +97,10 @@ final class AuthenticationContext implements Context
     {
         $request = new ServerRequest(
             'GET',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            new Uri('http://discorg.bouda.life/api/v1/user/me'),
             [
                 'content-type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress][0]),
             ],
         );
         $this->handleRequest($request);
@@ -121,20 +121,8 @@ final class AuthenticationContext implements Context
      */
     public function thereAreTwoDifferentSessionsStartedForUser(string $emailAddress) : void
     {
-        $request = new ServerRequest(
-            'GET',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
-            [
-                'content-type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
-            ],
-        );
-        $response = $this->handleRequest($request);
-
-        $sessionCollection = json_decode((string) $response->getBody(), true);
-
-        Assert::assertCount(2, $sessionCollection);
-        Assert::assertNotSame($sessionCollection[0]['token'], $sessionCollection[1]['token']);
+        Assert::assertCount(2, $this->tokensByEmail[$emailAddress]);
+        Assert::assertNotSame($this->tokensByEmail[$emailAddress][0], $this->tokensByEmail[$emailAddress][1]);
     }
 
     /**
@@ -147,7 +135,7 @@ final class AuthenticationContext implements Context
             new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
             [
                 'content-type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress][0]),
             ],
         );
         $this->handleRequest($request);
@@ -160,10 +148,10 @@ final class AuthenticationContext implements Context
     {
         $request = new ServerRequest(
             'GET',
-            new Uri('http://discorg.bouda.life/api/v1/user/me/session'),
+            new Uri('http://discorg.bouda.life/api/v1/user/me'),
             [
                 'content-type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress]),
+                'Authorization' => sprintf('Bearer %s', $this->tokensByEmail[$emailAddress][0]),
             ],
         );
         $this->handleRequest($request);

@@ -126,4 +126,12 @@ final class User
     {
         return $this->emailAddress->toString() === $username->toString();
     }
+
+    /**
+     * TODO: get rid of this, use separate read model
+     */
+    public function emailAddress() : EmailAddress
+    {
+        return $this->emailAddress;
+    }
 }

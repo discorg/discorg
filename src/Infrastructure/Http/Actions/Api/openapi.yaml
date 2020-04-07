@@ -50,14 +50,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSession'
-    get:
-      responses:
-        '200':
-          description: Existing sessions for user
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserSessionCollection'
     delete:
       responses:
         '204':
@@ -100,7 +92,3 @@ components:
           type: string
       required:
         - token
-    UserSessionCollection:
-      type: array
-      items:
-        $ref: '#/components/schemas/UserSession'

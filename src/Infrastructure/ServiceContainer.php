@@ -18,7 +18,7 @@ use App\Infrastructure\Http\Actions\Api\CreateUser;
 use App\Infrastructure\Http\Actions\Api\CreateUserSession;
 use App\Infrastructure\Http\Actions\Api\DeleteUserSession;
 use App\Infrastructure\Http\Actions\Api\GetHealthCheck;
-use App\Infrastructure\Http\Actions\Api\GetSessionCollection;
+use App\Infrastructure\Http\Actions\Api\GetUser;
 use App\Infrastructure\Http\Actions\Get;
 use App\Infrastructure\Http\Api\ApiOperationFindingMiddleware;
 use App\Infrastructure\Http\Api\ApiRequestAndResponseValidatingMiddleware;
@@ -41,6 +41,7 @@ use App\Infrastructure\User\UserSessionManager;
 use App\Infrastructure\UserAuthentication\InMemoryUserRepository;
 use App\Infrastructure\UserAuthentication\IsUserRegisteredUsingRepository;
 use App\Infrastructure\UserAuthentication\PhpPasswordHashing;
+use App\Infrastructure\UserAuthentication\ReadModel\UserRepositoryUsingUserRepository;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Schema;
 use League\OpenAPIValidation\PSR7\ResponseValidator;
@@ -207,15 +208,16 @@ final class ServiceContainer
                     $this->psr17factory(),
                 );
             },
-            'POST /api/v1/user/me/session' => function () : RequestHandlerInterface {
-                return new CreateUserSession(
-                    $this->startUserSession(),
+            'GET /api/v1/user/me' => function () : RequestHandlerInterface {
+                return new GetUser(
+                    $this->getUser(),
                     $this->psr17factory(),
                     $this->psr17factory(),
                 );
             },
-            'GET /api/v1/user/me/session' => function () : RequestHandlerInterface {
-                return new GetSessionCollection(
+            'POST /api/v1/user/me/session' => function () : RequestHandlerInterface {
+                return new CreateUserSession(
+                    $this->startUserSession(),
                     $this->psr17factory(),
                     $this->psr17factory(),
                 );
@@ -336,6 +338,15 @@ final class ServiceContainer
     private function passwordHashing() : PasswordHashing
     {
         return new PhpPasswordHashing();
+    }
+
+    private function getUser() : \App\Application\UserAuthentication\ReadModel\GetUser
+    {
+        return new \App\Application\UserAuthentication\ReadModel\GetUser(
+            new UserRepositoryUsingUserRepository(
+                $this->userRepository(),
+            ),
+        );
     }
 
     private function startUserSession() : StartUserSession
