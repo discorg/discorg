@@ -22,7 +22,9 @@
         "symfony/dotenv": "^4.1",
         "tracy/tracy": "^2.5",
         "zendframework/zend-httphandlerrunner": "^1.1",
-        "ramsey/uuid": "^4.0"
+        "ramsey/uuid": "^4.0",
+        "monolog/monolog": "^2.0",
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "behat/behat": "^3.6",

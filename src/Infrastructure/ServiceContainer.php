@@ -49,8 +49,11 @@ use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use LogicException;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 use SpotifyWebAPI\SpotifyWebAPI;
 use Throwable;
 use function array_key_exists;
@@ -131,6 +134,7 @@ final class ServiceContainer
             $this->serverRequestValidator(),
             $this->responseValidator(),
             $this->psr17factory(),
+            $this->logger(),
         );
     }
 
@@ -377,5 +381,14 @@ final class ServiceContainer
     private function renewUserSession() : RenewUserSession
     {
         return new RenewUserSession($this->userRepository());
+    }
+
+    private function logger() : LoggerInterface
+    {
+        static $logger;
+
+        return $logger ?? $logger = new Logger('log', [
+            new ErrorLogHandler(),
+        ]);
     }
 }

@@ -12,21 +12,25 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 final class ApiRequestAndResponseValidatingMiddleware implements MiddlewareInterface
 {
     private ServerRequestValidator $requestValidator;
     private ResponseValidator $responseValidator;
     private ResponseFactoryInterface $responseFactory;
+    private LoggerInterface $logger;
 
     public function __construct(
         ServerRequestValidator $serverRequestValidator,
         ResponseValidator $responseValidator,
-        ResponseFactoryInterface $responseFactory
+        ResponseFactoryInterface $responseFactory,
+        LoggerInterface $logger
     ) {
         $this->requestValidator = $serverRequestValidator;
         $this->responseValidator = $responseValidator;
         $this->responseFactory = $responseFactory;
+        $this->logger = $logger;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
@@ -49,6 +53,8 @@ final class ApiRequestAndResponseValidatingMiddleware implements MiddlewareInter
         try {
             $this->responseValidator->validate($operation, $response);
         } catch (ValidationFailed $e) {
+            $this->logger->error($e->getMessage());
+
             return $this->responseFactory->createResponse(500);
         }
 
