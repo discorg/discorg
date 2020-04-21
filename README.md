@@ -1,5 +1,7 @@
 ![logo](discorg.png)
 
+My long-term pet project that serves mainly the purpose of playground for trying out new design/architecture ideas.
+
 Discorg is an app that helps to discover and organize music albums from different sources and across multiple platforms.
 
 **The problems that I seek to solve**
@@ -38,7 +40,7 @@ This is as much a tool that I really need as a playground for trying new tech.
     - [ ] checked exceptions
     - [x] strict coding standard rules
     - [x] deptrac for architecture rules
-    - [ ] psalm?
+    - [ ] psalm? Tried, not worth it when I have phpstan.
 * HTTP stack
     - [x] PSR-7 request/response
     - [x] PSR-15 middleware stack
@@ -49,10 +51,10 @@ This is as much a tool that I really need as a playground for trying new tech.
 * application architecture
     - [x] strictly separated domain, application and infrastructure layers
     - [ ] command bus, query bus?, (async) events
-    - [ ] DDD - aggregates, repositories, value objects
+    - [x] DDD - aggregates, repositories, value objects
 * testing
     - [x] end-to-end tests using HTTP request/response
-    - [ ] behat/gherkin for acceptance testing of behaviour
+    - [x] behat/gherkin for acceptance testing of behaviour
     - [ ] proper unit tests (no mocks, no brittle single-class tests)
     - [ ] phpspec?
 * infrastructure
